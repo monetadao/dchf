@@ -1,3 +1,4 @@
+const { ParamType } = require('ethers/lib/utils')
 const fs = require('fs')
 
 const ZERO_ADDRESS = '0x' + '0'.repeat(40)
@@ -44,6 +45,7 @@ class MainnetDeploymentHelper {
   }
 
   async loadOrDeploy(factory, name, deploymentState, proxy, params = []) {
+
     if (deploymentState[name] && deploymentState[name].address) {
       console.log(`Using previously deployed ${name} contract at address ${deploymentState[name].address}`)
       return await factory.attach(deploymentState[name].address);
@@ -272,12 +274,11 @@ class MainnetDeploymentHelper {
     return isInitialized;
   }
   // Connect contracts to their dependencies
-  async connectCoreContractsMainnet(contracts, VSTAContracts, chainlinkFlagAddress) {
+  async connectCoreContractsMainnet(contracts, VSTAContracts) {
     const gasPrice = this.configParams.GAS_PRICE
 
     await this.isOwnershipRenounced(contracts.priceFeed) ||
       await this.sendAndWaitForTransaction(contracts.priceFeed.setAddresses(
-        chainlinkFlagAddress,
         contracts.adminContract.address,
         { gasPrice }))
 
@@ -317,7 +318,7 @@ class MainnetDeploymentHelper {
         { gasPrice }
       ))
 
-      await this.isOwnershipRenounced(contracts.troveManagerHelpers) ||
+    await this.isOwnershipRenounced(contracts.troveManagerHelpers) ||
       await this.sendAndWaitForTransaction(contracts.troveManagerHelpers.setAddresses(
         contracts.borrowerOperations.address,
         contracts.stabilityPoolManager.address,

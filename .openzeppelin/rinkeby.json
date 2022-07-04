@@ -212,6 +212,21 @@
       "address": "0xb0766B9E0B6c6eC3E36465761BBd40a5b3428Aa3",
       "txHash": "0x48ae970afda02cd36eb651d9b85fba66cf2d912d17b1c457e069fba86ac78f0e",
       "kind": "transparent"
+    },
+    {
+      "address": "0x72f9445fEF0c54696A312c07b460b6A4c7B6ebC1",
+      "txHash": "0xa2f17bd1d599bfafeb8d984d93e006792cf791ee510baaddb195f10d190a0583",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x7fd74469246ce99c13bE52756fA890d27A75AE27",
+      "txHash": "0xb26e19d7b981a60f1550d8bc218f0984b4217a94ebd8b9ddaa21d2f4940a7a7d",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x44a03d30a500fB1292b0660fd729bdbd35A3A692",
+      "txHash": "0xf3ebb576a85f12f8966caf2f8a2bc23a4fc2b0fb0b777eb6ce8816a3af52d7dd",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -2709,6 +2724,686 @@
           },
           "t_bool": {
             "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "e54eb515907b8ce1e66ab4d4de421b18da3bf26dad9807ea3520581d9ef4df16": {
+      "address": "0x3c8A8d0d89B65284CE4105169B077514f3cF1C9b",
+      "txHash": "0xd94a30a6666c459f48ce9d41a0fd9c2690dfea303a3df3db29d2438e4802506c",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts\\PriceFeedV2.sol:30"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "adminContract",
+            "type": "t_address",
+            "src": "contracts\\PriceFeedV2.sol:32"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "status",
+            "type": "t_enum(Status)10381",
+            "src": "contracts\\PriceFeedV2.sol:34"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "registeredOracles",
+            "type": "t_mapping(t_address,t_struct(RegisterOracle)10378_storage)",
+            "src": "contracts\\PriceFeedV2.sol:35"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "lastGoodPrice",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\PriceFeedV2.sol:36"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "lastGoodIndex",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\PriceFeedV2.sol:37"
+          }
+        ],
+        "types": {
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_enum(Status)10381": {
+            "label": "enum IPriceFeed.Status",
+            "members": [
+              "chainlinkWorking",
+              "chainlinkUntrusted"
+            ]
+          },
+          "t_mapping(t_address,t_struct(RegisterOracle)10378_storage)": {
+            "label": "mapping(address => struct IPriceFeed.RegisterOracle)"
+          },
+          "t_struct(RegisterOracle)10378_storage": {
+            "label": "struct IPriceFeed.RegisterOracle",
+            "members": [
+              {
+                "label": "chainLinkOracle",
+                "type": "t_contract(AggregatorV3Interface)45"
+              },
+              {
+                "label": "chainLinkIndex",
+                "type": "t_contract(AggregatorV3Interface)45"
+              },
+              {
+                "label": "isRegistered",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_contract(AggregatorV3Interface)45": {
+            "label": "contract AggregatorV3Interface"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "c3b8295f451c5aaf0ae77e064056807d66d2a487c70b86241eba8fc505a616c9": {
+      "address": "0x5FD46dc6058A73Eaa4F2aEa0ae939F133c3c514e",
+      "txHash": "0x1e5f0829ff55f84b11195f0f18a5e62c409acc118a327dc450b634e23f6c7602",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "chainlinkFlags",
+            "type": "t_contract(FlagsInterface)86",
+            "src": "contracts\\PriceFeedV2.sol:19"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts\\PriceFeedV2.sol:30"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "adminContract",
+            "type": "t_address",
+            "src": "contracts\\PriceFeedV2.sol:32"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "status",
+            "type": "t_enum(Status)10381",
+            "src": "contracts\\PriceFeedV2.sol:34"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "registeredOracles",
+            "type": "t_mapping(t_address,t_struct(RegisterOracle)10378_storage)",
+            "src": "contracts\\PriceFeedV2.sol:35"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "lastGoodPrice",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\PriceFeedV2.sol:36"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "lastGoodIndex",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\PriceFeedV2.sol:37"
+          }
+        ],
+        "types": {
+          "t_contract(FlagsInterface)86": {
+            "label": "contract FlagsInterface"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_enum(Status)10381": {
+            "label": "enum IPriceFeed.Status",
+            "members": [
+              "chainlinkWorking",
+              "chainlinkUntrusted"
+            ]
+          },
+          "t_mapping(t_address,t_struct(RegisterOracle)10378_storage)": {
+            "label": "mapping(address => struct IPriceFeed.RegisterOracle)"
+          },
+          "t_struct(RegisterOracle)10378_storage": {
+            "label": "struct IPriceFeed.RegisterOracle",
+            "members": [
+              {
+                "label": "chainLinkOracle",
+                "type": "t_contract(AggregatorV3Interface)45"
+              },
+              {
+                "label": "chainLinkIndex",
+                "type": "t_contract(AggregatorV3Interface)45"
+              },
+              {
+                "label": "isRegistered",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_contract(AggregatorV3Interface)45": {
+            "label": "contract AggregatorV3Interface"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "5ad5307dd188cb153f47ba42cf1212d6816da752496a1f3cd4a58411c8ac9213": {
+      "address": "0xACc5B2e21b4addDe64b25ea6A037662697C03673",
+      "txHash": "0x08a96c5f24364642e88e67b30cce335566082cea252844d3a8b126a28967e1d8",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts\\PriceFeedV2.sol:27"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "adminContract",
+            "type": "t_address",
+            "src": "contracts\\PriceFeedV2.sol:29"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "status",
+            "type": "t_enum(Status)10381",
+            "src": "contracts\\PriceFeedV2.sol:31"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "registeredOracles",
+            "type": "t_mapping(t_address,t_struct(RegisterOracle)10378_storage)",
+            "src": "contracts\\PriceFeedV2.sol:32"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "lastGoodPrice",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\PriceFeedV2.sol:33"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "lastGoodIndex",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\PriceFeedV2.sol:34"
+          }
+        ],
+        "types": {
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_enum(Status)10381": {
+            "label": "enum IPriceFeed.Status",
+            "members": [
+              "chainlinkWorking",
+              "chainlinkUntrusted"
+            ]
+          },
+          "t_mapping(t_address,t_struct(RegisterOracle)10378_storage)": {
+            "label": "mapping(address => struct IPriceFeed.RegisterOracle)"
+          },
+          "t_struct(RegisterOracle)10378_storage": {
+            "label": "struct IPriceFeed.RegisterOracle",
+            "members": [
+              {
+                "label": "chainLinkOracle",
+                "type": "t_contract(AggregatorV3Interface)45"
+              },
+              {
+                "label": "chainLinkIndex",
+                "type": "t_contract(AggregatorV3Interface)45"
+              },
+              {
+                "label": "isRegistered",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_contract(AggregatorV3Interface)45": {
+            "label": "contract AggregatorV3Interface"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "8a66378697700fa6b60bcc67f5092d2786ece51b26bb3c882b3c321767dc2285": {
+      "address": "0x26aFbe8ac507ccd0075C7F20db45911f0872d6C5",
+      "txHash": "0xdea493202103d8b297acdc839fdf9e3dba11a7a2d1ed7c6e0b35d63a97575f90",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "VestaBase",
+            "label": "vestaParams",
+            "type": "t_contract(IVestaParameters)12325",
+            "src": "contracts\\Dependencies\\VestaBase.sol:21"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "troveManager",
+            "type": "t_contract(TroveManager)24855",
+            "src": "contracts\\TroveManagerHelpers.sol:16"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "borrowerOperationsAddress",
+            "type": "t_address",
+            "src": "contracts\\TroveManagerHelpers.sol:18"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "stabilityPoolManager",
+            "type": "t_contract(IStabilityPoolManager)10821",
+            "src": "contracts\\TroveManagerHelpers.sol:20"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "gasPoolAddress",
+            "type": "t_address",
+            "src": "contracts\\TroveManagerHelpers.sol:22"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "collSurplusPool",
+            "type": "t_contract(ICollSurplusPool)10180",
+            "src": "contracts\\TroveManagerHelpers.sol:24"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "vstToken",
+            "type": "t_contract(IVSTToken)12053",
+            "src": "contracts\\TroveManagerHelpers.sol:26"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "vstaStaking",
+            "type": "t_contract(IVSTAStaking)11983",
+            "src": "contracts\\TroveManagerHelpers.sol:28"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "sortedTroves",
+            "type": "t_contract(ISortedTroves)10585",
+            "src": "contracts\\TroveManagerHelpers.sol:31"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "baseRate",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:48"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "lastFeeOperationTime",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:51"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "Troves",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)11280_storage))",
+            "src": "contracts\\TroveManagerHelpers.sol:53"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "totalStakes",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:55"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "totalStakesSnapshot",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:58"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "totalCollateralSnapshot",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:61"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "L_ASSETS",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:71"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "L_VSTDebts",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:72"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "rewardSnapshots",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)24951_storage))",
+            "src": "contracts\\TroveManagerHelpers.sol:75"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "TroveOwners",
+            "type": "t_mapping(t_address,t_array(t_address)dyn_storage)",
+            "src": "contracts\\TroveManagerHelpers.sol:84"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "lastETHError_Redistribution",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:87"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "lastVSTDebtError_Redistribution",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:88"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts\\TroveManagerHelpers.sol:90"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "redemptionWhitelist",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "contracts\\TroveManagerHelpers.sol:92"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "isRedemptionWhitelisted",
+            "type": "t_bool",
+            "src": "contracts\\TroveManagerHelpers.sol:93"
+          }
+        ],
+        "types": {
+          "t_contract(TroveManager)24855": {
+            "label": "contract TroveManager"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_contract(IStabilityPoolManager)10821": {
+            "label": "contract IStabilityPoolManager"
+          },
+          "t_contract(ICollSurplusPool)10180": {
+            "label": "contract ICollSurplusPool"
+          },
+          "t_contract(IVSTToken)12053": {
+            "label": "contract IVSTToken"
+          },
+          "t_contract(IVSTAStaking)11983": {
+            "label": "contract IVSTAStaking"
+          },
+          "t_contract(ISortedTroves)10585": {
+            "label": "contract ISortedTroves"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)11280_storage))": {
+            "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.Trove))"
+          },
+          "t_mapping(t_address,t_struct(Trove)11280_storage)": {
+            "label": "mapping(address => struct ITroveManagerHelpers.Trove)"
+          },
+          "t_struct(Trove)11280_storage": {
+            "label": "struct ITroveManagerHelpers.Trove",
+            "members": [
+              {
+                "label": "asset",
+                "type": "t_address"
+              },
+              {
+                "label": "debt",
+                "type": "t_uint256"
+              },
+              {
+                "label": "coll",
+                "type": "t_uint256"
+              },
+              {
+                "label": "stake",
+                "type": "t_uint256"
+              },
+              {
+                "label": "status",
+                "type": "t_enum(Status)11266"
+              },
+              {
+                "label": "arrayIndex",
+                "type": "t_uint128"
+              }
+            ]
+          },
+          "t_enum(Status)11266": {
+            "label": "enum ITroveManagerHelpers.Status",
+            "members": [
+              "nonExistent",
+              "active",
+              "closedByOwner",
+              "closedByLiquidation",
+              "closedByRedemption"
+            ]
+          },
+          "t_uint128": {
+            "label": "uint128"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)24951_storage))": {
+            "label": "mapping(address => mapping(address => struct TroveManagerHelpers.RewardSnapshot))"
+          },
+          "t_mapping(t_address,t_struct(RewardSnapshot)24951_storage)": {
+            "label": "mapping(address => struct TroveManagerHelpers.RewardSnapshot)"
+          },
+          "t_struct(RewardSnapshot)24951_storage": {
+            "label": "struct TroveManagerHelpers.RewardSnapshot",
+            "members": [
+              {
+                "label": "asset",
+                "type": "t_uint256"
+              },
+              {
+                "label": "VSTDebt",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_mapping(t_address,t_array(t_address)dyn_storage)": {
+            "label": "mapping(address => address[])"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_contract(IVestaParameters)12325": {
+            "label": "contract IVestaParameters"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]"

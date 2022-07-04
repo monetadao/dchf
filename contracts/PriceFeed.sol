@@ -9,7 +9,7 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/BaseMath.sol";
 import "./Dependencies/VestaMath.sol";
 
-contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
+contract PriceFeedOld is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
 	using SafeMathUpgradeable for uint256;
 
 	string public constant NAME = "PriceFeed";

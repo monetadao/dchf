@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.14;
-import "../PriceFeed.sol";
+import "../PriceFeedV2.sol";
 
 contract PriceFeedTester is PriceFeed {
 	function setLastGoodPrice(uint256 _lastGoodPrice) external {

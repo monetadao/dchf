@@ -94,8 +94,7 @@ async function mainnetDeploy(configParams) {
 
   await mdh.connectCoreContractsMainnet(
     vestaCore,
-    VSTAContracts,
-    config.externalAddrs.CHAINLINK_FLAG_HEALTH,
+    VSTAContracts
   )
 
   console.log("Connect VSTA Contract to Core");
@@ -127,10 +126,10 @@ async function addETHCollaterals() {
     const txReceiptProxyETH = await mdh
       .sendAndWaitForTransaction(
         vestaCore.adminContract.addNewCollateral(
-          ZERO_ADDRESS,
+          config.externalAddrs.WETH_ERC20,
           vestaCore.stabilityPoolV1.address,
           config.externalAddrs.CHAINLINK_ETHUSD_PROXY,
-          ZERO_ADDRESS,
+          config.externalAddrs.CHAINLINK_USDCHF_PROXY,
           dec(100_000, 18),
           toBN(dec(100_000, 18)).div(toBN(4)),
           config.REDEMPTION_SAFETY), {
@@ -163,7 +162,7 @@ async function addBTCCollaterals() {
           BTCAddress,
           vestaCore.stabilityPoolV1.address,
           config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
-          ZERO_ADDRESS,
+          config.externalAddrs.CHAINLINK_USDCHF_PROXY,
           dec(30_000, 18),
           toBN(dec(30_000, 18)).div(toBN(4)),
           config.REDEMPTION_SAFETY))

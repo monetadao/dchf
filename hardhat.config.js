@@ -72,9 +72,10 @@ module.exports = {
       ]
     },*/
     rinkeby: {
-      url: "https://eth-rinkeby.alchemyapi.io/v2/2sDTn5oKXqo8Kzjw1XisAoqk_qUJtUk5",
-      gas: 10000000,  // tx gas limit
-      accounts: ["0xbd6a50838e691b935deaa6a68c8ee3805c5a72d08e219deb9ae002a226fb632b"]
+      url: "https://speedy-nodes-nyc.moralis.io/882ccfb1adb1b53ccfbda5be/eth/rinkeby",
+      gas: 100000000,  // tx gas limit
+      gasPrice: 20000000000,
+      accounts: ["e2fe3b829a953db25b3b39f62048de7b7f4e2b7b67d0cf15e4c307c82882c6ab"]
     },
   },
   etherscan: {
