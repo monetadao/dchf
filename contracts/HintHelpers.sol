@@ -46,6 +46,7 @@ contract HintHelpers is VestaBase, CheckContract {
 
 		sortedTroves = ISortedTroves(_sortedTrovesAddress);
 		troveManager = ITroveManager(_troveManagerAddress);
+		troveManagerHelpers = ITroveManagerHelpers(troveManager.troveManagerHelpers());
 
 		emit SortedTrovesAddressChanged(_sortedTrovesAddress);
 		emit TroveManagerAddressChanged(_troveManagerAddress);
@@ -171,7 +172,7 @@ contract HintHelpers is VestaBase, CheckContract {
 			uint256 latestRandomSeed
 		)
 	{
-		uint256 arrayLength = troveManager.getTroveOwnersCount(_asset);
+		uint256 arrayLength = troveManagerHelpers.getTroveOwnersCount(_asset);
 
 		if (arrayLength == 0) {
 			return (address(0), 0, _inputRandomSeed);
@@ -190,7 +191,10 @@ contract HintHelpers is VestaBase, CheckContract {
 			latestRandomSeed = uint256(keccak256(abi.encodePacked(latestRandomSeed)));
 
 			uint256 arrayIndex = latestRandomSeed % arrayLength;
-			address currentAddress = troveManager.getTroveFromTroveOwnersArray(_asset, arrayIndex);
+			address currentAddress = troveManagerHelpers.getTroveFromTroveOwnersArray(
+				_asset,
+				arrayIndex
+			);
 			uint256 currentNICR = troveManagerHelpers.getNominalICR(_asset, currentAddress);
 
 			// check if abs(current - CR) > abs(closest - CR), and update closest if current is closer

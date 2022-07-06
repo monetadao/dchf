@@ -3,7 +3,8 @@
 pragma solidity ^0.8.14;
 pragma experimental ABIEncoderV2;
 
-import "./TroveManager.sol";
+import "./Interfaces/ITroveManager.sol";
+import "./Interfaces/ITroveManagerHelpers.sol";
 import "./SortedTroves.sol";
 
 /*  Helper contract for grabbing Trove data for the front end. Not part of the core Vesta system. */
@@ -18,11 +19,13 @@ contract MultiTroveGetter {
 		uint256 snapshotVSTDebt;
 	}
 
-	TroveManager public troveManager; // XXX Troves missing from ITroveManager?
+	ITroveManager public troveManager; // XXX Troves missing from ITroveManager?
+	ITroveManagerHelpers public troveManagerHelpers;
 	ISortedTroves public sortedTroves;
 
-	constructor(TroveManager _troveManager, ISortedTroves _sortedTroves) {
+	constructor(ITroveManager _troveManager, ISortedTroves _sortedTroves) {
 		troveManager = _troveManager;
+		troveManagerHelpers = ITroveManagerHelpers(troveManager.troveManagerHelpers());
 		sortedTroves = _sortedTroves;
 	}
 
@@ -85,9 +88,9 @@ contract MultiTroveGetter {
 				/* arrayIndex */
 				,
 
-			) = troveManager.Troves(_asset, currentTroveowner);
-			(_troves[idx].snapshotAsset, _troves[idx].snapshotVSTDebt) = troveManager
-				.rewardSnapshots(_asset, currentTroveowner);
+			) = troveManagerHelpers.getTrove(_asset, currentTroveowner);
+			(_troves[idx].snapshotAsset, _troves[idx].snapshotVSTDebt) = troveManagerHelpers
+				.getRewardSnapshots(_asset, currentTroveowner);
 
 			currentTroveowner = sortedTroves.getNext(_asset, currentTroveowner);
 		}
@@ -117,9 +120,9 @@ contract MultiTroveGetter {
 				/* arrayIndex */
 				,
 
-			) = troveManager.Troves(_asset, currentTroveowner);
-			(_troves[idx].snapshotAsset, _troves[idx].snapshotVSTDebt) = troveManager
-				.rewardSnapshots(_asset, currentTroveowner);
+			) = troveManagerHelpers.getTrove(_asset, currentTroveowner);
+			(_troves[idx].snapshotAsset, _troves[idx].snapshotVSTDebt) = troveManagerHelpers
+				.getRewardSnapshots(_asset, currentTroveowner);
 
 			currentTroveowner = sortedTroves.getPrev(_asset, currentTroveowner);
 		}

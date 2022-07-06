@@ -120,15 +120,13 @@ interface ITroveManagerHelpers is IVestaBase {
 		bool cancelledPartial;
 	}
 
-	// --- Events ---
+	// Object containing the ETH and VST snapshots for a given active trove
+	struct RewardSnapshot {
+		uint256 asset;
+		uint256 VSTDebt;
+	}
 
-	event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
-	event VSTTokenAddressChanged(address _newVSTTokenAddress);
-	event StabilityPoolAddressChanged(address _stabilityPoolAddress);
-	event GasPoolAddressChanged(address _gasPoolAddress);
-	event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
-	event SortedTrovesAddressChanged(address _sortedTrovesAddress);
-	event VSTAStakingAddressChanged(address _VSTAStakingAddress);
+	// --- Events ---
 
 	event Liquidation(
 		address indexed _asset,
@@ -194,15 +192,15 @@ interface ITroveManagerHelpers is IVestaBase {
 		redeemCollateral
 	}
 
-    // Functions
+	// Functions
 
-    function addTroveOwnerToArray(address _asset, address _borrower)
-	external
-	returns (uint256 index);
+	function addTroveOwnerToArray(address _asset, address _borrower)
+		external
+		returns (uint256 index);
 
 	function applyPendingRewards(address _asset, address _borrower) external;
 
-    function checkRecoveryMode(address _asset, uint256 _price) external returns (bool);
+	function checkRecoveryMode(address _asset, uint256 _price) external returns (bool);
 
 	function closeTrove(address _asset, address _borrower) external;
 
@@ -219,7 +217,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		address _borrower,
 		uint256 _collDecrease
 	) external returns (uint256);
-    
+
 	function getBorrowingFee(address _asset, uint256 VSTDebt) external view returns (uint256);
 
 	function getBorrowingRateWithDecay(address _asset) external view returns (uint256);
@@ -306,4 +304,113 @@ interface ITroveManagerHelpers is IVestaBase {
 		view
 		returns (uint256);
 
+	function getTroveOwnersCount(address _asset) external view returns (uint256);
+
+	function getTroveFromTroveOwnersArray(address _asset, uint256 _index)
+		external
+		view
+		returns (address);
+
+	function setTroveDeptAndColl(
+		address _asset,
+		address _borrower,
+		uint256 _debt,
+		uint256 _coll
+	) external;
+
+	function isTroveActive(address _asset, address _borrower) external view returns (bool);
+
+	function _movePendingTroveRewardsToActivePool(
+		address _asset,
+		IActivePool _activePool,
+		IDefaultPool _defaultPool,
+		uint256 _VST,
+		uint256 _amount
+	) external;
+
+	function _removeStake(address _asset, address _borrower) external;
+
+	function _closeTrove(
+		// access control
+		address _asset,
+		address _borrower,
+		Status closedStatus
+	) external;
+
+	function _redistributeDebtAndColl(
+		address _asset,
+		IActivePool _activePool,
+		IDefaultPool _defaultPool,
+		uint256 _debt,
+		uint256 _coll
+	) external;
+
+	function _updateSystemSnapshots_excludeCollRemainder(
+		// access control
+		address _asset,
+		IActivePool _activePool,
+		uint256 _collRemainder
+	) external;
+
+	function _checkPotentialRecoveryMode(
+		// access control
+		address _asset,
+		uint256 _entireSystemColl,
+		uint256 _entireSystemDebt,
+		uint256 _price
+	) external view returns (bool);
+
+	function _updateBaseRateFromRedemption(
+		address _asset,
+		uint256 _ETHDrawn,
+		uint256 _price,
+		uint256 _totalVSTSupply
+	) external returns (uint256);
+
+	function _updateStakeAndTotalStakes(address _asset, address _borrower)
+		external
+		returns (uint256);
+
+	function _requireValidMaxFeePercentage(address _asset, uint256 _maxFeePercentage)
+		external
+		view;
+
+	function _requireTCRoverMCR(address _asset, uint256 _price) external view;
+
+	function _requireAmountGreaterThanZero(uint256 _amount) external pure;
+
+	function _requireVSTBalanceCoversRedemption(
+		IVSTToken _vstToken,
+		address _redeemer,
+		uint256 _amount
+	) external view;
+
+	function _applyPendingRewards(
+		address _asset,
+		IActivePool _activePool,
+		IDefaultPool _defaultPool,
+		address _borrower
+	) external;
+
+	function _getRedemptionFee(address _asset, uint256 _assetDraw)
+		external
+		view
+		returns (uint256);
+
+	function getTrove(address _asset, address _borrower)
+		external
+		view
+		returns (
+			address,
+			uint256,
+			uint256,
+			uint256,
+			Status,
+			uint128
+		);
+
+	function getRewardSnapshots(address _asset, address _troveOwner)
+		external
+		view
+		returns (uint256 asset, uint256 VSTDebt);
 }

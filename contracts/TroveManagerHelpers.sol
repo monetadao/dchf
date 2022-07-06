@@ -9,23 +9,13 @@ import "./TroveManager.sol";
 
 contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 	using SafeMathUpgradeable for uint256;
-	string public constant NAME = "TroveManagerHelpers";
 
-    // --- Connected contract declarations ---
-
-    TroveManager public troveManager;
+	// --- Connected contract declarations ---
 
 	address public borrowerOperationsAddress;
-
-	IStabilityPoolManager public stabilityPoolManager;
-
-	address gasPoolAddress;
-
-	ICollSurplusPool collSurplusPool;
+	address public troveManagerAddress;
 
 	IVSTToken public vstToken;
-
-	IVSTAStaking public vstaStaking;
 
 	// A doubly linked list of Troves, sorted by their sorted by their collateral ratios
 	ISortedTroves public sortedTroves;
@@ -72,13 +62,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 	mapping(address => uint256) public L_VSTDebts;
 
 	// Map addresses with active troves to their RewardSnapshot
-	mapping(address => mapping(address => RewardSnapshot)) public rewardSnapshots;
-
-	// Object containing the ETH and VST snapshots for a given active trove
-	struct RewardSnapshot {
-		uint256 asset;
-		uint256 VSTDebt;
-	}
+	mapping(address => mapping(address => RewardSnapshot)) private rewardSnapshots;
 
 	// Array of all active trove addresses - used to to compute an approximate hint off-chain, for the sorted list insertion
 	mapping(address => address[]) public TroveOwners;
@@ -89,30 +73,29 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 
 	bool public isInitialized;
 
-	mapping(address => bool) public redemptionWhitelist;
-	bool public isRedemptionWhitelisted;
-
 	// Internal Function and Modifier onlyBorrowerOperations
 	// @dev This workaround was needed in order to reduce bytecode size
-	
+
 	function _onlyBorrowerOperations() private view {
-		require(
-			msg.sender == borrowerOperationsAddress,
-			"WA"
-		);
-		
+		require(msg.sender == borrowerOperationsAddress, "WA");
 	}
-	
+
 	modifier onlyBorrowerOperations() {
 		_onlyBorrowerOperations();
 		_;
 	}
-	
+
+	function _onlyTroveManager() private view {
+		require(msg.sender == troveManagerAddress, "WA");
+	}
+
+	modifier onlyTroveManager() {
+		_onlyTroveManager();
+		_;
+	}
+
 	modifier troveIsActive(address _asset, address _borrower) {
-		require(
-			isTroveActive(_asset, _borrower),
-			"IT"
-		);
+		require(isTroveActive(_asset, _borrower), "IT");
 		_;
 	}
 
@@ -120,49 +103,29 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 
 	function setAddresses(
 		address _borrowerOperationsAddress,
-		address _stabilityPoolManagerAddress,
-		address _gasPoolAddress,
-		address _collSurplusPoolAddress,
 		address _vstTokenAddress,
 		address _sortedTrovesAddress,
-		address _vstaStakingAddress,
 		address _vestaParamsAddress,
-        address _troveManagerAddress
+		address _troveManagerAddress
 	) external initializer {
 		require(!isInitialized, "AI");
 		checkContract(_borrowerOperationsAddress);
-		checkContract(_stabilityPoolManagerAddress);
-		checkContract(_gasPoolAddress);
-		checkContract(_collSurplusPoolAddress);
 		checkContract(_vstTokenAddress);
 		checkContract(_sortedTrovesAddress);
-		checkContract(_vstaStakingAddress);
 		checkContract(_vestaParamsAddress);
-        checkContract(_troveManagerAddress);
 		isInitialized = true;
 
 		__Ownable_init();
 
 		borrowerOperationsAddress = _borrowerOperationsAddress;
-		stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
-		gasPoolAddress = _gasPoolAddress;
-		collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
 		vstToken = IVSTToken(_vstTokenAddress);
 		sortedTroves = ISortedTroves(_sortedTrovesAddress);
-		vstaStaking = IVSTAStaking(_vstaStakingAddress);
+		troveManagerAddress = _troveManagerAddress;
 
 		setVestaParameters(_vestaParamsAddress);
-
-		emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
-		emit StabilityPoolAddressChanged(_stabilityPoolManagerAddress);
-		emit GasPoolAddressChanged(_gasPoolAddress);
-		emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
-		emit VSTTokenAddressChanged(_vstTokenAddress);
-		emit SortedTrovesAddressChanged(_sortedTrovesAddress);
-		emit VSTAStakingAddressChanged(_vstaStakingAddress);
 	}
 
-    // --- Helper functions ---
+	// --- Helper functions ---
 
 	// Return the nominal collateral ratio (ICR) of a given Trove, without the price. Takes a trove's pending coll and debt rewards from redistributions into account.
 	function getNominalICR(address _asset, address _borrower)
@@ -210,11 +173,10 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 	}
 
 	function applyPendingRewards(address _asset, address _borrower)
-		public
+		external
 		override
 		onlyBorrowerOperations
 	{
-	
 		return
 			_applyPendingRewards(
 				_asset,
@@ -230,7 +192,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		IActivePool _activePool,
 		IDefaultPool _defaultPool,
 		address _borrower
-	) public {
+	) public override onlyTroveManager {
 		if (!hasPendingRewards(_asset, _borrower)) {
 			return;
 		}
@@ -248,7 +210,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		_updateTroveRewardSnapshots(_asset, _borrower);
 
 		// Transfer from DefaultPool to ActivePool
-		troveManager._movePendingTroveRewardsToActivePool(
+		_movePendingTroveRewardsToActivePool(
 			_asset,
 			_activePool,
 			_defaultPool,
@@ -365,7 +327,8 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return _removeStake(_asset, _borrower);
 	}
 
-	function _removeStake(address _asset, address _borrower) public { //add access control
+	function _removeStake(address _asset, address _borrower) public override onlyTroveManager {
+		//add access control
 		uint256 stake = Troves[_borrower][_asset].stake;
 		totalStakes[_asset] = totalStakes[_asset].sub(stake);
 		Troves[_borrower][_asset].stake = 0;
@@ -383,6 +346,8 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 	// Update borrower's stake based on their latest collateral value
 	function _updateStakeAndTotalStakes(address _asset, address _borrower)
 		public
+		override
+		onlyTroveManager
 		returns (uint256)
 	{
 		uint256 newStake = _computeNewStake(_asset, Troves[_borrower][_asset].coll);
@@ -419,7 +384,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		IDefaultPool _defaultPool,
 		uint256 _debt,
 		uint256 _coll
-	) public {
+	) public override onlyTroveManager {
 		if (_debt == 0) {
 			return;
 		}
@@ -472,11 +437,12 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return _closeTrove(_asset, _borrower, Status.closedByOwner);
 	}
 
-	function _closeTrove( // access control
+	function _closeTrove(
+		// access control
 		address _asset,
 		address _borrower,
 		Status closedStatus
-	) public {
+	) public override onlyTroveManager {
 		assert(closedStatus != Status.nonExistent && closedStatus != Status.active);
 
 		uint256 TroveOwnersArrayLength = TroveOwners[_asset].length;
@@ -493,11 +459,11 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		sortedTroves.remove(_asset, _borrower);
 	}
 
-	function _updateSystemSnapshots_excludeCollRemainder( // access control
+	function _updateSystemSnapshots_excludeCollRemainder(
 		address _asset,
 		IActivePool _activePool,
 		uint256 _collRemainder
-	) public {
+	) public override onlyTroveManager {
 		totalStakesSnapshot[_asset] = totalStakes[_asset];
 
 		uint256 activeColl = _activePool.getAssetBalance(_asset);
@@ -536,7 +502,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		address _asset,
 		address _borrower,
 		uint256 TroveOwnersArrayLength
-	) public {
+	) internal {
 		Status troveStatus = Troves[_borrower][_asset].status;
 		assert(troveStatus != Status.nonExistent && troveStatus != Status.active);
 
@@ -568,12 +534,12 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return _checkRecoveryMode(_asset, _price);
 	}
 
-	function _checkPotentialRecoveryMode( // access control
+	function _checkPotentialRecoveryMode(
 		address _asset,
 		uint256 _entireSystemColl,
 		uint256 _entireSystemDebt,
 		uint256 _price
-	) public view returns (bool) {
+	) public view override returns (bool) {
 		uint256 TCR = VestaMath._computeCR(_entireSystemColl, _entireSystemDebt, _price);
 
 		return TCR < vestaParams.CCR(_asset);
@@ -584,7 +550,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		uint256 _ETHDrawn,
 		uint256 _price,
 		uint256 _totalVSTSupply
-	) public returns (uint256) {
+	) public override onlyTroveManager returns (uint256) {
 		uint256 decayedBaseRate = _calcDecayedBaseRate(_asset);
 
 		uint256 redeemedVSTFraction = _ETHDrawn.mul(_price).div(_totalVSTSupply);
@@ -624,6 +590,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 	function _getRedemptionFee(address _asset, uint256 _assetDraw)
 		public
 		view
+		override
 		returns (uint256)
 	{
 		return _calcRedemptionFee(getRedemptionRate(_asset), _assetDraw);
@@ -644,10 +611,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		returns (uint256)
 	{
 		uint256 redemptionFee = _redemptionRate.mul(_assetDraw).div(DECIMAL_PRECISION);
-		require(
-			redemptionFee < _assetDraw,
-			"FE"
-		);
+		require(redemptionFee < _assetDraw, "FE");
 		return redemptionFee;
 	}
 
@@ -711,7 +675,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 	}
 
 	// Update the last fee operation time only if time passed >= decay interval. This prevents base rate griefing.
-	function _updateLastFeeOpTime(address _asset) public {
+	function _updateLastFeeOpTime(address _asset) internal {
 		uint256 timePassed = block.timestamp.sub(lastFeeOperationTime[_asset]);
 
 		if (timePassed >= SECONDS_IN_ONE_MINUTE) {
@@ -720,14 +684,19 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		}
 	}
 
-	function _calcDecayedBaseRate(address _asset) public view returns (uint256) {
+	function _calcDecayedBaseRate(address _asset)
+		public
+		view
+		onlyTroveManager
+		returns (uint256)
+	{
 		uint256 minutesPassed = _minutesPassedSinceLastFeeOp(_asset);
 		uint256 decayFactor = VestaMath._decPow(MINUTE_DECAY_FACTOR, minutesPassed);
 
 		return baseRate[_asset].mul(decayFactor).div(DECIMAL_PRECISION);
 	}
 
-	function _minutesPassedSinceLastFeeOp(address _asset) public view returns (uint256) {
+	function _minutesPassedSinceLastFeeOp(address _asset) internal view returns (uint256) {
 		return (block.timestamp.sub(lastFeeOperationTime[_asset])).div(SECONDS_IN_ONE_MINUTE);
 	}
 
@@ -735,37 +704,29 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		IVSTToken _vstToken,
 		address _redeemer,
 		uint256 _amount
-	) public view {
-		require(
-			_vstToken.balanceOf(_redeemer) >= _amount,
-			"RR"
-		);
+	) public view override {
+		require(_vstToken.balanceOf(_redeemer) >= _amount, "RR");
 	}
 
 	function _requireMoreThanOneTroveInSystem(address _asset, uint256 TroveOwnersArrayLength)
 		internal
 		view
 	{
-		require(
-			TroveOwnersArrayLength > 1 && sortedTroves.getSize(_asset) > 1,
-			"OO"
-		);
+		require(TroveOwnersArrayLength > 1 && sortedTroves.getSize(_asset) > 1, "OO");
 	}
 
-	function _requireAmountGreaterThanZero(uint256 _amount) public pure { // access control
+	function _requireAmountGreaterThanZero(uint256 _amount) public pure override {
 		require(_amount > 0, "AG");
 	}
 
-	function _requireTCRoverMCR(address _asset, uint256 _price) public view { // access control
-		require(
-			_getTCR(_asset, _price) >= vestaParams.MCR(_asset),
-			"CR"
-		);
+	function _requireTCRoverMCR(address _asset, uint256 _price) public view override {
+		require(_getTCR(_asset, _price) >= vestaParams.MCR(_asset), "CR");
 	}
 
 	function _requireValidMaxFeePercentage(address _asset, uint256 _maxFeePercentage)
 		public
 		view
+		override
 	{
 		require(
 			_maxFeePercentage >= vestaParams.REDEMPTION_FEE_FLOOR(_asset) &&
@@ -774,11 +735,55 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		);
 	}
 
-	function isTroveActive(address _asset, address _borrower) public view returns (bool) {
+	function isTroveActive(address _asset, address _borrower)
+		public
+		view
+		override
+		returns (bool)
+	{
 		return this.getTroveStatus(_asset, _borrower) == uint256(Status.active);
 	}
 
+	// --- Trove owners getters ---
+
+	function getTroveOwnersCount(address _asset) external view override returns (uint256) {
+		return TroveOwners[_asset].length;
+	}
+
+	function getTroveFromTroveOwnersArray(address _asset, uint256 _index)
+		external
+		view
+		override
+		returns (address)
+	{
+		return TroveOwners[_asset][_index];
+	}
+
 	// --- Trove property getters ---
+
+	function getTrove(address _asset, address _borrower)
+		external
+		view
+		override
+		returns (
+			address,
+			uint256,
+			uint256,
+			uint256,
+			Status,
+			uint128
+		)
+	{
+		Trove memory _trove = Troves[_borrower][_asset];
+		return (
+			_trove.asset,
+			_trove.debt,
+			_trove.coll,
+			_trove.stake,
+			_trove.status,
+			_trove.arrayIndex
+		);
+	}
 
 	function getTroveStatus(address _asset, address _borrower)
 		external
@@ -816,6 +821,19 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return Troves[_borrower][_asset].coll;
 	}
 
+	// --- Trove property setters, called by TroveManager ---
+
+	// todo: only Trovemanager
+	function setTroveDeptAndColl(
+		address _asset,
+		address _borrower,
+		uint256 _debt,
+		uint256 _coll
+	) external override onlyBorrowerOperations {
+		Troves[_borrower][_asset].debt = _debt;
+		Troves[_borrower][_asset].coll = _coll;
+	}
+
 	// --- Trove property setters, called by BorrowerOperations ---
 
 	function setTroveStatus(
@@ -847,7 +865,6 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return newDebt;
 	}
 
-
 	function decreaseTroveDebt(
 		address _asset,
 		address _borrower,
@@ -858,7 +875,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return newDebt;
 	}
 
-		function increaseTroveColl(
+	function increaseTroveColl(
 		address _asset,
 		address _borrower,
 		uint256 _collIncrease
@@ -867,7 +884,27 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		Troves[_borrower][_asset].coll = newColl;
 		return newColl;
 	}
+
+	// Move a Trove's pending debt and collateral rewards from distributions, from the Default Pool to the Active Pool
+	function _movePendingTroveRewardsToActivePool(
+		address _asset,
+		IActivePool _activePool,
+		IDefaultPool _defaultPool,
+		uint256 _VST,
+		uint256 _amount
+	) public override onlyTroveManager {
+		_defaultPool.decreaseVSTDebt(_asset, _VST);
+		_activePool.increaseVSTDebt(_asset, _VST);
+		_defaultPool.sendAssetToActivePool(_asset, _amount);
+	}
+
+	function getRewardSnapshots(address _asset, address _troveOwner)
+		external
+		view
+		override
+		returns (uint256 asset, uint256 VSTDebt)
+	{
+		RewardSnapshot memory _rewardSnapshot = rewardSnapshots[_asset][_troveOwner];
+		return (_rewardSnapshot.asset, _rewardSnapshot.VSTDebt);
+	}
 }
-
-
-

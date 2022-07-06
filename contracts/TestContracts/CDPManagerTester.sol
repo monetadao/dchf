@@ -1,11 +1,8 @@
 // SPDX-License-Identifier: MIT
-
+/*
 pragma solidity ^0.8.14;
 import "../TroveManager.sol";
 import "../TroveManagerHelpers.sol";
-
-/* Tester contract inherits from TroveManager, and provides external functions 
-for testing the parent's internal functions. */
 
 contract TroveManagerTester is TroveManager {
 	function computeICR(
@@ -72,4 +69,4 @@ contract TroveManagerTester is TroveManager {
 		uint256 troveOwnersArrayLength = TroveOwners[_asset].length;
 		troveManagerHelpers._removeTroveOwner(_asset, _troveOwner, troveOwnersArrayLength);
 	}
-}
+}*/

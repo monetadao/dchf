@@ -10,6 +10,7 @@ import "./ISortedTroves.sol";
 import "./IActivePool.sol";
 import "./IDefaultPool.sol";
 import "./IStabilityPoolManager.sol";
+import "./ITroveManagerHelpers.sol";
 
 // Common interface for the Trove Manager.
 interface ITroveManager is IVestaBase {
@@ -122,14 +123,6 @@ interface ITroveManager is IVestaBase {
 
 	// --- Events ---
 
-	event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
-	event VSTTokenAddressChanged(address _newVSTTokenAddress);
-	event StabilityPoolAddressChanged(address _stabilityPoolAddress);
-	event GasPoolAddressChanged(address _gasPoolAddress);
-	event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
-	event SortedTrovesAddressChanged(address _sortedTrovesAddress);
-	event VSTAStakingAddressChanged(address _VSTAStakingAddress);
-
 	event Liquidation(
 		address indexed _asset,
 		uint256 _liquidatedDebt,
@@ -196,15 +189,17 @@ interface ITroveManager is IVestaBase {
 
 	// --- Functions ---
 
+	function troveManagerHelpers() external view returns (ITroveManagerHelpers);
+
 	function setAddresses(
-		address _borrowerOperationsAddress,
-		address _stabilityPoolAddress,
+		address _stabilityPoolManagerAddress,
 		address _gasPoolAddress,
 		address _collSurplusPoolAddress,
 		address _vstTokenAddress,
 		address _sortedTrovesAddress,
-		address _VSTAStakingAddress,
-		address _vestaParamsAddress
+		address _vstaStakingAddress,
+		address _vestaParamsAddress,
+		address _troveManagerHelpersAddress
 	) external;
 
 	function stabilityPoolManager() external view returns (IStabilityPoolManager);
@@ -212,13 +207,6 @@ interface ITroveManager is IVestaBase {
 	function vstToken() external view returns (IVSTToken);
 
 	function vstaStaking() external view returns (IVSTAStaking);
-
-	function getTroveOwnersCount(address _asset) external view returns (uint256);
-
-	function getTroveFromTroveOwnersArray(address _asset, uint256 _index)
-		external
-		view
-		returns (address);
 
 	function liquidate(address _asset, address borrower) external;
 
@@ -236,5 +224,4 @@ interface ITroveManager is IVestaBase {
 		uint256 _maxIterations,
 		uint256 _maxFee
 	) external;
-
 }
