@@ -9,6 +9,7 @@ import "./TroveManager.sol";
 
 contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 	using SafeMathUpgradeable for uint256;
+	string public constant NAME = "TroveManagerHelpers";
 
 	// --- Connected contract declarations ---
 
