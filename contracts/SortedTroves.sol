@@ -78,11 +78,11 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 
 	// --- Dependency setters ---
 
-	function setParams(address _troveManagerAddress, address _borrowerOperationsAddress)
-		external
-		override
-		initializer
-	{
+	function setParams(
+		address _troveManagerAddress,
+		address _troveManagerHelpersAddress,
+		address _borrowerOperationsAddress
+	) external override initializer {
 		require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
 		checkContract(_borrowerOperationsAddress);
@@ -93,6 +93,7 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 		data[ETH_REF_ADDRESS].maxSize = MAX_UINT256;
 
 		troveManager = ITroveManager(_troveManagerAddress);
+		troveManagerHelpers = ITroveManagerHelpers(_troveManagerAddress);
 		borrowerOperationsAddress = _borrowerOperationsAddress;
 
 		emit TroveManagerAddressChanged(_troveManagerAddress);
@@ -119,7 +120,15 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 		ITroveManager troveManagerCached = troveManager;
 		ITroveManagerHelpers troveManagerHelpersCached = troveManagerHelpers;
 		_requireCallerIsBOorTroveM(troveManagerCached, troveManagerHelpersCached);
-		_insert(_asset, troveManagerCached, troveManagerHelpersCached, _id, _NICR, _prevId, _nextId);
+		_insert(
+			_asset,
+			troveManagerCached,
+			troveManagerHelpersCached,
+			_id,
+			_NICR,
+			_prevId,
+			_nextId
+		);
 	}
 
 	function _insert(
@@ -150,7 +159,13 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 		if (!_validInsertPosition(_asset, _troveManagerHelpers, _NICR, prevId, nextId)) {
 			// Sender's hint was not a valid insert position
 			// Use sender's hint to find a valid insert position
-			(prevId, nextId) = _findInsertPosition(_asset, _troveManagerHelpers, _NICR, prevId, nextId);
+			(prevId, nextId) = _findInsertPosition(
+				_asset,
+				_troveManagerHelpers,
+				_NICR,
+				prevId,
+				nextId
+			);
 		}
 
 		data[_asset].nodes[_id].exists = true;
@@ -257,7 +272,15 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 		// Remove node from the list
 		_remove(_asset, _id);
 
-		_insert(_asset, troveManagerCached, troveManagerHelpersCached, _id, _newNICR, _prevId, _nextId);
+		_insert(
+			_asset,
+			troveManagerCached,
+			troveManagerHelpersCached,
+			_id,
+			_newNICR,
+			_prevId,
+			_nextId
+		);
 	}
 
 	/*
@@ -353,11 +376,13 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 		} else if (_prevId == address(0)) {
 			// `(null, _nextId)` is a valid insert position if `_nextId` is the head of the list
 			return
-				data[_asset].head == _nextId && _NICR >= _troveManagerHelpers.getNominalICR(_asset, _nextId);
+				data[_asset].head == _nextId &&
+				_NICR >= _troveManagerHelpers.getNominalICR(_asset, _nextId);
 		} else if (_nextId == address(0)) {
 			// `(_prevId, null)` is a valid insert position if `_prevId` is the tail of the list
 			return
-				data[_asset].tail == _prevId && _NICR <= _troveManagerHelpers.getNominalICR(_asset, _prevId);
+				data[_asset].tail == _prevId &&
+				_NICR <= _troveManagerHelpers.getNominalICR(_asset, _prevId);
 		} else {
 			// `(_prevId, _nextId)` is a valid insert position if they are adjacent nodes and `_NICR` falls between the two nodes' NICRs
 			return
@@ -381,7 +406,8 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 	) internal view returns (address, address) {
 		// If `_startId` is the head, check if the insert position is before the head
 		if (
-			data[_asset].head == _startId && _NICR >= _troveManagerHelpers.getNominalICR(_asset, _startId)
+			data[_asset].head == _startId &&
+			_NICR >= _troveManagerHelpers.getNominalICR(_asset, _startId)
 		) {
 			return (address(0), _startId);
 		}
@@ -415,7 +441,8 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 	) internal view returns (address, address) {
 		// If `_startId` is the tail, check if the insert position is after the tail
 		if (
-			data[_asset].tail == _startId && _NICR <= _troveManagerHelpers.getNominalICR(_asset, _startId)
+			data[_asset].tail == _startId &&
+			_NICR <= _troveManagerHelpers.getNominalICR(_asset, _startId)
 		) {
 			return (_startId, address(0));
 		}
@@ -461,14 +488,18 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 		address nextId = _nextId;
 
 		if (prevId != address(0)) {
-			if (!contains(_asset, prevId) || _NICR > _troveManagerHelpers.getNominalICR(_asset, prevId)) {
+			if (
+				!contains(_asset, prevId) || _NICR > _troveManagerHelpers.getNominalICR(_asset, prevId)
+			) {
 				// `prevId` does not exist anymore or now has a smaller NICR than the given NICR
 				prevId = address(0);
 			}
 		}
 
 		if (nextId != address(0)) {
-			if (!contains(_asset, nextId) || _NICR < _troveManagerHelpers.getNominalICR(_asset, nextId)) {
+			if (
+				!contains(_asset, nextId) || _NICR < _troveManagerHelpers.getNominalICR(_asset, nextId)
+			) {
 				// `nextId` does not exist anymore or now has a larger NICR than the given NICR
 				nextId = address(0);
 			}
@@ -491,7 +522,6 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 
 	// --- 'require' functions ---
 	// add access control
-	
 
 	function _requireCallerIsTroveManager() internal view {
 		require(
@@ -500,9 +530,14 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 		);
 	}
 
-	function _requireCallerIsBOorTroveM(ITroveManager _troveManager, ITroveManagerHelpers _troveManagerHelpers) internal view {
+	function _requireCallerIsBOorTroveM(
+		ITroveManager _troveManager,
+		ITroveManagerHelpers _troveManagerHelpers
+	) internal view {
 		require(
-			msg.sender == borrowerOperationsAddress || msg.sender == address(_troveManager) || msg.sender == address(_troveManagerHelpers),
+			msg.sender == borrowerOperationsAddress ||
+				msg.sender == address(_troveManager) ||
+				msg.sender == address(_troveManagerHelpers),
 			"SortedTroves: Caller is neither BO nor TroveM"
 		);
 	}

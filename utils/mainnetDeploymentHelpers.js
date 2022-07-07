@@ -275,6 +275,7 @@ class MainnetDeploymentHelper {
   }
   // Connect contracts to their dependencies
   async connectCoreContractsMainnet(contracts, VSTAContracts) {
+
     const gasPrice = this.configParams.GAS_PRICE
 
     await this.isOwnershipRenounced(contracts.priceFeed) ||
