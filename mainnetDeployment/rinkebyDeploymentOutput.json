@@ -71,7 +71,7 @@
   },
   "adminContract": {
     "address": "0x9E5888347B021cd487Ad6FE7b82691AEb2eC11de",
-    "txHash": "0xd1b38c184bb622092eee00de915167ab06f453910ac1d06de59672e7127b9571",
+    "txHash": "0x3f95130565028fb008b61c9db87b26aa26f811f3bb098a8e0fcc2d761576ba9f",
     "verification": "https://rinkeby-explorer.arbitrum.io/address/0x9E5888347B021cd487Ad6FE7b82691AEb2eC11de#code"
   },
   "VSTToken": {

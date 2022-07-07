@@ -51,6 +51,7 @@ contract AdminContract is ProxyAdmin {
 
 		borrowerOperationsAddress = _borrowerOperationsAddress;
 		troveManagerAddress = _troveManagerAddress;
+		troveManagerHelpersAddress = _troveManagerHelpersAddress;
 		vstTokenAddress = _vstTokenAddress;
 		sortedTrovesAddress = _sortedTrovesAddress;
 		communityIssuance = ICommunityIssuance(_communityIssuanceAddress);

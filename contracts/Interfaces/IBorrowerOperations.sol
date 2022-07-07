@@ -33,6 +33,7 @@ interface IBorrowerOperations {
 
 	function setAddresses(
 		address _troveManagerAddress,
+		address _troveManagerHelpersAddress,
 		address _stabilityPoolAddress,
 		address _gasPoolAddress,
 		address _collSurplusPoolAddress,

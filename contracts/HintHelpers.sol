@@ -34,11 +34,13 @@ contract HintHelpers is VestaBase, CheckContract {
 	function setAddresses(
 		address _sortedTrovesAddress,
 		address _troveManagerAddress,
+		address _troveManagerHelpersAddress,
 		address _vaultParametersAddress
 	) external initializer {
 		require(!isInitialized, "Already initialized");
 		checkContract(_sortedTrovesAddress);
 		checkContract(_troveManagerAddress);
+		checkContract(_troveManagerHelpersAddress);
 		checkContract(_vaultParametersAddress);
 		isInitialized = true;
 
@@ -46,7 +48,7 @@ contract HintHelpers is VestaBase, CheckContract {
 
 		sortedTroves = ISortedTroves(_sortedTrovesAddress);
 		troveManager = ITroveManager(_troveManagerAddress);
-		troveManagerHelpers = ITroveManagerHelpers(troveManager.troveManagerHelpers());
+		troveManagerHelpers = ITroveManagerHelpers(_troveManagerHelpersAddress);
 
 		emit SortedTrovesAddressChanged(_sortedTrovesAddress);
 		emit TroveManagerAddressChanged(_troveManagerAddress);

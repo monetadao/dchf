@@ -308,7 +308,6 @@ class MainnetDeploymentHelper {
 
     await this.isOwnershipRenounced(contracts.troveManager) ||
       await this.sendAndWaitForTransaction(contracts.troveManager.setAddresses(
-        contracts.borrowerOperations.address,
         contracts.stabilityPoolManager.address,
         contracts.gasPool.address,
         contracts.collSurplusPool.address,
@@ -316,19 +315,17 @@ class MainnetDeploymentHelper {
         contracts.sortedTroves.address,
         VSTAContracts.VSTAStaking.address,
         contracts.vestaParameters.address,
+        contracts.troveManagerHelpers.address,
         { gasPrice }
       ))
 
     await this.isOwnershipRenounced(contracts.troveManagerHelpers) ||
       await this.sendAndWaitForTransaction(contracts.troveManagerHelpers.setAddresses(
         contracts.borrowerOperations.address,
-        contracts.stabilityPoolManager.address,
-        contracts.gasPool.address,
-        contracts.collSurplusPool.address,
         contracts.vstToken.address,
         contracts.sortedTroves.address,
-        VSTAContracts.VSTAStaking.address,
         contracts.vestaParameters.address,
+        contracts.troveManager.address,
         { gasPrice }
       ))
 
@@ -356,7 +353,6 @@ class MainnetDeploymentHelper {
       await this.sendAndWaitForTransaction(contracts.activePool.setAddresses(
         contracts.borrowerOperations.address,
         contracts.troveManager.address,
-        contracts.troveManagerHelpers.address,
         contracts.stabilityPoolManager.address,
         contracts.defaultPool.address,
         contracts.collSurplusPool.address,
@@ -366,7 +362,6 @@ class MainnetDeploymentHelper {
     await this.isOwnershipRenounced(contracts.defaultPool) ||
       await this.sendAndWaitForTransaction(contracts.defaultPool.setAddresses(
         contracts.troveManager.address,
-        contracts.troveManagerHelpers.address,
         contracts.activePool.address,
         { gasPrice }
       ))
@@ -375,7 +370,6 @@ class MainnetDeploymentHelper {
       await this.sendAndWaitForTransaction(contracts.collSurplusPool.setAddresses(
         contracts.borrowerOperations.address,
         contracts.troveManager.address,
-        contracts.troveManagerHelpers.address,
         contracts.activePool.address,
         { gasPrice }
       ))
@@ -411,7 +405,6 @@ class MainnetDeploymentHelper {
         VSTAContracts.VSTAToken.address,
         coreContracts.vstToken.address,
         coreContracts.troveManager.address,
-        coreContracts.troveManagerHelpers.address,
         coreContracts.borrowerOperations.address,
         coreContracts.activePool.address,
         treasuryAddress,

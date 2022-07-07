@@ -104,6 +104,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 
 	function setAddresses(
 		address _troveManagerAddress,
+		address _troveManagerHelpersAddress,
 		address _stabilityPoolManagerAddress,
 		address _gasPoolAddress,
 		address _collSurplusPoolAddress,
@@ -114,6 +115,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 	) external override initializer {
 		require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
+		checkContract(_troveManagerHelpersAddress);
 		checkContract(_stabilityPoolManagerAddress);
 		checkContract(_gasPoolAddress);
 		checkContract(_collSurplusPoolAddress);
@@ -126,6 +128,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		__Ownable_init();
 
 		troveManager = ITroveManager(_troveManagerAddress);
+		troveManagerHelpers = ITroveManagerHelpers(_troveManagerAddress);
 		stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
 		gasPoolAddress = _gasPoolAddress;
 		collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
@@ -171,7 +174,12 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		bool isRecoveryMode = _checkRecoveryMode(vars.asset, vars.price);
 
 		_requireValidMaxFeePercentage(vars.asset, _maxFeePercentage, isRecoveryMode);
-		_requireTroveisNotActive(vars.asset, contractsCache.troveManager, contractsCache.troveManagerHelpers, msg.sender);
+		_requireTroveisNotActive(
+			vars.asset,
+			contractsCache.troveManager,
+			contractsCache.troveManagerHelpers,
+			msg.sender
+		);
 
 		vars.VSTFee;
 		vars.netDebt = _VSTAmount;
@@ -214,13 +222,23 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		// Set the trove struct's properties
 		contractsCache.troveManagerHelpers.setTroveStatus(vars.asset, msg.sender, 1);
 		contractsCache.troveManagerHelpers.increaseTroveColl(vars.asset, msg.sender, _tokenAmount);
-		contractsCache.troveManagerHelpers.increaseTroveDebt(vars.asset, msg.sender, vars.compositeDebt);
+		contractsCache.troveManagerHelpers.increaseTroveDebt(
+			vars.asset,
+			msg.sender,
+			vars.compositeDebt
+		);
 
 		contractsCache.troveManagerHelpers.updateTroveRewardSnapshots(vars.asset, msg.sender);
-		vars.stake = contractsCache.troveManagerHelpers.updateStakeAndTotalStakes(vars.asset, msg.sender);
+		vars.stake = contractsCache.troveManagerHelpers.updateStakeAndTotalStakes(
+			vars.asset,
+			msg.sender
+		);
 
 		sortedTroves.insert(vars.asset, msg.sender, vars.NICR, _upperHint, _lowerHint);
-		vars.arrayIndex = contractsCache.troveManagerHelpers.addTroveOwnerToArray(vars.asset, msg.sender);
+		vars.arrayIndex = contractsCache.troveManagerHelpers.addTroveOwnerToArray(
+			vars.asset,
+			msg.sender
+		);
 		emit TroveCreated(vars.asset, msg.sender, vars.arrayIndex);
 
 		// Move the ether to the Active Pool, and mint the VSTAmount to the borrower
@@ -477,7 +495,10 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			vars.netDebtChange,
 			_isDebtIncrease
 		);
-		vars.stake = contractsCache.troveManagerHelpers.updateStakeAndTotalStakes(vars.asset, _borrower);
+		vars.stake = contractsCache.troveManagerHelpers.updateStakeAndTotalStakes(
+			vars.asset,
+			_borrower
+		);
 
 		// Re-insert trove in to the sorted list
 		uint256 newNICR = _getNewNominalICRFromTroveChange(
