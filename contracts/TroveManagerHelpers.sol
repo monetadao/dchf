@@ -187,13 +187,22 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 			);
 	}
 
+	function applyPendingRewards(
+		address _asset,
+		IActivePool _activePool,
+		IDefaultPool _defaultPool,
+		address _borrower
+	) external override onlyTroveManager {
+		_applyPendingRewards(_asset, _activePool, _defaultPool, _borrower);
+	}
+
 	// Add the borrowers's coll and debt rewards earned from redistributions, to their Trove
 	function _applyPendingRewards(
 		address _asset,
 		IActivePool _activePool,
 		IDefaultPool _defaultPool,
 		address _borrower
-	) public override onlyTroveManager {
+	) internal {
 		if (!hasPendingRewards(_asset, _borrower)) {
 			return;
 		}
@@ -328,7 +337,15 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return _removeStake(_asset, _borrower);
 	}
 
-	function _removeStake(address _asset, address _borrower) public override onlyTroveManager {
+	function removeStakeTrove(address _asset, address _borrower)
+		external
+		override
+		onlyTroveManager
+	{
+		return _removeStake(_asset, _borrower);
+	}
+
+	function _removeStake(address _asset, address _borrower) internal {
 		//add access control
 		uint256 stake = Troves[_borrower][_asset].stake;
 		totalStakes[_asset] = totalStakes[_asset].sub(stake);
@@ -344,11 +361,18 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return _updateStakeAndTotalStakes(_asset, _borrower);
 	}
 
-	// Update borrower's stake based on their latest collateral value
-	function _updateStakeAndTotalStakes(address _asset, address _borrower)
-		public
+	function updateStakeAndTotalStakesTrove(address _asset, address _borrower)
+		external
 		override
 		onlyTroveManager
+		returns (uint256)
+	{
+		return _updateStakeAndTotalStakes(_asset, _borrower);
+	}
+
+	// Update borrower's stake based on their latest collateral value
+	function _updateStakeAndTotalStakes(address _asset, address _borrower)
+		internal
 		returns (uint256)
 	{
 		uint256 newStake = _computeNewStake(_asset, Troves[_borrower][_asset].coll);
@@ -379,13 +403,23 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return stake;
 	}
 
+	function redistributeDebtAndColl(
+		address _asset,
+		IActivePool _activePool,
+		IDefaultPool _defaultPool,
+		uint256 _debt,
+		uint256 _coll
+	) external override onlyTroveManager {
+		_redistributeDebtAndColl(_asset, _activePool, _defaultPool, _debt, _coll);
+	}
+
 	function _redistributeDebtAndColl(
 		address _asset,
 		IActivePool _activePool,
 		IDefaultPool _defaultPool,
 		uint256 _debt,
 		uint256 _coll
-	) public override onlyTroveManager {
+	) internal {
 		if (_debt == 0) {
 			return;
 		}
@@ -438,12 +472,20 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return _closeTrove(_asset, _borrower, Status.closedByOwner);
 	}
 
+	function closeTrove(
+		address _asset,
+		address _borrower,
+		Status closedStatus
+	) external override onlyTroveManager {
+		_closeTrove(_asset, _borrower, closedStatus);
+	}
+
 	function _closeTrove(
 		// access control
 		address _asset,
 		address _borrower,
 		Status closedStatus
-	) public override onlyTroveManager {
+	) internal {
 		assert(closedStatus != Status.nonExistent && closedStatus != Status.active);
 
 		uint256 TroveOwnersArrayLength = TroveOwners[_asset].length;
@@ -460,11 +502,19 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		sortedTroves.remove(_asset, _borrower);
 	}
 
+	function updateSystemSnapshots_excludeCollRemainder(
+		address _asset,
+		IActivePool _activePool,
+		uint256 _collRemainder
+	) external override onlyTroveManager {
+		_updateSystemSnapshots_excludeCollRemainder(_asset, _activePool, _collRemainder);
+	}
+
 	function _updateSystemSnapshots_excludeCollRemainder(
 		address _asset,
 		IActivePool _activePool,
 		uint256 _collRemainder
-	) public override onlyTroveManager {
+	) internal {
 		totalStakesSnapshot[_asset] = totalStakes[_asset];
 
 		uint256 activeColl = _activePool.getAssetBalance(_asset);
@@ -546,12 +596,21 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return TCR < vestaParams.CCR(_asset);
 	}
 
+	function updateBaseRateFromRedemption(
+		address _asset,
+		uint256 _ETHDrawn,
+		uint256 _price,
+		uint256 _totalVSTSupply
+	) external override onlyTroveManager returns (uint256) {
+		return _updateBaseRateFromRedemption(_asset, _ETHDrawn, _price, _totalVSTSupply);
+	}
+
 	function _updateBaseRateFromRedemption(
 		address _asset,
 		uint256 _ETHDrawn,
 		uint256 _price,
 		uint256 _totalVSTSupply
-	) public override onlyTroveManager returns (uint256) {
+	) internal returns (uint256) {
 		uint256 decayedBaseRate = _calcDecayedBaseRate(_asset);
 
 		uint256 redeemedVSTFraction = _ETHDrawn.mul(_price).div(_totalVSTSupply);
@@ -685,12 +744,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		}
 	}
 
-	function _calcDecayedBaseRate(address _asset)
-		public
-		view
-		onlyTroveManager
-		returns (uint256)
-	{
+	function _calcDecayedBaseRate(address _asset) public view returns (uint256) {
 		uint256 minutesPassed = _minutesPassedSinceLastFeeOp(_asset);
 		uint256 decayFactor = VestaMath._decPow(MINUTE_DECAY_FACTOR, minutesPassed);
 
@@ -886,6 +940,16 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		return newColl;
 	}
 
+	function movePendingTroveRewardsToActivePool(
+		address _asset,
+		IActivePool _activePool,
+		IDefaultPool _defaultPool,
+		uint256 _VST,
+		uint256 _amount
+	) external override onlyTroveManager {
+		_movePendingTroveRewardsToActivePool(_asset, _activePool, _defaultPool, _VST, _amount);
+	}
+
 	// Move a Trove's pending debt and collateral rewards from distributions, from the Default Pool to the Active Pool
 	function _movePendingTroveRewardsToActivePool(
 		address _asset,
@@ -893,7 +957,7 @@ contract TroveManagerHelpers is VestaBase, CheckContract, ITroveManagerHelpers {
 		IDefaultPool _defaultPool,
 		uint256 _VST,
 		uint256 _amount
-	) public override onlyTroveManager {
+	) internal {
 		_defaultPool.decreaseVSTDebt(_asset, _VST);
 		_activePool.increaseVSTDebt(_asset, _VST);
 		_defaultPool.sendAssetToActivePool(_asset, _amount);

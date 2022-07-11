@@ -118,6 +118,19 @@ async function mainnetDeploy(configParams) {
   await mdh.logContractObjects(VSTAContracts)
 
   await giveContractsOwnerships();
+
+  const erc20 = await ethers.getContractAt("IERC20Deposit", config.externalAddrs.WETH_ERC20);
+  await erc20.deposit({ value: ethers.utils.parseEther("1") });
+  await erc20.approve(vestaCore.borrowerOperations.address, "1000000000000000000");
+
+  await vestaCore.borrowerOperations.openTrove(
+    config.externalAddrs.WETH_ERC20,
+    "1000000000000000000",
+    "5000000000000000",
+    "700000000000000000000",
+    ethers.constants.AddressZero,
+    ethers.constants.AddressZero);
+
 }
 
 async function addETHCollaterals() {

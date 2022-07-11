@@ -111,14 +111,14 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 			vars.pendingCollReward
 		) = troveManagerHelpers.getEntireDebtAndColl(_asset, _borrower);
 
-		troveManagerHelpers._movePendingTroveRewardsToActivePool(
+		troveManagerHelpers.movePendingTroveRewardsToActivePool(
 			_asset,
 			_activePool,
 			_defaultPool,
 			vars.pendingDebtReward,
 			vars.pendingCollReward
 		);
-		troveManagerHelpers._removeStake(_asset, _borrower);
+		troveManagerHelpers.removeStake(_asset, _borrower);
 
 		singleLiquidation.collGasCompensation = _getCollGasCompensation(
 			_asset,
@@ -140,7 +140,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 			_VSTInStabPool
 		);
 
-		troveManagerHelpers._closeTrove(
+		troveManagerHelpers.closeTrove(
 			_asset,
 			_borrower,
 			ITroveManagerHelpers.Status.closedByLiquidation
@@ -189,21 +189,21 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 
 		// If ICR <= 100%, purely redistribute the Trove across all active Troves
 		if (_ICR <= vestaParams._100pct()) {
-			troveManagerHelpers._movePendingTroveRewardsToActivePool(
+			troveManagerHelpers.movePendingTroveRewardsToActivePool(
 				_asset,
 				_activePool,
 				_defaultPool,
 				vars.pendingDebtReward,
 				vars.pendingCollReward
 			);
-			troveManagerHelpers._removeStake(_asset, _borrower);
+			troveManagerHelpers.removeStake(_asset, _borrower);
 
 			singleLiquidation.debtToOffset = 0;
 			singleLiquidation.collToSendToSP = 0;
 			singleLiquidation.debtToRedistribute = singleLiquidation.entireTroveDebt;
 			singleLiquidation.collToRedistribute = vars.collToLiquidate;
 
-			troveManagerHelpers._closeTrove(
+			troveManagerHelpers.closeTrove(
 				_asset,
 				_borrower,
 				ITroveManagerHelpers.Status.closedByLiquidation
@@ -226,14 +226,14 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 
 			// If 100% < ICR < MCR, offset as much as possible, and redistribute the remainder
 		} else if ((_ICR > vestaParams._100pct()) && (_ICR < vestaParams.MCR(_asset))) {
-			troveManagerHelpers._movePendingTroveRewardsToActivePool(
+			troveManagerHelpers.movePendingTroveRewardsToActivePool(
 				_asset,
 				_activePool,
 				_defaultPool,
 				vars.pendingDebtReward,
 				vars.pendingCollReward
 			);
-			troveManagerHelpers._removeStake(_asset, _borrower);
+			troveManagerHelpers.removeStake(_asset, _borrower);
 
 			(
 				singleLiquidation.debtToOffset,
@@ -246,7 +246,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 				_VSTInStabPool
 			);
 
-			troveManagerHelpers._closeTrove(
+			troveManagerHelpers.closeTrove(
 				_asset,
 				_borrower,
 				ITroveManagerHelpers.Status.closedByLiquidation
@@ -277,7 +277,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 			(_ICR < _TCR) &&
 			(singleLiquidation.entireTroveDebt <= _VSTInStabPool)
 		) {
-			troveManagerHelpers._movePendingTroveRewardsToActivePool(
+			troveManagerHelpers.movePendingTroveRewardsToActivePool(
 				_asset,
 				_activePool,
 				_defaultPool,
@@ -286,7 +286,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 			);
 			assert(_VSTInStabPool != 0);
 
-			troveManagerHelpers._removeStake(_asset, _borrower);
+			troveManagerHelpers.removeStake(_asset, _borrower);
 			singleLiquidation = _getCappedOffsetVals(
 				_asset,
 				singleLiquidation.entireTroveDebt,
@@ -294,7 +294,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 				_price
 			);
 
-			troveManagerHelpers._closeTrove(
+			troveManagerHelpers.closeTrove(
 				_asset,
 				_borrower,
 				ITroveManagerHelpers.Status.closedByLiquidation
@@ -441,7 +441,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 
 		// Move liquidated ETH and VST to the appropriate pools
 		stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
-		troveManagerHelpers._redistributeDebtAndColl(
+		troveManagerHelpers.redistributeDebtAndColl(
 			_asset,
 			contractsCache.activePool,
 			contractsCache.defaultPool,
@@ -457,7 +457,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 		}
 
 		// Update system snapshots
-		troveManagerHelpers._updateSystemSnapshots_excludeCollRemainder(
+		troveManagerHelpers.updateSystemSnapshots_excludeCollRemainder(
 			_asset,
 			contractsCache.activePool,
 			totals.totalCollGasCompensation
@@ -667,7 +667,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 
 		// Move liquidated ETH and VST to the appropriate pools
 		stabilityPoolCached.offset(totals.totalDebtToOffset, totals.totalCollToSendToSP);
-		troveManagerHelpers._redistributeDebtAndColl(
+		troveManagerHelpers.redistributeDebtAndColl(
 			_asset,
 			activePoolCached,
 			defaultPoolCached,
@@ -679,7 +679,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 		}
 
 		// Update system snapshots
-		troveManagerHelpers._updateSystemSnapshots_excludeCollRemainder(
+		troveManagerHelpers.updateSystemSnapshots_excludeCollRemainder(
 			_asset,
 			activePoolCached,
 			totals.totalCollGasCompensation
@@ -924,8 +924,8 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 
 		if (newDebt == vestaParams.VST_GAS_COMPENSATION(_asset)) {
 			// No debt left in the Trove (except for the liquidation reserve), therefore the trove gets closed
-			troveManagerHelpers._removeStake(vars._asset, vars._borrower);
-			troveManagerHelpers._closeTrove(
+			troveManagerHelpers.removeStake(vars._asset, vars._borrower);
+			troveManagerHelpers.closeTrove(
 				vars._asset,
 				vars._borrower,
 				ITroveManagerHelpers.Status.closedByRedemption
@@ -971,7 +971,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 			);
 
 			troveManagerHelpers.setTroveDeptAndColl(vars._asset, vars._borrower, newDebt, newColl);
-			troveManagerHelpers._updateStakeAndTotalStakes(vars._asset, vars._borrower);
+			troveManagerHelpers.updateStakeAndTotalStakes(vars._asset, vars._borrower);
 
 			emit TroveUpdated(
 				vars._asset,
@@ -1138,7 +1138,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 			// Save the address of the Trove preceding the current one, before potentially modifying the list
 			address nextUserToCheck = contractsCache.sortedTroves.getPrev(_asset, currentBorrower);
 
-			troveManagerHelpers._applyPendingRewards(
+			troveManagerHelpers.applyPendingRewards(
 				_asset,
 				contractsCache.activePool,
 				contractsCache.defaultPool,
@@ -1168,7 +1168,7 @@ contract TroveManager is VestaBase, CheckContract, ITroveManager {
 
 		// Decay the baseRate due to time passed, and then increase it according to the size of this redemption.
 		// Use the saved total VST supply value, from before it was reduced by the redemption.
-		troveManagerHelpers._updateBaseRateFromRedemption(
+		troveManagerHelpers.updateBaseRateFromRedemption(
 			_asset,
 			totals.totalAssetDrawn,
 			totals.price,

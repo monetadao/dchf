@@ -285,7 +285,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 _debtIncrease
 	) external returns (uint256);
 
-	function removeStake(address _asset, address _borrower) external;
+	function removeStakeTrove(address _asset, address _borrower) external;
 
 	function setTroveStatus(
 		address _asset,
@@ -293,7 +293,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 num
 	) external;
 
-	function updateStakeAndTotalStakes(address _asset, address _borrower)
+	function updateStakeAndTotalStakesTrove(address _asset, address _borrower)
 		external
 		returns (uint256);
 
@@ -320,7 +320,7 @@ interface ITroveManagerHelpers is IVestaBase {
 
 	function isTroveActive(address _asset, address _borrower) external view returns (bool);
 
-	function _movePendingTroveRewardsToActivePool(
+	function movePendingTroveRewardsToActivePool(
 		address _asset,
 		IActivePool _activePool,
 		IDefaultPool _defaultPool,
@@ -328,16 +328,16 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 _amount
 	) external;
 
-	function _removeStake(address _asset, address _borrower) external;
+	function removeStake(address _asset, address _borrower) external;
 
-	function _closeTrove(
+	function closeTrove(
 		// access control
 		address _asset,
 		address _borrower,
 		Status closedStatus
 	) external;
 
-	function _redistributeDebtAndColl(
+	function redistributeDebtAndColl(
 		address _asset,
 		IActivePool _activePool,
 		IDefaultPool _defaultPool,
@@ -345,7 +345,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 _coll
 	) external;
 
-	function _updateSystemSnapshots_excludeCollRemainder(
+	function updateSystemSnapshots_excludeCollRemainder(
 		// access control
 		address _asset,
 		IActivePool _activePool,
@@ -360,14 +360,14 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 _price
 	) external view returns (bool);
 
-	function _updateBaseRateFromRedemption(
+	function updateBaseRateFromRedemption(
 		address _asset,
 		uint256 _ETHDrawn,
 		uint256 _price,
 		uint256 _totalVSTSupply
 	) external returns (uint256);
 
-	function _updateStakeAndTotalStakes(address _asset, address _borrower)
+	function updateStakeAndTotalStakes(address _asset, address _borrower)
 		external
 		returns (uint256);
 
@@ -385,7 +385,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 _amount
 	) external view;
 
-	function _applyPendingRewards(
+	function applyPendingRewards(
 		address _asset,
 		IActivePool _activePool,
 		IDefaultPool _defaultPool,

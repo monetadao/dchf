@@ -156,7 +156,7 @@ contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
 	}
 
 	function _getIndexedPrice(uint256 _price, uint256 _index) internal pure returns (uint256) {
-		return _price.mul(_index).div(1 ether);
+		return _price.mul(1 ether).div(_index);
 	}
 
 	function _getChainlinkResponses(

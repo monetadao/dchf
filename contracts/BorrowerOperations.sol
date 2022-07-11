@@ -128,7 +128,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		__Ownable_init();
 
 		troveManager = ITroveManager(_troveManagerAddress);
-		troveManagerHelpers = ITroveManagerHelpers(_troveManagerAddress);
+		troveManagerHelpers = ITroveManagerHelpers(_troveManagerHelpersAddress);
 		stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
 		gasPoolAddress = _gasPoolAddress;
 		collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
@@ -171,6 +171,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 
 		_tokenAmount = getMethodValue(vars.asset, _tokenAmount, false);
 		vars.price = vestaParams.priceFeed().fetchPrice(vars.asset);
+
 		bool isRecoveryMode = _checkRecoveryMode(vars.asset, vars.price);
 
 		_requireValidMaxFeePercentage(vars.asset, _maxFeePercentage, isRecoveryMode);

@@ -55,8 +55,8 @@ module.exports = {
       allowUnlimitedContractSize: true,
       accounts: accountsList,
       initialBaseFeePerGas: 0,
-      gas: 10000000,  // tx gas limit
-      blockGasLimit: 15000000,
+      gas: 100000000,  // tx gas limit
+      blockGasLimit: 150000000,
       gasPrice: 20000000000,
       hardfork: "london",
       forking: {
