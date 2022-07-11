@@ -33,6 +33,8 @@ interface IStabilityPool is IDeposit {
 
 	// --- Functions ---
 
+	function NAME() external view returns (string memory name);
+
 	/*
 	 * Called only once on init, to set addresses of other Vesta contracts
 	 * Callable only by owner, renounces ownership at the end

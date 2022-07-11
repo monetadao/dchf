@@ -62,48 +62,32 @@ contract AdminContract is ProxyAdmin {
 
 	//Needs to approve Community Issuance to use this fonction.
 	function addNewCollateral(
-		address _asset,
-		address _stabilityPoolImplementation,
+		address _stabilityPoolProxyAddress,
 		address _chainlinkOracle,
 		address _chainlinkIndex,
 		uint256 assignedToken,
 		uint256 _tokenPerWeekDistributed,
 		uint256 redemptionLockInDay
 	) external onlyOwner {
+		address _asset = IStabilityPool(_stabilityPoolProxyAddress).getAssetType();
+
 		require(
 			stabilityPoolManager.unsafeGetAssetStabilityPool(_asset) == address(0),
 			"This collateral already exists"
-		);
-		require(
-			IStabilityPool(_stabilityPoolImplementation).getNameBytes() == STABILITY_POOL_NAME_BYTES,
-			"Invalid Stability pool"
 		);
 
 		vestaParameters.priceFeed().addOracle(_asset, _chainlinkOracle, _chainlinkIndex);
 		vestaParameters.setAsDefaultWithRemptionBlock(_asset, redemptionLockInDay);
 
-		address clonedStabilityPool = ClonesUpgradeable.clone(_stabilityPoolImplementation);
-		require(clonedStabilityPool != address(0), "Failed to clone contract");
-
-		TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
-			clonedStabilityPool,
-			address(this),
-			abi.encodeWithSignature(
-				"setAddresses(address,address,address,address,address,address,address,address)",
-				_asset,
-				borrowerOperationsAddress,
-				troveManagerAddress,
-				troveManagerHelpersAddress,
-				vstTokenAddress,
-				sortedTrovesAddress,
-				address(communityIssuance),
-				address(vestaParameters)
-			)
+		stabilityPoolManager.addStabilityPool(_asset, _stabilityPoolProxyAddress);
+		communityIssuance.addFundToStabilityPoolFrom(
+			_stabilityPoolProxyAddress,
+			assignedToken,
+			msg.sender
 		);
-
-		address proxyAddress = address(proxy);
-		stabilityPoolManager.addStabilityPool(_asset, proxyAddress);
-		communityIssuance.addFundToStabilityPoolFrom(proxyAddress, assignedToken, msg.sender);
-		communityIssuance.setWeeklyVstaDistribution(proxyAddress, _tokenPerWeekDistributed);
+		communityIssuance.setWeeklyVstaDistribution(
+			_stabilityPoolProxyAddress,
+			_tokenPerWeekDistributed
+		);
 	}
 }

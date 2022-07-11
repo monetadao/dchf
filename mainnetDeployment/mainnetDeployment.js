@@ -4,6 +4,7 @@ const { dec } = th
 
 const MainnetDeploymentHelper = require("../utils/mainnetDeploymentHelpers.js")
 const { ZERO_ADDRESS } = require("@openzeppelin/test-helpers/src/constants")
+const { ethers } = require("hardhat")
 const toBN = ethers.BigNumber.from
 
 
@@ -109,7 +110,7 @@ async function mainnetDeploy(configParams) {
 
   await addETHCollaterals();
   await addBTCCollaterals();
-  await addGOHMCollaterals();
+  // await addGOHMCollaterals();
 
   mdh.saveDeployment(deploymentState)
 
@@ -120,14 +121,26 @@ async function mainnetDeploy(configParams) {
 }
 
 async function addETHCollaterals() {
-  if ((await vestaCore.stabilityPoolManager.unsafeGetAssetStabilityPool(ZERO_ADDRESS)) == ZERO_ADDRESS) {
+  if ((await vestaCore.stabilityPoolManager.unsafeGetAssetStabilityPool(config.externalAddrs.WETH_ERC20)) == ZERO_ADDRESS) {
     console.log("Creating Collateral - ETH")
+
+    const stabilityPoolETHProxy = await upgrades.deployProxy(await mdh.getFactory("StabilityPool"), [
+      config.externalAddrs.WETH_ERC20,
+      vestaCore.borrowerOperations.address,
+      vestaCore.troveManager.address,
+      vestaCore.troveManagerHelpers.address,
+      vestaCore.vstToken.address,
+      vestaCore.sortedTroves.address,
+      VSTAContracts.communityIssuance.address,
+      vestaCore.vestaParameters.address
+    ], { initializer: 'setAddresses' });
+
+    await stabilityPoolETHProxy.deployed();
 
     const txReceiptProxyETH = await mdh
       .sendAndWaitForTransaction(
         vestaCore.adminContract.addNewCollateral(
-          config.externalAddrs.WETH_ERC20,
-          vestaCore.stabilityPoolV1.address,
+          stabilityPoolETHProxy.address,
           config.externalAddrs.CHAINLINK_ETHUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
           dec(100_000, 18),
@@ -137,7 +150,7 @@ async function addETHCollaterals() {
       })
 
     deploymentState["ProxyStabilityPoolETH"] = {
-      address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(ZERO_ADDRESS),
+      address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(config.externalAddrs.WETH_ERC20),
       txHash: txReceiptProxyETH.transactionHash
     }
   }
@@ -156,16 +169,31 @@ async function addBTCCollaterals() {
   if ((await vestaCore.stabilityPoolManager.unsafeGetAssetStabilityPool(BTCAddress)) == ZERO_ADDRESS) {
     console.log("Creating Collateral - BTC")
 
+    const stabilityPoolBTCProxy = await upgrades.deployProxy(await mdh.getFactory("StabilityPool"), [
+      BTCAddress,
+      vestaCore.borrowerOperations.address,
+      vestaCore.troveManager.address,
+      vestaCore.troveManagerHelpers.address,
+      vestaCore.vstToken.address,
+      vestaCore.sortedTroves.address,
+      VSTAContracts.communityIssuance.address,
+      vestaCore.vestaParameters.address
+    ], { initializer: 'setAddresses' });
+
+
+    await stabilityPoolBTCProxy.deployed();
+
     const txReceiptProxyBTC = await mdh
       .sendAndWaitForTransaction(
         vestaCore.adminContract.addNewCollateral(
-          BTCAddress,
-          vestaCore.stabilityPoolV1.address,
-          config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
+          stabilityPoolBTCProxy.address,
+          config.externalAddrs.CHAINLINK_ETHUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
-          dec(30_000, 18),
-          toBN(dec(30_000, 18)).div(toBN(4)),
-          config.REDEMPTION_SAFETY))
+          dec(100_000, 18),
+          toBN(dec(100_000, 18)).div(toBN(4)),
+          config.REDEMPTION_SAFETY), {
+        gasPrice,
+      });
 
     deploymentState["ProxyStabilityPoolRenBTC"] = {
       address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(BTCAddress),

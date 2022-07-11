@@ -58,7 +58,10 @@ module.exports = {
       gas: 10000000,  // tx gas limit
       blockGasLimit: 15000000,
       gasPrice: 20000000000,
-      hardfork: "london"
+      hardfork: "london",
+      forking: {
+        url: "https://rinkeby.infura.io/v3/cf9de047e0f54fac8d44b12783036bc8"
+      }
     },
     localhost: {
       url: "http://localhost:8545",
@@ -73,9 +76,7 @@ module.exports = {
     },*/
     rinkeby: {
       url: "https://speedy-nodes-nyc.moralis.io/882ccfb1adb1b53ccfbda5be/eth/rinkeby",
-      gas: 100000000,  // tx gas limit
-      gasPrice: 20000000000,
-      accounts: ["e2fe3b829a953db25b3b39f62048de7b7f4e2b7b67d0cf15e4c307c82882c6ab"]
+      accounts: ["1a4a5d0d814a76a164e080819070bff2a553b0cb3fcae26c98ef3521f8d3f8ed"]
     },
   },
   etherscan: {

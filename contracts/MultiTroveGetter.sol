@@ -23,9 +23,13 @@ contract MultiTroveGetter {
 	ITroveManagerHelpers public troveManagerHelpers;
 	ISortedTroves public sortedTroves;
 
-	constructor(ITroveManager _troveManager, ISortedTroves _sortedTroves) {
+	constructor(
+		ITroveManager _troveManager,
+		ITroveManagerHelpers _troveManagerHelpers,
+		ISortedTroves _sortedTroves
+	) {
 		troveManager = _troveManager;
-		troveManagerHelpers = ITroveManagerHelpers(troveManager.troveManagerHelpers());
+		troveManagerHelpers = _troveManagerHelpers;
 		sortedTroves = _sortedTroves;
 	}
 

@@ -126,7 +126,7 @@ contract StabilityPool is VestaBase, CheckContract, IStabilityPool {
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress,
 		address _vestaParamsAddress
-	) external override initializer {
+	) external initializer {
 		require(!isInitialized, "Already initialized");
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_troveManagerAddress);
