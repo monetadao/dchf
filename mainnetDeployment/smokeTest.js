@@ -26,7 +26,7 @@ async function main() {
 
     deploymentState = mdh.loadPreviousDeployment()
 
-    //await openTrove();
+    await openTrove();
 
 }
 

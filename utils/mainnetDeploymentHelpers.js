@@ -207,6 +207,8 @@ class MainnetDeploymentHelper {
       vestaParameters,
       lockedVsta
     }
+
+
     return coreContracts
   }
 

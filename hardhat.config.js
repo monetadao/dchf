@@ -63,9 +63,9 @@ module.exports = {
         url: "https://rinkeby.infura.io/v3/cf9de047e0f54fac8d44b12783036bc8"
       }
     },
+
     localhost: {
-      url: "http://localhost:8545",
-      gas: 20000000,  // tx gas limit
+      url: "http://localhost:7545"
     },
     /*mainnet: {
       url: "https://arb1.arbitrum.io/rpc",
