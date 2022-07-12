@@ -2,7 +2,7 @@
 // const testHelpers = require("../../utils/testHelpers.js")
 
 // const TroveManagerTester = artifacts.require("TroveManagerTester")
-// const VSTATokenTester = artifacts.require("VSTATokenTester")
+// const MONTokenTester = artifacts.require("MONTokenTester")
 
 // const th = testHelpers.TestHelper
 
@@ -22,7 +22,7 @@
 //   StabilityPoolProxy,
 //   SortedTrovesProxy,
 //   TokenProxy,
-//   VSTAStakingProxy
+//   MONStakingProxy
 // } = require('../../utils/proxyHelpers.js')
 
 // contract('BorrowerWrappers', async accounts => {
@@ -37,7 +37,7 @@
 //   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
 
 //   let priceFeed
-//   let vstToken
+//   let dchfToken
 //   let sortedTroves
 //   let troveManagerOriginal
 //   let troveManager
@@ -47,15 +47,15 @@
 //   let collSurplusPool
 //   let borrowerOperations
 //   let borrowerWrappers
-//   let vstaTokenOriginal
-//   let vstaToken
-//   let vstaStaking
+//   let monTokenOriginal
+//   let monToken
+//   let monStaking
 
 //   let contracts
 
-//   let VST_GAS_COMPENSATION
+//   let DCHF_GAS_COMPENSATION
 
-//   const getOpenTroveVSTAmount = async (asset, totalDebt) => th.getOpenTroveVSTAmount(contracts, totalDebt, asset)
+//   const getOpenTroveMONmount = async (asset, totalDebt) => th.getOpenTroveMONmount(contracts, totalDebt, asset)
 //   const getActualDebtFromComposite = async (compositeDebt) => th.getActualDebtFromComposite(compositeDebt, contracts)
 //   const getNetBorrowingAmount = async (asset, debtWithFee) => th.getNetBorrowingAmount(contracts, debtWithFee, asset)
 //   const openTrove = async (params) => th.openTrove(contracts, params)
@@ -63,20 +63,20 @@
 //   beforeEach(async () => {
 //     contracts = await deploymentHelper.deployLiquityCore()
 //     contracts.troveManager = await TroveManagerTester.new()
-//     contracts = await deploymentHelper.deployVSTToken(contracts)
-//     const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+//     contracts = await deploymentHelper.deployDCHFToken(contracts)
+//     const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
-//     await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-//     await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+//     await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+//     await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
 
 //     troveManagerOriginal = contracts.troveManager
-//     vstaTokenOriginal = VSTAContracts.vstaToken
+//     monTokenOriginal = MONContracts.monToken
 
 //     const users = [alice, bob, carol, dennis, whale, A, B, C, D, E, defaulter_1, defaulter_2]
-//     await deploymentHelper.deployProxyScripts(contracts, VSTAContracts, owner, users)
+//     await deploymentHelper.deployProxyScripts(contracts, MONContracts, owner, users)
 
 //     priceFeed = contracts.priceFeedTestnet
-//     vstToken = contracts.vstToken
+//     dchfToken = contracts.dchfToken
 //     sortedTroves = contracts.sortedTroves
 //     troveManager = contracts.troveManager
 //     activePool = contracts.activePool
@@ -85,10 +85,10 @@
 //     collSurplusPool = contracts.collSurplusPool
 //     borrowerOperations = contracts.borrowerOperations
 //     borrowerWrappers = contracts.borrowerWrappers
-//     vstaStaking = VSTAContracts.vstaStaking
-//     vstaToken = VSTAContracts.vstaToken
+//     monStaking = MONContracts.monStaking
+//     monToken = MONContracts.monToken
 
-//     VST_GAS_COMPENSATION = await borrowerOperations.VST_GAS_COMPENSATION()
+//     DCHF_GAS_COMPENSATION = await borrowerOperations.DCHF_GAS_COMPENSATION()
 //   })
 
 //   it('proxy owner can recover ETH', async () => {
@@ -137,7 +137,7 @@
 //     await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
 //     // alice opens Trove
-//     const { VSTAmount, collateral } = await openTrove({ ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+//     const { MONmount, collateral } = await openTrove({ ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
 
 //     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
@@ -147,23 +147,23 @@
 
 //     // alice claims collateral and re-opens the trove
 //     await assertRevert(
-//       borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, VSTAmount, alice, alice, { from: alice }),
+//       borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, MONmount, alice, alice, { from: alice }),
 //       'CollSurplusPool: No collateral available to claim'
 //     )
 
 //     // check everything remain the same
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
 //     th.assertIsApproximatelyEqual(await collSurplusPool.getCollateral(proxyAddress), '0')
-//     th.assertIsApproximatelyEqual(await vstToken.balanceOf(proxyAddress), VSTAmount)
+//     th.assertIsApproximatelyEqual(await dchfToken.balanceOf(proxyAddress), MONmount)
 //     assert.equal(await troveManager.getTroveStatus(proxyAddress), 1)
 //     th.assertIsApproximatelyEqual(await troveManager.getTroveColl(ZERO_ADDRESS, proxyAddress), collateral)
 //   })
 
 //   it('claimCollateralAndOpenTrove(): without sending any value', async () => {
 //     // alice opens Trove
-//     const { VSTAmount, netDebt: redeemAmount, collateral } = await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
+//     const { MONmount, netDebt: redeemAmount, collateral } = await openTrove({ extraMONmount: 0, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
 //     // Whale opens Trove
-//     await openTrove({ extraVSTAmount: redeemAmount, ICR: toBN(dec(5, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraMONmount: redeemAmount, ICR: toBN(dec(5, 18)), extraParams: { from: whale } })
 
 //     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
@@ -171,7 +171,7 @@
 //     // skip bootstrapping phase
 //     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-//     // whale redeems 150 VST
+//     // whale redeems 150 DCHF
 //     await th.redeemCollateral(whale, contracts, redeemAmount)
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
 
@@ -182,20 +182,20 @@
 //     assert.equal(await troveManager.getTroveStatus(proxyAddress), 4) // closed by redemption
 
 //     // alice claims collateral and re-opens the trove
-//     await borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, VSTAmount, alice, alice, { from: alice })
+//     await borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, MONmount, alice, alice, { from: alice })
 
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
 //     th.assertIsApproximatelyEqual(await collSurplusPool.getCollateral(proxyAddress), '0')
-//     th.assertIsApproximatelyEqual(await vstToken.balanceOf(proxyAddress), VSTAmount.mul(toBN(2)))
+//     th.assertIsApproximatelyEqual(await dchfToken.balanceOf(proxyAddress), MONmount.mul(toBN(2)))
 //     assert.equal(await troveManager.getTroveStatus(proxyAddress), 1)
 //     th.assertIsApproximatelyEqual(await troveManager.getTroveColl(ZERO_ADDRESS, proxyAddress), expectedSurplus)
 //   })
 
 //   it('claimCollateralAndOpenTrove(): sending value in the transaction', async () => {
 //     // alice opens Trove
-//     const { VSTAmount, netDebt: redeemAmount, collateral } = await openTrove({ extraParams: { from: alice } })
+//     const { MONmount, netDebt: redeemAmount, collateral } = await openTrove({ extraParams: { from: alice } })
 //     // Whale opens Trove
-//     await openTrove({ extraVSTAmount: redeemAmount, ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraMONmount: redeemAmount, ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
 //     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
@@ -203,7 +203,7 @@
 //     // skip bootstrapping phase
 //     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-//     // whale redeems 150 VST
+//     // whale redeems 150 DCHF
 //     await th.redeemCollateral(whale, contracts, redeemAmount)
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
 
@@ -214,11 +214,11 @@
 //     assert.equal(await troveManager.getTroveStatus(proxyAddress), 4) // closed by redemption
 
 //     // alice claims collateral and re-opens the trove
-//     await borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, VSTAmount, alice, alice, { from: alice, value: collateral })
+//     await borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, MONmount, alice, alice, { from: alice, value: collateral })
 
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
 //     th.assertIsApproximatelyEqual(await collSurplusPool.getCollateral(proxyAddress), '0')
-//     th.assertIsApproximatelyEqual(await vstToken.balanceOf(proxyAddress), VSTAmount.mul(toBN(2)))
+//     th.assertIsApproximatelyEqual(await dchfToken.balanceOf(proxyAddress), MONmount.mul(toBN(2)))
 //     assert.equal(await troveManager.getTroveStatus(proxyAddress), 1)
 //     th.assertIsApproximatelyEqual(await troveManager.getTroveColl(ZERO_ADDRESS, proxyAddress), expectedSurplus.add(collateral))
 //   })
@@ -227,12 +227,12 @@
 
 //   it('claimSPRewardsAndRecycle(): only owner can call it', async () => {
 //     // Whale opens Trove
-//     await openTrove({ extraVSTAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-//     // Whale deposits 1850 VST in StabilityPool
+//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     // Whale deposits 1850 DCHF in StabilityPool
 //     await stabilityPool.provideToSP(dec(1850, 18), ZERO_ADDRESS, { from: whale })
 
-//     // alice opens trove and provides 150 VST to StabilityPool
-//     await openTrove({ extraVSTAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     // alice opens trove and provides 150 DCHF to StabilityPool
+//     await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 //     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
 //     // Defaulter Trove opened
@@ -256,17 +256,17 @@
 //   it('claimSPRewardsAndRecycle():', async () => {
 //     // Whale opens Trove
 //     const whaleDeposit = toBN(dec(2350, 18))
-//     await openTrove({ extraVSTAmount: whaleDeposit, ICR: toBN(dec(4, 18)), extraParams: { from: whale } })
-//     // Whale deposits 1850 VST in StabilityPool
+//     await openTrove({ extraMONmount: whaleDeposit, ICR: toBN(dec(4, 18)), extraParams: { from: whale } })
+//     // Whale deposits 1850 DCHF in StabilityPool
 //     await stabilityPool.provideToSP(whaleDeposit, ZERO_ADDRESS, { from: whale })
 
-//     // alice opens trove and provides 150 VST to StabilityPool
+//     // alice opens trove and provides 150 DCHF to StabilityPool
 //     const aliceDeposit = toBN(dec(150, 18))
-//     await openTrove({ extraVSTAmount: aliceDeposit, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
+//     await openTrove({ extraMONmount: aliceDeposit, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
 //     await stabilityPool.provideToSP(aliceDeposit, ZERO_ADDRESS, { from: alice })
 
 //     // Defaulter Trove opened
-//     const { VSTAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const { MONmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
 
 //     // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
 //     const price = toBN(dec(100, 18))
@@ -276,34 +276,34 @@
 //     const liquidationTX_1 = await troveManager.liquidate(defaulter_1, { from: owner })
 //     const [liquidatedDebt_1] = await th.getEmittedLiquidationValues(liquidationTX_1)
 
-//     // Alice VSTLoss is ((150/2500) * liquidatedDebt)
+//     // Alice DCHFLoss is ((150/2500) * liquidatedDebt)
 //     const totalDeposits = whaleDeposit.add(aliceDeposit)
-//     const expectedVSTLoss_A = liquidatedDebt_1.mul(aliceDeposit).div(totalDeposits)
+//     const expectedDCHFLoss_A = liquidatedDebt_1.mul(aliceDeposit).div(totalDeposits)
 
-//     const expectedCompoundedVSTDeposit_A = toBN(dec(150, 18)).sub(expectedVSTLoss_A)
-//     const compoundedVSTDeposit_A = await stabilityPool.getCompoundedVSTDeposit(alice)
+//     const expectedCompoundedDCHFDeposit_A = toBN(dec(150, 18)).sub(expectedDCHFLoss_A)
+//     const compoundedDCHFDeposit_A = await stabilityPool.getCompoundedDCHFDeposit(alice)
 //     // collateral * 150 / 2500 * 0.995
 //     const expectedETHGain_A = collateral.mul(aliceDeposit).div(totalDeposits).mul(toBN(dec(995, 15))).div(mv._1e18BN)
 
-//     assert.isAtMost(th.getDifference(expectedCompoundedVSTDeposit_A, compoundedVSTDeposit_A), 1000)
+//     assert.isAtMost(th.getDifference(expectedCompoundedDCHFDeposit_A, compoundedDCHFDeposit_A), 1000)
 
 //     const ethBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
 //     const troveCollBefore = await troveManager.getTroveColl(ZERO_ADDRESS, alice)
-//     const VSTBalanceBefore = await vstToken.balanceOf(alice)
+//     const DCHFBalanceBefore = await dchfToken.balanceOf(alice)
 //     const troveDebtBefore = await troveManager.getTroveDebt(ZERO_ADDRESS, alice)
-//     const VSTABalanceBefore = await vstaToken.balanceOf(alice)
+//     const MONBalanceBefore = await monToken.balanceOf(alice)
 //     const ICRBefore = await troveManager.getCurrentICR(ZERO_ADDRESS, alice, price)
 //     const depositBefore = (await stabilityPool.deposits(alice))[0]
-//     const stakeBefore = await vstaStaking.stakes(alice)
+//     const stakeBefore = await monStaking.stakes(alice)
 
-//     const proportionalVST = expectedETHGain_A.mul(price).div(ICRBefore)
+//     const proportionalDCHF = expectedETHGain_A.mul(price).div(ICRBefore)
 //     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
-//     const netDebtChange = proportionalVST.mul(mv._1e18BN).div(mv._1e18BN.add(borrowingRate))
+//     const netDebtChange = proportionalDCHF.mul(mv._1e18BN).div(mv._1e18BN.add(borrowingRate))
 
-//     // to force VSTA issuance
+//     // to force MON issuance
 //     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-//     const expectedVSTAGain_A = toBN('50373424199406504708132')
+//     const expectedMONGain_A = toBN('50373424199406504708132')
 
 //     await priceFeed.setPrice(price.mul(toBN(2)));
 
@@ -313,30 +313,30 @@
 
 //     const ethBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
 //     const troveCollAfter = await troveManager.getTroveColl(ZERO_ADDRESS, alice)
-//     const VSTBalanceAfter = await vstToken.balanceOf(alice)
+//     const DCHFBalanceAfter = await dchfToken.balanceOf(alice)
 //     const troveDebtAfter = await troveManager.getTroveDebt(ZERO_ADDRESS, alice)
-//     const VSTABalanceAfter = await vstaToken.balanceOf(alice)
+//     const MONBalanceAfter = await monToken.balanceOf(alice)
 //     const ICRAfter = await troveManager.getCurrentICR(ZERO_ADDRESS, alice, price)
 //     const depositAfter = (await stabilityPool.deposits(alice))[0]
-//     const stakeAfter = await vstaStaking.stakes(alice)
+//     const stakeAfter = await monStaking.stakes(alice)
 
 //     // check proxy balances remain the same
 //     assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
-//     assert.equal(VSTBalanceAfter.toString(), VSTBalanceBefore.toString())
-//     assert.equal(VSTABalanceAfter.toString(), VSTABalanceBefore.toString())
+//     assert.equal(DCHFBalanceAfter.toString(), DCHFBalanceBefore.toString())
+//     assert.equal(MONBalanceAfter.toString(), MONBalanceBefore.toString())
 //     // check trove has increased debt by the ICR proportional amount to ETH gain
-//     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore.add(proportionalVST))
+//     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore.add(proportionalDCHF))
 //     // check trove has increased collateral by the ETH gain
 //     th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore.add(expectedETHGain_A))
 //     // check that ICR remains constant
 //     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
 //     // check that Stability Pool deposit
-//     th.assertIsApproximatelyEqual(depositAfter, depositBefore.sub(expectedVSTLoss_A).add(netDebtChange))
-//     // check VSTA balance remains the same
-//     th.assertIsApproximatelyEqual(VSTABalanceAfter, VSTABalanceBefore)
+//     th.assertIsApproximatelyEqual(depositAfter, depositBefore.sub(expectedDCHFLoss_A).add(netDebtChange))
+//     // check MON balance remains the same
+//     th.assertIsApproximatelyEqual(MONBalanceAfter, MONBalanceBefore)
 
-//     // VSTA staking
-//     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedVSTAGain_A))
+//     // MON staking
+//     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedMONGain_A))
 
 //     // Expect Alice has withdrawn all ETH gain
 //     const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
@@ -348,26 +348,26 @@
 
 //   it('claimStakingGainsAndRecycle(): only owner can call it', async () => {
 //     // Whale opens Trove
-//     await openTrove({ extraVSTAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
 //     // alice opens trove
-//     await openTrove({ extraVSTAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 
-//     // mint some VSTA
-//     await vstaTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
-//     await vstaTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
+//     // mint some MON
+//     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
+//     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
 
-//     // stake VSTA
-//     await vstaStaking.stake(dec(1850, 18), { from: whale })
-//     await vstaStaking.stake(dec(150, 18), { from: alice })
+//     // stake MON
+//     await monStaking.stake(dec(1850, 18), { from: whale })
+//     await monStaking.stake(dec(150, 18), { from: alice })
 
 //     // Defaulter Trove opened
-//     const { VSTAmount, netDebt, totalDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const { MONmount, netDebt, totalDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
 
 //     // skip bootstrapping phase
 //     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-//     // whale redeems 100 VST
+//     // whale redeems 100 DCHF
 //     const redeemedAmount = toBN(dec(100, 18))
 //     await th.redeemCollateral(whale, contracts, redeemedAmount)
 
@@ -382,44 +382,44 @@
 //     const price = toBN(dec(200, 18))
 
 //     // Whale opens Trove
-//     await openTrove({ extraVSTAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-//     // Whale deposits 1850 VST in StabilityPool
+//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     // Whale deposits 1850 DCHF in StabilityPool
 //     await stabilityPool.provideToSP(dec(1850, 18), ZERO_ADDRESS, { from: whale })
 
-//     // alice opens trove and provides 150 VST to StabilityPool
-//     //await openTrove({ extraVSTAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     // alice opens trove and provides 150 DCHF to StabilityPool
+//     //await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 //     //await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
-//     // mint some VSTA
-//     await vstaTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
-//     await vstaTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
+//     // mint some MON
+//     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
+//     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
 
-//     // stake VSTA
-//     await vstaStaking.stake(dec(1850, 18), { from: whale })
-//     await vstaStaking.stake(dec(150, 18), { from: alice })
+//     // stake MON
+//     await monStaking.stake(dec(1850, 18), { from: whale })
+//     await monStaking.stake(dec(150, 18), { from: alice })
 
 //     // Defaulter Trove opened
-//     const { VSTAmount, netDebt, totalDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
-//     const borrowingFee = netDebt.sub(VSTAmount)
+//     const { MONmount, netDebt, totalDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const borrowingFee = netDebt.sub(MONmount)
 
-//     // Alice VST gain is ((150/2000) * borrowingFee)
-//     const expectedVSTGain_A = borrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
+//     // Alice DCHF gain is ((150/2000) * borrowingFee)
+//     const expectedDCHFGain_A = borrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
 
 //     // skip bootstrapping phase
 //     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-//     // whale redeems 100 VST
+//     // whale redeems 100 DCHF
 //     const redeemedAmount = toBN(dec(100, 18))
 //     await th.redeemCollateral(whale, contracts, redeemedAmount)
 
 //     const ethBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
 //     const troveCollBefore = await troveManager.getTroveColl(ZERO_ADDRESS, alice)
-//     const VSTBalanceBefore = await vstToken.balanceOf(alice)
+//     const DCHFBalanceBefore = await dchfToken.balanceOf(alice)
 //     const troveDebtBefore = await troveManager.getTroveDebt(ZERO_ADDRESS, alice)
-//     const VSTABalanceBefore = await vstaToken.balanceOf(alice)
+//     const MONBalanceBefore = await monToken.balanceOf(alice)
 //     const ICRBefore = await troveManager.getCurrentICR(ZERO_ADDRESS, alice, price)
 //     const depositBefore = (await stabilityPool.deposits(alice))[0]
-//     const stakeBefore = await vstaStaking.stakes(alice)
+//     const stakeBefore = await monStaking.stakes(alice)
 
 //     // Alice claims staking rewards and puts them back in the system through the proxy
 //     await assertRevert(
@@ -429,23 +429,23 @@
 
 //     const ethBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
 //     const troveCollAfter = await troveManager.getTroveColl(ZERO_ADDRESS, alice)
-//     const VSTBalanceAfter = await vstToken.balanceOf(alice)
+//     const DCHFBalanceAfter = await dchfToken.balanceOf(alice)
 //     const troveDebtAfter = await troveManager.getTroveDebt(ZERO_ADDRESS, alice)
-//     const VSTABalanceAfter = await vstaToken.balanceOf(alice)
+//     const MONBalanceAfter = await monToken.balanceOf(alice)
 //     const ICRAfter = await troveManager.getCurrentICR(ZERO_ADDRESS, alice, price)
 //     const depositAfter = (await stabilityPool.deposits(alice))[0]
-//     const stakeAfter = await vstaStaking.stakes(alice)
+//     const stakeAfter = await monStaking.stakes(alice)
 
 //     // check everything remains the same
 //     assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
-//     assert.equal(VSTBalanceAfter.toString(), VSTBalanceBefore.toString())
-//     assert.equal(VSTABalanceAfter.toString(), VSTABalanceBefore.toString())
+//     assert.equal(DCHFBalanceAfter.toString(), DCHFBalanceBefore.toString())
+//     assert.equal(MONBalanceAfter.toString(), MONBalanceBefore.toString())
 //     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore, 10000)
 //     th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore)
 //     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
 //     th.assertIsApproximatelyEqual(depositAfter, depositBefore, 10000)
-//     th.assertIsApproximatelyEqual(VSTABalanceBefore, VSTABalanceAfter)
-//     // VSTA staking
+//     th.assertIsApproximatelyEqual(MONBalanceBefore, MONBalanceAfter)
+//     // MON staking
 //     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore)
 
 //     // Expect Alice has withdrawn all ETH gain
@@ -457,28 +457,28 @@
 //     const price = toBN(dec(200, 18))
 
 //     // Whale opens Trove
-//     await openTrove({ extraVSTAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
 //     // Defaulter Trove opened
-//     const { VSTAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
-//     const borrowingFee = netDebt.sub(VSTAmount)
+//     const { MONmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const borrowingFee = netDebt.sub(MONmount)
 
-//     // alice opens trove and provides 150 VST to StabilityPool
-//     await openTrove({ extraVSTAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     // alice opens trove and provides 150 DCHF to StabilityPool
+//     await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 //     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
-//     // mint some VSTA
-//     await vstaTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
-//     await vstaTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
+//     // mint some MON
+//     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
+//     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
 
-//     // stake VSTA
-//     await vstaStaking.stake(dec(1850, 18), { from: whale })
-//     await vstaStaking.stake(dec(150, 18), { from: alice })
+//     // stake MON
+//     await monStaking.stake(dec(1850, 18), { from: whale })
+//     await monStaking.stake(dec(150, 18), { from: alice })
 
 //     // skip bootstrapping phase
 //     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-//     // whale redeems 100 VST
+//     // whale redeems 100 DCHF
 //     const redeemedAmount = toBN(dec(100, 18))
 //     await th.redeemCollateral(whale, contracts, redeemedAmount)
 
@@ -488,93 +488,93 @@
 
 //     const ethBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
 //     const troveCollBefore = await troveManager.getTroveColl(ZERO_ADDRESS, alice)
-//     const VSTBalanceBefore = await vstToken.balanceOf(alice)
+//     const DCHFBalanceBefore = await dchfToken.balanceOf(alice)
 //     const troveDebtBefore = await troveManager.getTroveDebt(ZERO_ADDRESS, alice)
-//     const VSTABalanceBefore = await vstaToken.balanceOf(alice)
+//     const MONBalanceBefore = await monToken.balanceOf(alice)
 //     const ICRBefore = await troveManager.getCurrentICR(ZERO_ADDRESS, alice, price)
 //     const depositBefore = (await stabilityPool.deposits(alice))[0]
-//     const stakeBefore = await vstaStaking.stakes(alice)
+//     const stakeBefore = await monStaking.stakes(alice)
 
-//     const proportionalVST = expectedETHGain_A.mul(price).div(ICRBefore)
+//     const proportionalDCHF = expectedETHGain_A.mul(price).div(ICRBefore)
 //     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
-//     const netDebtChange = proportionalVST.mul(toBN(dec(1, 18))).div(toBN(dec(1, 18)).add(borrowingRate))
+//     const netDebtChange = proportionalDCHF.mul(toBN(dec(1, 18))).div(toBN(dec(1, 18)).add(borrowingRate))
 
-//     const expectedVSTAGain_A = toBN('839557069990108416000000')
+//     const expectedMONGain_A = toBN('839557069990108416000000')
 
 //     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 //     // Alice claims staking rewards and puts them back in the system through the proxy
 //     await borrowerWrappers.claimStakingGainsAndRecycle(th._100pct, alice, alice, { from: alice })
 
-//     // Alice new VST gain due to her own Trove adjustment: ((150/2000) * (borrowing fee over netDebtChange))
+//     // Alice new DCHF gain due to her own Trove adjustment: ((150/2000) * (borrowing fee over netDebtChange))
 //     const newBorrowingFee = await troveManagerOriginal.getBorrowingFeeWithDecay(netDebtChange)
-//     const expectedNewVSTGain_A = newBorrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
+//     const expectedNewDCHFGain_A = newBorrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
 
 //     const ethBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
 //     const troveCollAfter = await troveManager.getTroveColl(ZERO_ADDRESS, alice)
-//     const VSTBalanceAfter = await vstToken.balanceOf(alice)
+//     const DCHFBalanceAfter = await dchfToken.balanceOf(alice)
 //     const troveDebtAfter = await troveManager.getTroveDebt(ZERO_ADDRESS, alice)
-//     const VSTABalanceAfter = await vstaToken.balanceOf(alice)
+//     const MONBalanceAfter = await monToken.balanceOf(alice)
 //     const ICRAfter = await troveManager.getCurrentICR(ZERO_ADDRESS, alice, price)
 //     const depositAfter = (await stabilityPool.deposits(alice))[0]
-//     const stakeAfter = await vstaStaking.stakes(alice)
+//     const stakeAfter = await monStaking.stakes(alice)
 
 //     // check proxy balances remain the same
 //     assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
-//     assert.equal(VSTABalanceAfter.toString(), VSTABalanceBefore.toString())
-//     // check proxy VST balance has increased by own adjust trove reward
-//     th.assertIsApproximatelyEqual(VSTBalanceAfter, VSTBalanceBefore.add(expectedNewVSTGain_A))
+//     assert.equal(MONBalanceAfter.toString(), MONBalanceBefore.toString())
+//     // check proxy DCHF balance has increased by own adjust trove reward
+//     th.assertIsApproximatelyEqual(DCHFBalanceAfter, DCHFBalanceBefore.add(expectedNewDCHFGain_A))
 //     // check trove has increased debt by the ICR proportional amount to ETH gain
-//     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore.add(proportionalVST), 10000)
+//     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore.add(proportionalDCHF), 10000)
 //     // check trove has increased collateral by the ETH gain
 //     th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore.add(expectedETHGain_A))
 //     // check that ICR remains constant
 //     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
 //     // check that Stability Pool deposit
 //     th.assertIsApproximatelyEqual(depositAfter, depositBefore.add(netDebtChange), 10000)
-//     // check VSTA balance remains the same
-//     th.assertIsApproximatelyEqual(VSTABalanceBefore, VSTABalanceAfter)
+//     // check MON balance remains the same
+//     th.assertIsApproximatelyEqual(MONBalanceBefore, MONBalanceAfter)
 
-//     // VSTA staking
-//     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedVSTAGain_A))
+//     // MON staking
+//     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedMONGain_A))
 
 //     // Expect Alice has withdrawn all ETH gain
 //     const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
 //     assert.equal(alice_pendingETHGain, 0)
 //   })
 
-//   it('claimStakingGainsAndRecycle(): with only VST gain', async () => {
+//   it('claimStakingGainsAndRecycle(): with only DCHF gain', async () => {
 //     const price = toBN(dec(200, 18))
 
 //     // Whale opens Trove
-//     await openTrove({ extraVSTAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
-//     // alice opens trove and provides 150 VST to StabilityPool
-//     await openTrove({ extraVSTAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     // alice opens trove and provides 150 DCHF to StabilityPool
+//     await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 //     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
-//     // mint some VSTA
-//     await vstaTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
-//     await vstaTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
+//     // mint some MON
+//     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
+//     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
 
-//     // stake VSTA
-//     await vstaStaking.stake(dec(1850, 18), { from: whale })
-//     await vstaStaking.stake(dec(150, 18), { from: alice })
+//     // stake MON
+//     await monStaking.stake(dec(1850, 18), { from: whale })
+//     await monStaking.stake(dec(150, 18), { from: alice })
 
 //     // Defaulter Trove opened
-//     const { VSTAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
-//     const borrowingFee = netDebt.sub(VSTAmount)
+//     const { MONmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const borrowingFee = netDebt.sub(MONmount)
 
-//     // Alice VST gain is ((150/2000) * borrowingFee)
-//     const expectedVSTGain_A = borrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
+//     // Alice DCHF gain is ((150/2000) * borrowingFee)
+//     const expectedDCHFGain_A = borrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
 
 //     const ethBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
 //     const troveCollBefore = await troveManager.getTroveColl(ZERO_ADDRESS, alice)
-//     const VSTBalanceBefore = await vstToken.balanceOf(alice)
+//     const DCHFBalanceBefore = await dchfToken.balanceOf(alice)
 //     const troveDebtBefore = await troveManager.getTroveDebt(ZERO_ADDRESS, alice)
-//     const VSTABalanceBefore = await vstaToken.balanceOf(alice)
+//     const MONBalanceBefore = await monToken.balanceOf(alice)
 //     const ICRBefore = await troveManager.getCurrentICR(ZERO_ADDRESS, alice, price)
 //     const depositBefore = (await stabilityPool.deposits(alice))[0]
-//     const stakeBefore = await vstaStaking.stakes(alice)
+//     const stakeBefore = await monStaking.stakes(alice)
 
 //     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
 
@@ -583,18 +583,18 @@
 
 //     const ethBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
 //     const troveCollAfter = await troveManager.getTroveColl(ZERO_ADDRESS, alice)
-//     const VSTBalanceAfter = await vstToken.balanceOf(alice)
+//     const DCHFBalanceAfter = await dchfToken.balanceOf(alice)
 //     const troveDebtAfter = await troveManager.getTroveDebt(ZERO_ADDRESS, alice)
-//     const VSTABalanceAfter = await vstaToken.balanceOf(alice)
+//     const MONBalanceAfter = await monToken.balanceOf(alice)
 //     const ICRAfter = await troveManager.getCurrentICR(ZERO_ADDRESS, alice, price)
 //     const depositAfter = (await stabilityPool.deposits(alice))[0]
-//     const stakeAfter = await vstaStaking.stakes(alice)
+//     const stakeAfter = await monStaking.stakes(alice)
 
 //     // check proxy balances remain the same
 //     assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
-//     assert.equal(VSTABalanceAfter.toString(), VSTABalanceBefore.toString())
-//     // check proxy VST balance has increased by own adjust trove reward
-//     th.assertIsApproximatelyEqual(VSTBalanceAfter, VSTBalanceBefore)
+//     assert.equal(MONBalanceAfter.toString(), MONBalanceBefore.toString())
+//     // check proxy DCHF balance has increased by own adjust trove reward
+//     th.assertIsApproximatelyEqual(DCHFBalanceAfter, DCHFBalanceBefore)
 //     // check trove has increased debt by the ICR proportional amount to ETH gain
 //     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore, 10000)
 //     // check trove has increased collateral by the ETH gain
@@ -602,44 +602,44 @@
 //     // check that ICR remains constant
 //     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
 //     // check that Stability Pool deposit
-//     th.assertIsApproximatelyEqual(depositAfter, depositBefore.add(expectedVSTGain_A), 10000)
-//     // check VSTA balance remains the same
-//     th.assertIsApproximatelyEqual(VSTABalanceBefore, VSTABalanceAfter)
+//     th.assertIsApproximatelyEqual(depositAfter, depositBefore.add(expectedDCHFGain_A), 10000)
+//     // check MON balance remains the same
+//     th.assertIsApproximatelyEqual(MONBalanceBefore, MONBalanceAfter)
 
 //     // Expect Alice has withdrawn all ETH gain
 //     const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)
 //     assert.equal(alice_pendingETHGain, 0)
 //   })
 
-//   it('claimStakingGainsAndRecycle(): with both ETH and VST gains', async () => {
+//   it('claimStakingGainsAndRecycle(): with both ETH and DCHF gains', async () => {
 //     const price = toBN(dec(200, 18))
 
 //     // Whale opens Trove
-//     await openTrove({ extraVSTAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
-//     // alice opens trove and provides 150 VST to StabilityPool
-//     await openTrove({ extraVSTAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     // alice opens trove and provides 150 DCHF to StabilityPool
+//     await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 //     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
-//     // mint some VSTA
-//     await vstaTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
-//     await vstaTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
+//     // mint some MON
+//     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
+//     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(alice), dec(150, 18))
 
-//     // stake VSTA
-//     await vstaStaking.stake(dec(1850, 18), { from: whale })
-//     await vstaStaking.stake(dec(150, 18), { from: alice })
+//     // stake MON
+//     await monStaking.stake(dec(1850, 18), { from: whale })
+//     await monStaking.stake(dec(150, 18), { from: alice })
 
 //     // Defaulter Trove opened
-//     const { VSTAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
-//     const borrowingFee = netDebt.sub(VSTAmount)
+//     const { MONmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const borrowingFee = netDebt.sub(MONmount)
 
-//     // Alice VST gain is ((150/2000) * borrowingFee)
-//     const expectedVSTGain_A = borrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
+//     // Alice DCHF gain is ((150/2000) * borrowingFee)
+//     const expectedDCHFGain_A = borrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
 
 //     // skip bootstrapping phase
 //     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
 
-//     // whale redeems 100 VST
+//     // whale redeems 100 DCHF
 //     const redeemedAmount = toBN(dec(100, 18))
 //     await th.redeemCollateral(whale, contracts, redeemedAmount)
 
@@ -649,54 +649,54 @@
 
 //     const ethBalanceBefore = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
 //     const troveCollBefore = await troveManager.getTroveColl(ZERO_ADDRESS, alice)
-//     const VSTBalanceBefore = await vstToken.balanceOf(alice)
+//     const DCHFBalanceBefore = await dchfToken.balanceOf(alice)
 //     const troveDebtBefore = await troveManager.getTroveDebt(ZERO_ADDRESS, alice)
-//     const VSTABalanceBefore = await vstaToken.balanceOf(alice)
+//     const MONBalanceBefore = await monToken.balanceOf(alice)
 //     const ICRBefore = await troveManager.getCurrentICR(ZERO_ADDRESS, alice, price)
 //     const depositBefore = (await stabilityPool.deposits(alice))[0]
-//     const stakeBefore = await vstaStaking.stakes(alice)
+//     const stakeBefore = await monStaking.stakes(alice)
 
-//     const proportionalVST = expectedETHGain_A.mul(price).div(ICRBefore)
+//     const proportionalDCHF = expectedETHGain_A.mul(price).div(ICRBefore)
 //     const borrowingRate = await troveManagerOriginal.getBorrowingRateWithDecay()
-//     const netDebtChange = proportionalVST.mul(toBN(dec(1, 18))).div(toBN(dec(1, 18)).add(borrowingRate))
-//     const expectedTotalVST = expectedVSTGain_A.add(netDebtChange)
+//     const netDebtChange = proportionalDCHF.mul(toBN(dec(1, 18))).div(toBN(dec(1, 18)).add(borrowingRate))
+//     const expectedTotalDCHF = expectedDCHFGain_A.add(netDebtChange)
 
-//     const expectedVSTAGain_A = toBN('839557069990108416000000')
+//     const expectedMONGain_A = toBN('839557069990108416000000')
 
 //     // Alice claims staking rewards and puts them back in the system through the proxy
 //     await borrowerWrappers.claimStakingGainsAndRecycle(th._100pct, alice, alice, { from: alice })
 
-//     // Alice new VST gain due to her own Trove adjustment: ((150/2000) * (borrowing fee over netDebtChange))
+//     // Alice new DCHF gain due to her own Trove adjustment: ((150/2000) * (borrowing fee over netDebtChange))
 //     const newBorrowingFee = await troveManagerOriginal.getBorrowingFeeWithDecay(netDebtChange)
-//     const expectedNewVSTGain_A = newBorrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
+//     const expectedNewDCHFGain_A = newBorrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
 
 //     const ethBalanceAfter = await web3.eth.getBalance(borrowerOperations.getProxyAddressFromUser(alice))
 //     const troveCollAfter = await troveManager.getTroveColl(ZERO_ADDRESS, alice)
-//     const VSTBalanceAfter = await vstToken.balanceOf(alice)
+//     const DCHFBalanceAfter = await dchfToken.balanceOf(alice)
 //     const troveDebtAfter = await troveManager.getTroveDebt(ZERO_ADDRESS, alice)
-//     const VSTABalanceAfter = await vstaToken.balanceOf(alice)
+//     const MONBalanceAfter = await monToken.balanceOf(alice)
 //     const ICRAfter = await troveManager.getCurrentICR(ZERO_ADDRESS, alice, price)
 //     const depositAfter = (await stabilityPool.deposits(alice))[0]
-//     const stakeAfter = await vstaStaking.stakes(alice)
+//     const stakeAfter = await monStaking.stakes(alice)
 
 //     // check proxy balances remain the same
 //     assert.equal(ethBalanceAfter.toString(), ethBalanceBefore.toString())
-//     assert.equal(VSTABalanceAfter.toString(), VSTABalanceBefore.toString())
-//     // check proxy VST balance has increased by own adjust trove reward
-//     th.assertIsApproximatelyEqual(VSTBalanceAfter, VSTBalanceBefore.add(expectedNewVSTGain_A))
+//     assert.equal(MONBalanceAfter.toString(), MONBalanceBefore.toString())
+//     // check proxy DCHF balance has increased by own adjust trove reward
+//     th.assertIsApproximatelyEqual(DCHFBalanceAfter, DCHFBalanceBefore.add(expectedNewDCHFGain_A))
 //     // check trove has increased debt by the ICR proportional amount to ETH gain
-//     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore.add(proportionalVST), 10000)
+//     th.assertIsApproximatelyEqual(troveDebtAfter, troveDebtBefore.add(proportionalDCHF), 10000)
 //     // check trove has increased collateral by the ETH gain
 //     th.assertIsApproximatelyEqual(troveCollAfter, troveCollBefore.add(expectedETHGain_A))
 //     // check that ICR remains constant
 //     th.assertIsApproximatelyEqual(ICRAfter, ICRBefore)
 //     // check that Stability Pool deposit
-//     th.assertIsApproximatelyEqual(depositAfter, depositBefore.add(expectedTotalVST), 10000)
-//     // check VSTA balance remains the same
-//     th.assertIsApproximatelyEqual(VSTABalanceBefore, VSTABalanceAfter)
+//     th.assertIsApproximatelyEqual(depositAfter, depositBefore.add(expectedTotalDCHF), 10000)
+//     // check MON balance remains the same
+//     th.assertIsApproximatelyEqual(MONBalanceBefore, MONBalanceAfter)
 
-//     // VSTA staking
-//     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedVSTAGain_A))
+//     // MON staking
+//     th.assertIsApproximatelyEqual(stakeAfter, stakeBefore.add(expectedMONGain_A))
 
 //     // Expect Alice has withdrawn all ETH gain
 //     const alice_pendingETHGain = await stabilityPool.getDepositorETHGain(alice)

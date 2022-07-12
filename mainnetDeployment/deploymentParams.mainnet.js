@@ -22,7 +22,7 @@ const gOHMParameters = {
 
 const vestaAddresses = {
   ADMIN_MULTI: "0xed9DeD8d0ee1d7086EC2BbFD8c5AD999d4BB7034",
-  VSTA_SAFE: "0xed9DeD8d0ee1d7086EC2BbFD8c5AD999d4BB7034", // to be passed to VSTAToken as the VSTA multisig address
+  MON_SAFE: "0xed9DeD8d0ee1d7086EC2BbFD8c5AD999d4BB7034", // to be passed to MONToken as the MON multisig address
   DEPLOYER: "0xed9DeD8d0ee1d7086EC2BbFD8c5AD999d4BB7034" // Mainnet REAL deployment address
 }
 
@@ -84,7 +84,7 @@ const beneficiaries = {
 
 
 const REDEMPTION_SAFETY = 14;
-const VSTA_TOKEN_ONLY = false;
+const MON_TOKEN_ONLY = false;
 
 const OUTPUT_FILE = './mainnetDeployment/mainnetDeploymentOutput.json'
 
@@ -108,7 +108,7 @@ module.exports = {
   TX_CONFIRMATIONS,
   ETHERSCAN_BASE_URL,
   REDEMPTION_SAFETY,
-  VSTA_TOKEN_ONLY,
+  MON_TOKEN_ONLY,
   gOHMParameters,
   IsMainnet
 };

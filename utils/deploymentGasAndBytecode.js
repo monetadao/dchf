@@ -2,25 +2,25 @@
 const SortedTroves = artifacts.require("./SortedTroves.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeed = artifacts.require("./PriceFeed.sol")
-const VSTToken = artifacts.require("./VSTToken.sol")
+const DCHFToken = artifacts.require("./DCHFToken.sol")
 const ActivePool = artifacts.require("./ActivePool.sol");
 const DefaultPool = artifacts.require("./DefaultPool.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol")
 const FunctionCaller = artifacts.require("./FunctionCaller.sol")
 const BorrowerOperations = artifacts.require("./BorrowerOperations.sol")
 
-const VSTAStaking = artifacts.require("./VSTA/VSTAStaking.sol")
-const VSTAToken = artifacts.require("./VSTA/VSTAToken.sol")
-const CommunityIssuance = artifacts.require("./VSTA/CommunityIssuance.sol")
+const MONStaking = artifacts.require("./MON/MONStaking.sol")
+const MONToken = artifacts.require("./MON/MONToken.sol")
+const CommunityIssuance = artifacts.require("./MON/CommunityIssuance.sol")
 const HintHelpers = artifacts.require("./HintHelpers.sol")
 
-const CommunityIssuanceTester = artifacts.require("./VSTA/CommunityIssuanceTester.sol")
+const CommunityIssuanceTester = artifacts.require("./MON/CommunityIssuanceTester.sol")
 const ActivePoolTester = artifacts.require("./ActivePoolTester.sol")
 const DefaultPoolTester = artifacts.require("./DefaultPoolTester.sol")
-const VestaMathTester = artifacts.require("./VestaMathTester.sol")
+const DfrancMathTester = artifacts.require("./DfrancMathTester.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
-const VSTTokenTester = artifacts.require("./VSTTokenTester.sol")
+const DCHFTokenTester = artifacts.require("./DCHFTokenTester.sol")
 
 const { TestHelper: th } = require("../utils/testHelpers.js")
 
@@ -30,7 +30,7 @@ const ARBITRARY_ADDRESS = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419"   // plac
 const coreContractABIs = [
   BorrowerOperations,
   PriceFeed,
-  VSTToken,
+  DCHFToken,
   SortedTroves,
   TroveManager,
   ActivePool,
@@ -40,9 +40,9 @@ const coreContractABIs = [
   HintHelpers,
 ]
 
-const VSTAContractABIs = [
-  VSTAStaking,
-  VSTAToken,
+const MONContractABIs = [
+  MONStaking,
+  MONToken,
   CommunityIssuance
 ]
 
@@ -50,10 +50,10 @@ const TesterContractABIs = [
   CommunityIssuanceTester,
   ActivePoolTester,
   DefaultPoolTester,
-  VestaMathTester,
+  DfrancMathTester,
   BorrowerOperationsTester,
   TroveManagerTester,
-  VSTTokenTester,
+  DCHFTokenTester,
 ]
 
 const getGasFromContractDeployment = async (contractObject, name) => {
@@ -107,18 +107,18 @@ const logContractBytecodeLengths = (contractABIs) => {
 // Run script: log deployment gas costs and bytecode lengths for all contracts
 async function main() {
   const coreContracts = await dh.deployLiquityCoreHardhat()
-  const VSTAContracts = await dh.deployVSTAContractsHardhat(accounts[0])
+  const MONContracts = await dh.deployMONContractsHardhat(accounts[0])
   const testerContracts = await dh.deployTesterContractsHardhat()
 
-  await dh.connectCoreContracts(coreContracts, VSTAContracts)
-  await dh.connectVSTAContractsToCore(VSTAContracts, coreContracts)
+  await dh.connectCoreContracts(coreContracts, MONContracts)
+  await dh.connectMONContractsToCore(MONContracts, coreContracts)
 
 
   console.log(`\n`)
-  console.log(`VSTA CONTRACTS`)
-  await logContractDeploymentCosts(VSTAContracts)
+  console.log(`MON CONTRACTS`)
+  await logContractDeploymentCosts(MONContracts)
   console.log(`\n`)
-  logContractBytecodeLengths(VSTAContractABIs)
+  logContractBytecodeLengths(MONContractABIs)
   console.log(`\n`)
 
   console.log(`CORE CONTRACTS`)

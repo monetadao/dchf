@@ -59,11 +59,11 @@
     "address": "0x3061d1DDCB75D2402a303e7AB0036Bc100ab716f",
     "txHash": "0x26bdae5d778d77a01c7fff26141339483a89f684a1b92def8887079856a82ce0"
   },
-  "VSTToken": {
+  "DCHFToken": {
     "address": "0x0cA97EF73eE47192dEC3519620adB2881dA6b95E",
     "txHash": "0x44d3cf4ffc176b9e1f40245ca9f9a124441fccd9757eb18d84ef33cd1083096b"
   },
-  "VSTAStaking": {
+  "MONStaking": {
     "address": "0x30B6560e24cF8609AB11b4752a3583AeBeE7af5F",
     "txHash": "0x25cbee28d3bb5cf1188b96778e60a1621912a7b22b3412f91838cad13a4c5cf8"
   },
@@ -71,7 +71,7 @@
     "address": "0x80716038961bf6076327eCAEA6DA56715B08131D",
     "txHash": "0x850e9437ab755990a68d6b6434cefba1e9e0f95d32f5dc3482868228ffdec226"
   },
-  "VSTAToken": {
+  "MONToken": {
     "address": "0x08Fe8bb3Ef9923B926ac3F1Fc78C5677fAb3c284",
     "txHash": "0xef587cd917a8871e69cf9a33c0c6ef776a8caf3cabb0a3ae38a22e42f8552032"
   },

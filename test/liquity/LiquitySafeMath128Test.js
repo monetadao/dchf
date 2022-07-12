@@ -1,13 +1,13 @@
 const testHelpers = require("../../utils/testHelpers.js")
 const th = testHelpers.TestHelper
 
-const VestaSafeMath128Tester = artifacts.require("VestaSafeMath128Tester")
+const DfrancSafeMath128Tester = artifacts.require("DfrancSafeMath128Tester")
 
-contract('VestaSafeMath128Tester', async accounts => {
+contract('DfrancSafeMath128Tester', async accounts => {
   let mathTester
 
   beforeEach(async () => {
-    mathTester = await VestaSafeMath128Tester.new()
+    mathTester = await DfrancSafeMath128Tester.new()
   })
 
   it('add(): reverts if overflows', async () => {

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.14;
-import "./IVestaBase.sol";
+import "./IDfrancBase.sol";
 import "./IStabilityPool.sol";
-import "./IVSTToken.sol";
-import "./IVSTAStaking.sol";
+import "./IDCHFToken.sol";
+import "./IMONStaking.sol";
 import "./ICollSurplusPool.sol";
 import "./ISortedTroves.sol";
 import "./IActivePool.sol";
@@ -13,7 +13,7 @@ import "./IStabilityPoolManager.sol";
 import "./ITroveManagerHelpers.sol";
 
 // Common interface for the Trove Manager.
-interface ITroveManager is IVestaBase {
+interface ITroveManager is IDfrancBase {
 	enum Status {
 		nonExistent,
 		active,
@@ -41,7 +41,7 @@ interface ITroveManager is IVestaBase {
 
 	struct LocalVariables_OuterLiquidationFunction {
 		uint256 price;
-		uint256 VSTInStabPool;
+		uint256 DCHFInStabPool;
 		bool recoveryModeAtStart;
 		uint256 liquidatedDebt;
 		uint256 liquidatedColl;
@@ -54,7 +54,7 @@ interface ITroveManager is IVestaBase {
 	}
 
 	struct LocalVariables_LiquidationSequence {
-		uint256 remainingVSTInStabPool;
+		uint256 remainingDCHFInStabPool;
 		uint256 i;
 		uint256 ICR;
 		address user;
@@ -73,7 +73,7 @@ interface ITroveManager is IVestaBase {
 		uint256 entireTroveDebt;
 		uint256 entireTroveColl;
 		uint256 collGasCompensation;
-		uint256 VSTGasCompensation;
+		uint256 DCHFGasCompensation;
 		uint256 debtToOffset;
 		uint256 collToSendToSP;
 		uint256 debtToRedistribute;
@@ -85,7 +85,7 @@ interface ITroveManager is IVestaBase {
 		uint256 totalCollInSequence;
 		uint256 totalDebtInSequence;
 		uint256 totalCollGasCompensation;
-		uint256 totalVSTGasCompensation;
+		uint256 totalDCHFGasCompensation;
 		uint256 totalDebtToOffset;
 		uint256 totalCollToSendToSP;
 		uint256 totalDebtToRedistribute;
@@ -96,8 +96,8 @@ interface ITroveManager is IVestaBase {
 	struct ContractsCache {
 		IActivePool activePool;
 		IDefaultPool defaultPool;
-		IVSTToken vstToken;
-		IVSTAStaking vstaStaking;
+		IDCHFToken dchfToken;
+		IMONStaking monStaking;
 		ISortedTroves sortedTroves;
 		ICollSurplusPool collSurplusPool;
 		address gasPoolAddress;
@@ -105,18 +105,18 @@ interface ITroveManager is IVestaBase {
 	// --- Variable container structs for redemptions ---
 
 	struct RedemptionTotals {
-		uint256 remainingVST;
-		uint256 totalVSTToRedeem;
+		uint256 remainingDCHF;
+		uint256 totalDCHFToRedeem;
 		uint256 totalAssetDrawn;
 		uint256 ETHFee;
 		uint256 ETHToSendToRedeemer;
 		uint256 decayedBaseRate;
 		uint256 price;
-		uint256 totalVSTSupplyAtStart;
+		uint256 totalDCHFSupplyAtStart;
 	}
 
 	struct SingleRedemptionValues {
-		uint256 VSTLot;
+		uint256 DCHFLot;
 		uint256 ETHLot;
 		bool cancelledPartial;
 	}
@@ -128,12 +128,12 @@ interface ITroveManager is IVestaBase {
 		uint256 _liquidatedDebt,
 		uint256 _liquidatedColl,
 		uint256 _collGasCompensation,
-		uint256 _VSTGasCompensation
+		uint256 _DCHFGasCompensation
 	);
 	event Redemption(
 		address indexed _asset,
-		uint256 _attemptedVSTAmount,
-		uint256 _actualVSTAmount,
+		uint256 _attemptedMONmount,
+		uint256 _actualMONmount,
 		uint256 _AssetSent,
 		uint256 _AssetFee
 	);
@@ -160,8 +160,8 @@ interface ITroveManager is IVestaBase {
 		uint256 _totalStakesSnapshot,
 		uint256 _totalCollateralSnapshot
 	);
-	event LTermsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_VSTDebt);
-	event TroveSnapshotsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_VSTDebt);
+	event LTermsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_DCHFDebt);
+	event TroveSnapshotsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_DCHFDebt);
 	event TroveIndexUpdated(address indexed _asset, address _borrower, uint256 _newIndex);
 
 	event TroveUpdated(
@@ -195,18 +195,18 @@ interface ITroveManager is IVestaBase {
 		address _stabilityPoolManagerAddress,
 		address _gasPoolAddress,
 		address _collSurplusPoolAddress,
-		address _vstTokenAddress,
+		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
-		address _vstaStakingAddress,
+		address _monStakingAddress,
 		address _vestaParamsAddress,
 		address _troveManagerHelpersAddress
 	) external;
 
 	function stabilityPoolManager() external view returns (IStabilityPoolManager);
 
-	function vstToken() external view returns (IVSTToken);
+	function dchfToken() external view returns (IDCHFToken);
 
-	function vstaStaking() external view returns (IVSTAStaking);
+	function monStaking() external view returns (IMONStaking);
 
 	function liquidate(address _asset, address borrower) external;
 
@@ -216,7 +216,7 @@ interface ITroveManager is IVestaBase {
 
 	function redeemCollateral(
 		address _asset,
-		uint256 _VSTAmount,
+		uint256 _MONmount,
 		address _firstRedemptionHint,
 		address _upperPartialRedemptionHint,
 		address _lowerPartialRedemptionHint,

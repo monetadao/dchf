@@ -76,15 +76,15 @@ class MainnetDeploymentHelper {
   }
 
   async deployPartially(treasurySigAddress, deploymentState) {
-    const VSTATokenFactory = await this.getFactory("VSTAToken")
-    const lockedVstaFactory = await this.getFactory("LockedVSTA")
+    const MONTokenFactory = await this.getFactory("MONToken")
+    const lockedVstaFactory = await this.getFactory("LockedMON")
 
     const lockedVsta = await this.loadOrDeploy(lockedVstaFactory, 'lockedVsta', deploymentState)
 
-    // Deploy VSTA Token, passing Community Issuance and Factory addresses to the constructor
-    const VSTAToken = await this.loadOrDeploy(
-      VSTATokenFactory,
-      'VSTAToken',
+    // Deploy MON Token, passing Community Issuance and Factory addresses to the constructor
+    const MONToken = await this.loadOrDeploy(
+      MONTokenFactory,
+      'MONToken',
       deploymentState,
       false,
       [treasurySigAddress]
@@ -94,18 +94,18 @@ class MainnetDeploymentHelper {
       console.log('No Etherscan Url defined, skipping verification')
     } else {
       await this.verifyContract('lockedVsta', deploymentState, [treasurySigAddress])
-      await this.verifyContract('VSTAToken', deploymentState, [treasurySigAddress])
+      await this.verifyContract('MONToken', deploymentState, [treasurySigAddress])
     }
 
     await this.isOwnershipRenounced(lockedVsta) ||
       await this.sendAndWaitForTransaction(lockedVsta.setAddresses(
-        VSTAToken.address,
+        MONToken.address,
         { gasPrice: this.configParams.GAS_PRICE }
       ))
 
     const partialContracts = {
       lockedVsta,
-      VSTAToken
+      MONToken
     }
 
     return partialContracts
@@ -125,9 +125,9 @@ class MainnetDeploymentHelper {
     const collSurplusPoolFactory = await this.getFactory("CollSurplusPool")
     const borrowerOperationsFactory = await this.getFactory("BorrowerOperations")
     const hintHelpersFactory = await this.getFactory("HintHelpers")
-    const VSTTokenFactory = await this.getFactory("VSTToken")
-    const vaultParametersFactory = await this.getFactory("VestaParameters")
-    const lockedVstaFactory = await this.getFactory("LockedVSTA")
+    const DCHFTokenFactory = await this.getFactory("DCHFToken")
+    const vaultParametersFactory = await this.getFactory("DfrancParameters")
+    const lockedVstaFactory = await this.getFactory("LockedMON")
     const adminContractFactory = await this.getFactory("AdminContract")
 
     // Deploy txs
@@ -150,17 +150,17 @@ class MainnetDeploymentHelper {
     const lockedVsta = await this.loadOrDeploy(lockedVstaFactory, 'lockedVsta', deploymentState)
     const adminContract = await this.loadOrDeploy(adminContractFactory, 'adminContract', deploymentState)
 
-    const VSTTokenParams = [
+    const DCHFTokenParams = [
       troveManager.address,
       stabilityPoolManager.address,
       borrowerOperations.address
     ]
-    const vstToken = await this.loadOrDeploy(
-      VSTTokenFactory,
-      'VSTToken',
+    const dchfToken = await this.loadOrDeploy(
+      DCHFTokenFactory,
+      'DCHFToken',
       deploymentState,
       false,
-      VSTTokenParams
+      DCHFTokenParams
     )
 
     if (!this.configParams.ETHERSCAN_BASE_URL) {
@@ -177,7 +177,7 @@ class MainnetDeploymentHelper {
       await this.verifyContract('collSurplusPool', deploymentState)
       await this.verifyContract('borrowerOperations', deploymentState)
       await this.verifyContract('hintHelpers', deploymentState)
-      await this.verifyContract('VSTToken', deploymentState, VSTTokenParams)
+      await this.verifyContract('DCHFToken', deploymentState, DCHFTokenParams)
       await this.verifyContract('vestaParameters', deploymentState)
       await this.verifyContract('lockedVsta', deploymentState)
       await this.verifyContract('adminContract', deploymentState)
@@ -185,7 +185,7 @@ class MainnetDeploymentHelper {
 
     const coreContracts = {
       priceFeed,
-      vstToken,
+      dchfToken,
       sortedTroves,
       troveManager,
       activePool,
@@ -203,18 +203,18 @@ class MainnetDeploymentHelper {
     return coreContracts
   }
 
-  async deployVSTAContractsMainnet(treasurySigAddress, deploymentState) {
-    const VSTAStakingFactory = await this.getFactory("VSTAStaking")
+  async deployMONContractsMainnet(treasurySigAddress, deploymentState) {
+    const MONStakingFactory = await this.getFactory("MONStaking")
     const communityIssuanceFactory = await this.getFactory("CommunityIssuance")
-    const VSTATokenFactory = await this.getFactory("VSTAToken")
+    const MONTokenFactory = await this.getFactory("MONToken")
 
-    const VSTAStaking = await this.loadOrDeploy(VSTAStakingFactory, 'VSTAStaking', deploymentState, true)
+    const MONStaking = await this.loadOrDeploy(MONStakingFactory, 'MONStaking', deploymentState, true)
     const communityIssuance = await this.loadOrDeploy(communityIssuanceFactory, 'communityIssuance', deploymentState, true)
 
-    // Deploy VSTA Token, passing Community Issuance and Factory addresses to the constructor
-    const VSTAToken = await this.loadOrDeploy(
-      VSTATokenFactory,
-      'VSTAToken',
+    // Deploy MON Token, passing Community Issuance and Factory addresses to the constructor
+    const MONToken = await this.loadOrDeploy(
+      MONTokenFactory,
+      'MONToken',
       deploymentState,
       false,
       [treasurySigAddress]
@@ -223,17 +223,17 @@ class MainnetDeploymentHelper {
     if (!this.configParams.ETHERSCAN_BASE_URL) {
       console.log('No Etherscan Url defined, skipping verification')
     } else {
-      await this.verifyContract('VSTAStaking', deploymentState)
+      await this.verifyContract('MONStaking', deploymentState)
       await this.verifyContract('communityIssuance', deploymentState)
-      await this.verifyContract('VSTAToken', deploymentState, [treasurySigAddress])
+      await this.verifyContract('MONToken', deploymentState, [treasurySigAddress])
     }
 
-    const VSTAContracts = {
-      VSTAStaking,
+    const MONContracts = {
+      MONStaking,
       communityIssuance,
-      VSTAToken
+      MONToken
     }
-    return VSTAContracts
+    return MONContracts
   }
 
   async deployMultiTroveGetterMainnet(liquityCore, deploymentState) {
@@ -266,7 +266,7 @@ class MainnetDeploymentHelper {
     return isInitialized;
   }
   // Connect contracts to their dependencies
-  async connectCoreContractsMainnet(contracts, VSTAContracts, chainlinkFlagAddress) {
+  async connectCoreContractsMainnet(contracts, MONContracts, chainlinkFlagAddress) {
     const gasPrice = this.configParams.GAS_PRICE
 
     await this.isOwnershipRenounced(contracts.priceFeed) ||
@@ -284,7 +284,7 @@ class MainnetDeploymentHelper {
 
     await this.isOwnershipRenounced(contracts.lockedVsta) ||
       await this.sendAndWaitForTransaction(contracts.lockedVsta.setAddresses(
-        VSTAContracts.VSTAToken.address,
+        MONContracts.MONToken.address,
         { gasPrice }
       ))
 
@@ -303,9 +303,9 @@ class MainnetDeploymentHelper {
         contracts.stabilityPoolManager.address,
         contracts.gasPool.address,
         contracts.collSurplusPool.address,
-        contracts.vstToken.address,
+        contracts.dchfToken.address,
         contracts.sortedTroves.address,
-        VSTAContracts.VSTAStaking.address,
+        MONContracts.MONStaking.address,
         contracts.vestaParameters.address,
         { gasPrice }
       ))
@@ -317,8 +317,8 @@ class MainnetDeploymentHelper {
         contracts.gasPool.address,
         contracts.collSurplusPool.address,
         contracts.sortedTroves.address,
-        contracts.vstToken.address,
-        VSTAContracts.VSTAStaking.address,
+        contracts.dchfToken.address,
+        MONContracts.MONStaking.address,
         contracts.vestaParameters.address,
         { gasPrice }
       ))
@@ -360,9 +360,9 @@ class MainnetDeploymentHelper {
         contracts.stabilityPoolManager.address,
         contracts.borrowerOperations.address,
         contracts.troveManager.address,
-        contracts.vstToken.address,
+        contracts.dchfToken.address,
         contracts.sortedTroves.address,
-        VSTAContracts.communityIssuance.address,
+        MONContracts.communityIssuance.address,
         { gasPrice }
       ))
 
@@ -376,12 +376,12 @@ class MainnetDeploymentHelper {
       ))
   }
 
-  async connectVSTAContractsToCoreMainnet(VSTAContracts, coreContracts, treasuryAddress) {
+  async connectMONContractsToCoreMainnet(MONContracts, coreContracts, treasuryAddress) {
     const gasPrice = this.configParams.GAS_PRICE
-    await this.isOwnershipRenounced(VSTAContracts.VSTAStaking) ||
-      await this.sendAndWaitForTransaction(VSTAContracts.VSTAStaking.setAddresses(
-        VSTAContracts.VSTAToken.address,
-        coreContracts.vstToken.address,
+    await this.isOwnershipRenounced(MONContracts.MONStaking) ||
+      await this.sendAndWaitForTransaction(MONContracts.MONStaking.setAddresses(
+        MONContracts.MONToken.address,
+        coreContracts.dchfToken.address,
         coreContracts.troveManager.address,
         coreContracts.borrowerOperations.address,
         coreContracts.activePool.address,
@@ -389,9 +389,9 @@ class MainnetDeploymentHelper {
         { gasPrice }
       ))
 
-    await this.isOwnershipRenounced(VSTAContracts.communityIssuance) ||
-      await this.sendAndWaitForTransaction(VSTAContracts.communityIssuance.setAddresses(
-        VSTAContracts.VSTAToken.address,
+    await this.isOwnershipRenounced(MONContracts.communityIssuance) ||
+      await this.sendAndWaitForTransaction(MONContracts.communityIssuance.setAddresses(
+        MONContracts.MONToken.address,
         coreContracts.stabilityPoolManager.address,
         coreContracts.adminContract.address,
         { gasPrice }

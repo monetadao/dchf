@@ -9,7 +9,7 @@ interface IPool is IDeposit {
 	// --- Events ---
 
 	event AssetBalanceUpdated(uint256 _newBalance);
-	event VSTBalanceUpdated(uint256 _newBalance);
+	event DCHFBalanceUpdated(uint256 _newBalance);
 	event ActivePoolAddressChanged(address _newActivePoolAddress);
 	event DefaultPoolAddressChanged(address _newDefaultPoolAddress);
 	event AssetAddressChanged(address _assetAddress);
@@ -20,9 +20,9 @@ interface IPool is IDeposit {
 
 	function getAssetBalance(address _asset) external view returns (uint256);
 
-	function getVSTDebt(address _asset) external view returns (uint256);
+	function getDCHFDebt(address _asset) external view returns (uint256);
 
-	function increaseVSTDebt(address _asset, uint256 _amount) external;
+	function increaseDCHFDebt(address _asset, uint256 _amount) external;
 
-	function decreaseVSTDebt(address _asset, uint256 _amount) external;
+	function decreaseDCHFDebt(address _asset, uint256 _amount) external;
 }

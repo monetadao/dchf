@@ -16,9 +16,9 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
 /*
- * The Active Pool holds the collaterals and VST debt (but not VST tokens) for all active troves.
+ * The Active Pool holds the collaterals and DCHF debt (but not DCHF tokens) for all active troves.
  *
- * When a trove is liquidated, it's collateral and VST debt are transferred from the Active Pool, to either the
+ * When a trove is liquidated, it's collateral and DCHF debt are transferred from the Active Pool, to either the
  * Stability Pool, the Default Pool, or both, depending on the liquidation conditions.
  *
  */
@@ -44,7 +44,7 @@ contract ActivePool is
 	bool public isInitialized;
 
 	mapping(address => uint256) internal assetsBalance;
-	mapping(address => uint256) internal VSTDebts;
+	mapping(address => uint256) internal DCHFDebts;
 
 	// --- Contract setters ---
 
@@ -91,8 +91,8 @@ contract ActivePool is
 		return assetsBalance[_asset];
 	}
 
-	function getVSTDebt(address _asset) external view override returns (uint256) {
-		return VSTDebts[_asset];
+	function getDCHFDebt(address _asset) external view override returns (uint256) {
+		return DCHFDebts[_asset];
 	}
 
 	// --- Pool functionality ---
@@ -132,22 +132,22 @@ contract ActivePool is
 			stabilityPoolManager.isStabilityPool(_account));
 	}
 
-	function increaseVSTDebt(address _asset, uint256 _amount)
+	function increaseDCHFDebt(address _asset, uint256 _amount)
 		external
 		override
 		callerIsBOorTroveM
 	{
-		VSTDebts[_asset] = VSTDebts[_asset].add(_amount);
-		emit ActivePoolVSTDebtUpdated(_asset, VSTDebts[_asset]);
+		DCHFDebts[_asset] = DCHFDebts[_asset].add(_amount);
+		emit ActivePoolDCHFDebtUpdated(_asset, DCHFDebts[_asset]);
 	}
 
-	function decreaseVSTDebt(address _asset, uint256 _amount)
+	function decreaseDCHFDebt(address _asset, uint256 _amount)
 		external
 		override
 		callerIsBOorTroveMorSP
 	{
-		VSTDebts[_asset] = VSTDebts[_asset].sub(_amount);
-		emit ActivePoolVSTDebtUpdated(_asset, VSTDebts[_asset]);
+		DCHFDebts[_asset] = DCHFDebts[_asset].sub(_amount);
+		emit ActivePoolDCHFDebtUpdated(_asset, DCHFDebts[_asset]);
 	}
 
 	// --- 'require' functions ---

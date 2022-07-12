@@ -6,7 +6,7 @@ const toBN = th.toBN
 const mv = testHelpers.MoneyValues
 const timeValues = testHelpers.TimeValues
 
-const VSTTokenTester = artifacts.require("VSTTokenTester")
+const DCHFTokenTester = artifacts.require("DCHFTokenTester")
 const TroveManagerTester = artifacts.require("TroveManagerTester")
 const NonPayable = artifacts.require('NonPayable.sol')
 const StabilityPool = artifacts.require('StabilityPool.sol')
@@ -28,7 +28,7 @@ contract('StabilityPool', async accounts => {
 
   let contracts
   let priceFeed
-  let vstToken
+  let dchfToken
   let sortedTroves
   let troveManager
   let activePool
@@ -36,13 +36,13 @@ contract('StabilityPool', async accounts => {
   let stabilityPoolERC20
   let defaultPool
   let borrowerOperations
-  let vstaToken
+  let monToken
   let communityIssuance
   let erc20
 
   let gasPriceInWei
 
-  const getOpenTroveVSTAmount = async (totalDebt, asset) => th.getOpenTroveVSTAmount(contracts, totalDebt, asset)
+  const getOpenTroveMONmount = async (totalDebt, asset) => th.getOpenTroveMONmount(contracts, totalDebt, asset)
   const openTrove = async (params) => th.openTrove(contracts, params)
   const assertRevert = th.assertRevert
 
@@ -55,15 +55,15 @@ contract('StabilityPool', async accounts => {
     beforeEach(async () => {
       contracts = await deploymentHelper.deployLiquityCore()
       contracts.troveManager = await TroveManagerTester.new()
-      contracts.vstToken = await VSTTokenTester.new(
+      contracts.dchfToken = await DCHFTokenTester.new(
         contracts.troveManager.address,
         contracts.stabilityPoolManager.address,
         contracts.borrowerOperations.address,
       )
-      const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+      const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
       priceFeed = contracts.priceFeedTestnet
-      vstToken = contracts.vstToken
+      dchfToken = contracts.dchfToken
       sortedTroves = contracts.sortedTroves
       troveManager = contracts.troveManager
       activePool = contracts.activePool
@@ -71,8 +71,8 @@ contract('StabilityPool', async accounts => {
       borrowerOperations = contracts.borrowerOperations
       hintHelpers = contracts.hintHelpers
 
-      vstaToken = VSTAContracts.vstaToken
-      communityIssuance = VSTAContracts.communityIssuance
+      monToken = MONContracts.monToken
+      communityIssuance = MONContracts.communityIssuance
 
       erc20 = contracts.erc20;
 
@@ -85,19 +85,19 @@ contract('StabilityPool', async accounts => {
           break;
       }
 
-      await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-      await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+      await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+      await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
 
       stabilityPool = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(ZERO_ADDRESS))
       stabilityPoolERC20 = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(erc20.address));
     })
 
     // --- provideToSP() ---
-    // increases recorded VST at Stability Pool
-    it("provideToSP(): increases the Stability Pool VST balance", async () => {
+    // increases recorded DCHF at Stability Pool
+    it("provideToSP(): increases the Stability Pool DCHF balance", async () => {
       // --- SETUP --- Give Alice a least 200
-      await openTrove({ extraVSTAmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       // --- TEST ---
 
@@ -105,15 +105,15 @@ contract('StabilityPool', async accounts => {
       await stabilityPool.provideToSP(200, { from: alice })
       await stabilityPoolERC20.provideToSP(200, { from: alice })
 
-      // check VST balances after
-      assert.equal(await stabilityPool.getTotalVSTDeposits(), 200)
-      assert.equal(await stabilityPoolERC20.getTotalVSTDeposits(), 200)
+      // check DCHF balances after
+      assert.equal(await stabilityPool.getTotalDCHFDeposits(), 200)
+      assert.equal(await stabilityPoolERC20.getTotalDCHFDeposits(), 200)
     })
 
     it("provideToSP(): updates the user's deposit record in StabilityPool", async () => {
       // --- SETUP --- Give Alice a least 200
-      await openTrove({ extraVSTAmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       // --- TEST ---
       // check user's deposit record before
@@ -129,63 +129,63 @@ contract('StabilityPool', async accounts => {
       assert.equal(await stabilityPoolERC20.deposits(alice), 200)
     })
 
-    it("provideToSP(): reduces the user's VST balance by the correct amount", async () => {
+    it("provideToSP(): reduces the user's DCHF balance by the correct amount", async () => {
       // --- SETUP --- Give Alice a least 200
-      await openTrove({ extraVSTAmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(200), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       // --- TEST ---
       // get user's deposit record before
-      const alice_VSTBalance_Before = await vstToken.balanceOf(alice)
+      const alice_DCHFBalance_Before = await dchfToken.balanceOf(alice)
 
       // provideToSP()
       await stabilityPool.provideToSP(200, { from: alice })
       await stabilityPoolERC20.provideToSP(200, { from: alice })
 
-      // check user's VST balance change
-      const alice_VSTBalance_After = await vstToken.balanceOf(alice)
-      assert.equal(alice_VSTBalance_Before.sub(alice_VSTBalance_After), '400')
+      // check user's DCHF balance change
+      const alice_DCHFBalance_After = await dchfToken.balanceOf(alice)
+      assert.equal(alice_DCHFBalance_Before.sub(alice_DCHFBalance_After), '400')
     })
 
-    it("provideToSP(): increases totalVSTDeposits by correct amount", async () => {
+    it("provideToSP(): increases totalDCHFDeposits by correct amount", async () => {
       // --- SETUP ---
 
-      // Whale opens Trove with 50 ETH, adds 2000 VST to StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      // Whale opens Trove with 50 ETH, adds 2000 DCHF to StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(2000, 18), { from: whale })
       await stabilityPoolERC20.provideToSP(dec(2000, 18), { from: whale })
 
-      assert.equal(await stabilityPool.getTotalVSTDeposits(), dec(2000, 18))
-      assert.equal(await stabilityPoolERC20.getTotalVSTDeposits(), dec(2000, 18))
+      assert.equal(await stabilityPool.getTotalDCHFDeposits(), dec(2000, 18))
+      assert.equal(await stabilityPoolERC20.getTotalDCHFDeposits(), dec(2000, 18))
     })
 
     it('provideToSP(): Correctly updates user snapshots of accumulated rewards per unit staked', async () => {
       // --- SETUP ---
 
       // Whale opens Trove and deposits to SP
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      const whaleVST = (await vstToken.balanceOf(whale)).div(toBN(2))
-      await stabilityPool.provideToSP(whaleVST, { from: whale })
-      await stabilityPoolERC20.provideToSP(whaleVST, { from: whale })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      const whaleDCHF = (await dchfToken.balanceOf(whale)).div(toBN(2))
+      await stabilityPool.provideToSP(whaleDCHF, { from: whale })
+      await stabilityPoolERC20.provideToSP(whaleDCHF, { from: whale })
 
       // 2 Troves opened, each withdraws minimum debt
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1, } })
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2, } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1, } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2, } })
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1, } })
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2, } })
+      await openTrove({ asset: erc20.address, extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1, } })
+      await openTrove({ asset: erc20.address, extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2, } })
 
-      // Alice makes Trove and withdraws 100 VST
-      await openTrove({ extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(5, 18)), extraParams: { from: alice, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(5, 18)), extraParams: { from: alice } })
+      // Alice makes Trove and withdraws 100 DCHF
+      await openTrove({ extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(5, 18)), extraParams: { from: alice, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(5, 18)), extraParams: { from: alice } })
 
 
       // price drops: defaulter's Troves fall below MCR, whale doesn't
       await priceFeed.setPrice(dec(105, 18));
 
-      const SPVST_Before = await stabilityPool.getTotalVSTDeposits()
-      const SPVST_BeforeERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
+      const SPDCHF_Before = await stabilityPool.getTotalDCHFDeposits()
+      const SPDCHF_BeforeERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
 
       // Troves are closed
       await troveManager.liquidate(ZERO_ADDRESS, defaulter_1, { from: owner })
@@ -198,10 +198,10 @@ contract('StabilityPool', async accounts => {
       assert.isFalse(await sortedTroves.contains(erc20.address, defaulter_2))
 
       // Confirm SP has decreased
-      const SPVST_After = await stabilityPool.getTotalVSTDeposits()
-      const SPVST_AfterERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
-      assert.isTrue(SPVST_After.lt(SPVST_Before))
-      assert.isTrue(SPVST_AfterERC20.lt(SPVST_BeforeERC20))
+      const SPDCHF_After = await stabilityPool.getTotalDCHFDeposits()
+      const SPDCHF_AfterERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
+      assert.isTrue(SPDCHF_After.lt(SPDCHF_Before))
+      assert.isTrue(SPDCHF_AfterERC20.lt(SPDCHF_BeforeERC20))
 
       // --- TEST ---
       const P_Before = (await stabilityPool.P())
@@ -262,27 +262,27 @@ contract('StabilityPool', async accounts => {
     it("provideToSP(), multiple deposits: updates user's deposit and snapshots", async () => {
       // --- SETUP ---
       // Whale opens Trove and deposits to SP
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
-      const whaleVST = (await vstToken.balanceOf(whale)).div(toBN(2))
-      await stabilityPool.provideToSP(whaleVST, { from: whale })
-      await stabilityPoolERC20.provideToSP(whaleVST, { from: whale })
+      const whaleDCHF = (await dchfToken.balanceOf(whale)).div(toBN(2))
+      await stabilityPool.provideToSP(whaleDCHF, { from: whale })
+      await stabilityPoolERC20.provideToSP(whaleDCHF, { from: whale })
 
-      // 3 Troves opened. Two users withdraw 160 VST each
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1, value: dec(50, 'ether') } })
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2, value: dec(50, 'ether') } })
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_3, value: dec(50, 'ether') } })
+      // 3 Troves opened. Two users withdraw 160 DCHF each
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1, value: dec(50, 'ether') } })
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2, value: dec(50, 'ether') } })
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_3, value: dec(50, 'ether') } })
 
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_3 } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_3 } })
 
       // --- TEST ---
 
-      // Alice makes deposit #1: 150 VST
-      await openTrove({ extraVSTAmount: toBN(dec(250, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(250, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
+      // Alice makes deposit #1: 150 DCHF
+      await openTrove({ extraMONmount: toBN(dec(250, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(250, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(150, 18), { from: alice })
       await stabilityPoolERC20.provideToSP(dec(150, 18), { from: alice })
 
@@ -302,15 +302,15 @@ contract('StabilityPool', async accounts => {
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
       await priceFeed.setPrice(dec(105, 18));
 
-      // 2 users with Trove with 180 VST drawn are closed
+      // 2 users with Trove with 180 DCHF drawn are closed
       await troveManager.liquidate(ZERO_ADDRESS, defaulter_1, { from: owner })
       await troveManager.liquidate(ZERO_ADDRESS, defaulter_2, { from: owner })
 
       await troveManager.liquidate(erc20.address, defaulter_1, { from: owner })
       await troveManager.liquidate(erc20.address, defaulter_2, { from: owner })
 
-      const alice_compoundedDeposit_1 = await stabilityPool.getCompoundedVSTDeposit(alice)
-      const alice_compoundedDeposit_1ERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(alice)
+      const alice_compoundedDeposit_1 = await stabilityPool.getCompoundedDCHFDeposit(alice)
+      const alice_compoundedDeposit_1ERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)
 
       // Alice makes deposit #2
       const alice_topUp_1 = toBN(dec(100, 18))
@@ -348,19 +348,19 @@ contract('StabilityPool', async accounts => {
       assert.isTrue(alice_Snapshot_S_1ERC20.eq(S_1))
       assert.isTrue(alice_Snapshot_P_1ERC20.eq(P_1))
 
-      // Bob withdraws VST and deposits to StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      // Bob withdraws DCHF and deposits to StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       await stabilityPool.provideToSP(dec(427, 18), { from: alice })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       await stabilityPoolERC20.provideToSP(dec(427, 18), { from: alice })
 
       // Defaulter 3 Trove is closed
       await troveManager.liquidate(ZERO_ADDRESS, defaulter_3, { from: owner })
       await troveManager.liquidate(erc20.address, defaulter_3, { from: owner })
 
-      const alice_compoundedDeposit_2 = await stabilityPool.getCompoundedVSTDeposit(alice)
-      const alice_compoundedDeposit_2ERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(alice)
+      const alice_compoundedDeposit_2 = await stabilityPool.getCompoundedDCHFDeposit(alice)
+      const alice_compoundedDeposit_2ERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)
 
       const P_2 = await stabilityPool.P()
       const S_2 = await stabilityPool.epochToScaleToSum(0, 0)
@@ -372,7 +372,7 @@ contract('StabilityPool', async accounts => {
       assert.isTrue(P_2ERC20.lt(P_1ERC20))
       assert.isTrue(S_2ERC20.gt(S_1ERC20))
 
-      // Alice makes deposit #3:  100VST
+      // Alice makes deposit #3:  100DCHF
       await stabilityPool.provideToSP(dec(100, 18), { from: alice })
       await stabilityPoolERC20.provideToSP(dec(100, 18), { from: alice })
 
@@ -390,46 +390,46 @@ contract('StabilityPool', async accounts => {
       assert.isTrue(alice_Snapshot_P_2ERC20.eq(P_2ERC20))
     })
 
-    it("provideToSP(): reverts if user tries to provide more than their VST balance", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice, value: dec(50, 'ether') } })
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob, value: dec(50, 'ether') } })
+    it("provideToSP(): reverts if user tries to provide more than their DCHF balance", async () => {
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice, value: dec(50, 'ether') } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob, value: dec(50, 'ether') } })
 
 
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      const aliceVSTbal = await vstToken.balanceOf(alice)
-      const bobVSTbal = await vstToken.balanceOf(bob)
+      const aliceDCHFbal = await dchfToken.balanceOf(alice)
+      const bobDCHFbal = await dchfToken.balanceOf(bob)
 
       // Alice, attempts to deposit 1 wei more than her balance
 
-      const aliceTxPromise = stabilityPool.provideToSP(aliceVSTbal.add(toBN(1)), { from: alice })
-      const aliceTxPromiseERC20 = stabilityPoolERC20.provideToSP(aliceVSTbal.add(toBN(1)), { from: alice })
+      const aliceTxPromise = stabilityPool.provideToSP(aliceDCHFbal.add(toBN(1)), { from: alice })
+      const aliceTxPromiseERC20 = stabilityPoolERC20.provideToSP(aliceDCHFbal.add(toBN(1)), { from: alice })
       await assertRevert(aliceTxPromise, "revert")
       await assertRevert(aliceTxPromiseERC20, "revert")
 
       // Bob, attempts to deposit 235534 more than his balance
 
-      const bobTxPromise = stabilityPool.provideToSP(bobVSTbal.add(toBN(dec(235534, 18))), { from: bob })
-      const bobTxPromiseERC20 = stabilityPoolERC20.provideToSP(bobVSTbal.add(toBN(dec(235534, 18))), { from: bob })
+      const bobTxPromise = stabilityPool.provideToSP(bobDCHFbal.add(toBN(dec(235534, 18))), { from: bob })
+      const bobTxPromiseERC20 = stabilityPoolERC20.provideToSP(bobDCHFbal.add(toBN(dec(235534, 18))), { from: bob })
       await assertRevert(bobTxPromise, "revert")
       await assertRevert(bobTxPromiseERC20, "revert")
     })
 
-    it("provideToSP(): reverts if user tries to provide 2^256-1 VST, which exceeds their balance", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice, value: dec(50, 'ether') } })
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob, value: dec(50, 'ether') } })
+    it("provideToSP(): reverts if user tries to provide 2^256-1 DCHF, which exceeds their balance", async () => {
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice, value: dec(50, 'ether') } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob, value: dec(50, 'ether') } })
 
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       const maxBytes32 = web3.utils.toBN("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 
-      // Alice attempts to deposit 2^256-1 VST
+      // Alice attempts to deposit 2^256-1 DCHF
       try {
         aliceTx = await stabilityPool.provideToSP(maxBytes32, { from: alice })
         assert.isFalse(tx.receipt.status)
@@ -447,27 +447,27 @@ contract('StabilityPool', async accounts => {
 
     it("provideToSP(): reverts if cannot receive ETH Gain", async () => {
       // --- SETUP ---
-      // Whale deposits 1850 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      // Whale deposits 1850 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
       await stabilityPool.provideToSP(dec(1850, 18), { from: whale })
 
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
       await stabilityPoolERC20.provideToSP(dec(1850, 18), { from: whale })
 
       // Defaulter Troves opened
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
+      await openTrove({ asset: erc20.address, extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ asset: erc20.address, extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
       // --- TEST ---
 
       const nonPayable = await NonPayable.new()
-      await vstToken.transfer(nonPayable.address, dec(250, 18), { from: whale })
-      await vstToken.transfer(nonPayable.address, dec(250, 18), { from: whale })
+      await dchfToken.transfer(nonPayable.address, dec(250, 18), { from: whale })
+      await dchfToken.transfer(nonPayable.address, dec(250, 18), { from: whale })
 
-      // NonPayable makes deposit #1: 150 VST
+      // NonPayable makes deposit #1: 150 DCHF
       const txData1 = th.getTransactionData('provideToSP(uint256)', [web3.utils.toHex(dec(150, 18))])
       await nonPayable.forward(stabilityPool.address, txData1)
       await nonPayable.forward(stabilityPoolERC20.address, txData1)
@@ -494,23 +494,23 @@ contract('StabilityPool', async accounts => {
       const gain_1ERC20 = await stabilityPoolERC20.getDepositorAssetGain(nonPayable.address)
       assert.isTrue(gain_1ERC20.gt(toBN(0)), 'NonPayable should have some accumulated gains')
 
-      // NonPayable tries to make deposit #2: 100VST (which also attempts to withdraw ETH gain)
+      // NonPayable tries to make deposit #2: 100DCHF (which also attempts to withdraw ETH gain)
       const txData2 = th.getTransactionData('provideToSP(uint256)', [web3.utils.toHex(dec(100, 18))])
       await th.assertRevert(nonPayable.forward(stabilityPool.address, txData2), 'StabilityPool: sending ETH failed')
     })
 
     it("provideToSP(): doesn't impact other users' deposits or ETH gains", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       await stabilityPool.provideToSP(dec(1000, 18), { from: alice })
       await stabilityPool.provideToSP(dec(2000, 18), { from: bob })
@@ -521,15 +521,15 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.provideToSP(dec(3000, 18), { from: carol })
 
       // D opens a trove
-      await openTrove({ extraVSTAmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraMONmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
 
       // Would-be defaulters open troves
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
+      await openTrove({ asset: erc20.address, extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ asset: erc20.address, extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
       // Price drops
       await priceFeed.setPrice(dec(105, 18))
@@ -544,13 +544,13 @@ contract('StabilityPool', async accounts => {
       assert.isFalse(await sortedTroves.contains(erc20.address, defaulter_1))
       assert.isFalse(await sortedTroves.contains(erc20.address, defaulter_2))
 
-      const alice_VSTDeposit_Before = (await stabilityPool.getCompoundedVSTDeposit(alice)).toString()
-      const bob_VSTDeposit_Before = (await stabilityPool.getCompoundedVSTDeposit(bob)).toString()
-      const carol_VSTDeposit_Before = (await stabilityPool.getCompoundedVSTDeposit(carol)).toString()
+      const alice_DCHFDeposit_Before = (await stabilityPool.getCompoundedDCHFDeposit(alice)).toString()
+      const bob_DCHFDeposit_Before = (await stabilityPool.getCompoundedDCHFDeposit(bob)).toString()
+      const carol_DCHFDeposit_Before = (await stabilityPool.getCompoundedDCHFDeposit(carol)).toString()
 
-      const alice_VSTDeposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(alice)).toString()
-      const bob_VSTDeposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(bob)).toString()
-      const carol_VSTDeposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(carol)).toString()
+      const alice_DCHFDeposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)).toString()
+      const bob_DCHFDeposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)).toString()
+      const carol_DCHFDeposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(carol)).toString()
 
       const alice_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(alice)).toString()
       const bob_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(bob)).toString()
@@ -560,30 +560,30 @@ contract('StabilityPool', async accounts => {
       const bob_ETHGain_BeforeERC20 = (await stabilityPoolERC20.getDepositorAssetGain(bob)).toString()
       const carol_ETHGain_BeforeERC20 = (await stabilityPoolERC20.getDepositorAssetGain(carol)).toString()
 
-      //check non-zero VST and AssetGain in the Stability Pool
-      const VSTinSP = await stabilityPool.getTotalVSTDeposits()
+      //check non-zero DCHF and AssetGain in the Stability Pool
+      const DCHFinSP = await stabilityPool.getTotalDCHFDeposits()
       const ETHinSP = await stabilityPool.getAssetBalance()
-      const VSTinSPERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
+      const DCHFinSPERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
       const ETHinSPERC20 = await stabilityPoolERC20.getAssetBalance()
-      assert.isTrue(VSTinSP.gt(mv._zeroBN))
+      assert.isTrue(DCHFinSP.gt(mv._zeroBN))
       assert.isTrue(ETHinSP.gt(mv._zeroBN))
-      assert.isTrue(VSTinSPERC20.gt(mv._zeroBN))
+      assert.isTrue(DCHFinSPERC20.gt(mv._zeroBN))
       assert.isTrue(ETHinSPERC20.gt(mv._zeroBN))
 
       // D makes an SP deposit
       await stabilityPool.provideToSP(dec(1000, 18), { from: dennis })
-      assert.equal((await stabilityPool.getCompoundedVSTDeposit(dennis)).toString(), dec(1000, 18))
+      assert.equal((await stabilityPool.getCompoundedDCHFDeposit(dennis)).toString(), dec(1000, 18))
 
       await stabilityPoolERC20.provideToSP(dec(1000, 18), { from: dennis })
-      assert.equal((await stabilityPoolERC20.getCompoundedVSTDeposit(dennis)).toString(), dec(1000, 18))
+      assert.equal((await stabilityPoolERC20.getCompoundedDCHFDeposit(dennis)).toString(), dec(1000, 18))
 
-      const alice_VSTDeposit_After = (await stabilityPool.getCompoundedVSTDeposit(alice)).toString()
-      const bob_VSTDeposit_After = (await stabilityPool.getCompoundedVSTDeposit(bob)).toString()
-      const carol_VSTDeposit_After = (await stabilityPool.getCompoundedVSTDeposit(carol)).toString()
+      const alice_DCHFDeposit_After = (await stabilityPool.getCompoundedDCHFDeposit(alice)).toString()
+      const bob_DCHFDeposit_After = (await stabilityPool.getCompoundedDCHFDeposit(bob)).toString()
+      const carol_DCHFDeposit_After = (await stabilityPool.getCompoundedDCHFDeposit(carol)).toString()
 
-      const alice_VSTDeposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(alice)).toString()
-      const bob_VSTDeposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(bob)).toString()
-      const carol_VSTDeposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(carol)).toString()
+      const alice_DCHFDeposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)).toString()
+      const bob_DCHFDeposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)).toString()
+      const carol_DCHFDeposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(carol)).toString()
 
       const alice_ETHGain_After = (await stabilityPool.getDepositorAssetGain(alice)).toString()
       const bob_ETHGain_After = (await stabilityPool.getDepositorAssetGain(bob)).toString()
@@ -594,13 +594,13 @@ contract('StabilityPool', async accounts => {
       const carol_ETHGain_AfterERC20 = (await stabilityPoolERC20.getDepositorAssetGain(carol)).toString()
 
       // Check compounded deposits and ETH gains for A, B and C have not changed
-      assert.equal(alice_VSTDeposit_Before, alice_VSTDeposit_After)
-      assert.equal(bob_VSTDeposit_Before, bob_VSTDeposit_After)
-      assert.equal(carol_VSTDeposit_Before, carol_VSTDeposit_After)
+      assert.equal(alice_DCHFDeposit_Before, alice_DCHFDeposit_After)
+      assert.equal(bob_DCHFDeposit_Before, bob_DCHFDeposit_After)
+      assert.equal(carol_DCHFDeposit_Before, carol_DCHFDeposit_After)
 
-      assert.equal(alice_VSTDeposit_BeforeERC20, alice_VSTDeposit_AfterERC20)
-      assert.equal(bob_VSTDeposit_BeforeERC20, bob_VSTDeposit_AfterERC20)
-      assert.equal(carol_VSTDeposit_BeforeERC20, carol_VSTDeposit_AfterERC20)
+      assert.equal(alice_DCHFDeposit_BeforeERC20, alice_DCHFDeposit_AfterERC20)
+      assert.equal(bob_DCHFDeposit_BeforeERC20, bob_DCHFDeposit_AfterERC20)
+      assert.equal(carol_DCHFDeposit_BeforeERC20, carol_DCHFDeposit_AfterERC20)
 
       assert.equal(alice_ETHGain_Before, alice_ETHGain_After)
       assert.equal(bob_ETHGain_Before, bob_ETHGain_After)
@@ -612,17 +612,17 @@ contract('StabilityPool', async accounts => {
     })
 
     it("provideToSP(): doesn't impact system debt, collateral or TCR", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       await stabilityPool.provideToSP(dec(1000, 18), { from: alice })
       await stabilityPool.provideToSP(dec(2000, 18), { from: bob })
@@ -633,15 +633,15 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.provideToSP(dec(3000, 18), { from: carol })
 
       // D opens a trove
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
 
       // Would-be defaulters open troves
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await openTrove({ extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
+      await openTrove({ asset: erc20.address, extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ asset: erc20.address, extraMONmount: 0, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
 
       // Price drops
       await priceFeed.setPrice(dec(105, 18))
@@ -656,33 +656,33 @@ contract('StabilityPool', async accounts => {
       assert.isFalse(await sortedTroves.contains(erc20.address, defaulter_1))
       assert.isFalse(await sortedTroves.contains(erc20.address, defaulter_2))
 
-      const activeDebt_Before = (await activePool.getVSTDebt(ZERO_ADDRESS)).toString()
-      const defaultedDebt_Before = (await defaultPool.getVSTDebt(ZERO_ADDRESS)).toString()
+      const activeDebt_Before = (await activePool.getDCHFDebt(ZERO_ADDRESS)).toString()
+      const defaultedDebt_Before = (await defaultPool.getDCHFDebt(ZERO_ADDRESS)).toString()
       const activeColl_Before = (await activePool.getAssetBalance(ZERO_ADDRESS)).toString()
       const defaultedColl_Before = (await defaultPool.getAssetBalance(ZERO_ADDRESS)).toString()
       const TCR_Before = (await th.getTCR(contracts)).toString()
 
-      const activeDebt_BeforeERC20 = (await activePool.getVSTDebt(erc20.address)).toString()
-      const defaultedDebt_BeforeERC20 = (await defaultPool.getVSTDebt(erc20.address)).toString()
+      const activeDebt_BeforeERC20 = (await activePool.getDCHFDebt(erc20.address)).toString()
+      const defaultedDebt_BeforeERC20 = (await defaultPool.getDCHFDebt(erc20.address)).toString()
       const activeColl_BeforeERC20 = (await activePool.getAssetBalance(erc20.address)).toString()
       const defaultedColl_BeforeERC20 = (await defaultPool.getAssetBalance(erc20.address)).toString()
       const TCR_BeforeERC20 = (await th.getTCR(contracts, erc20.address)).toString()
 
       // D makes an SP deposit
       await stabilityPool.provideToSP(dec(1000, 18), { from: dennis })
-      assert.equal((await stabilityPool.getCompoundedVSTDeposit(dennis)).toString(), dec(1000, 18))
+      assert.equal((await stabilityPool.getCompoundedDCHFDeposit(dennis)).toString(), dec(1000, 18))
 
       await stabilityPoolERC20.provideToSP(dec(1000, 18), { from: dennis })
-      assert.equal((await stabilityPoolERC20.getCompoundedVSTDeposit(dennis)).toString(), dec(1000, 18))
+      assert.equal((await stabilityPoolERC20.getCompoundedDCHFDeposit(dennis)).toString(), dec(1000, 18))
 
-      const activeDebt_After = (await activePool.getVSTDebt(ZERO_ADDRESS)).toString()
-      const defaultedDebt_After = (await defaultPool.getVSTDebt(ZERO_ADDRESS)).toString()
+      const activeDebt_After = (await activePool.getDCHFDebt(ZERO_ADDRESS)).toString()
+      const defaultedDebt_After = (await defaultPool.getDCHFDebt(ZERO_ADDRESS)).toString()
       const activeColl_After = (await activePool.getAssetBalance(ZERO_ADDRESS)).toString()
       const defaultedColl_After = (await defaultPool.getAssetBalance(ZERO_ADDRESS)).toString()
       const TCR_After = (await th.getTCR(contracts)).toString()
 
-      const activeDebt_AfterERC20 = (await activePool.getVSTDebt(erc20.address)).toString()
-      const defaultedDebt_AfterERC20 = (await defaultPool.getVSTDebt(erc20.address)).toString()
+      const activeDebt_AfterERC20 = (await activePool.getDCHFDebt(erc20.address)).toString()
+      const defaultedDebt_AfterERC20 = (await defaultPool.getDCHFDebt(erc20.address)).toString()
       const activeColl_AfterERC20 = (await activePool.getAssetBalance(erc20.address)).toString()
       const defaultedColl_AfterERC20 = (await defaultPool.getAssetBalance(erc20.address)).toString()
       const TCR_AfterERC20 = (await th.getTCR(contracts, erc20.address)).toString()
@@ -702,17 +702,17 @@ contract('StabilityPool', async accounts => {
     })
 
     it("provideToSP(): doesn't impact any troves, including the caller's trove", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // A and B provide to SP
       await stabilityPool.provideToSP(dec(1000, 18), { from: alice })
@@ -722,8 +722,8 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.provideToSP(dec(2000, 18), { from: bob })
 
       // D opens a trove
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
 
       // Price drops
       await priceFeed.setPrice(dec(105, 18))
@@ -768,10 +768,10 @@ contract('StabilityPool', async accounts => {
 
       // D makes an SP deposit
       await stabilityPool.provideToSP(dec(1000, 18), { from: dennis })
-      assert.equal((await stabilityPool.getCompoundedVSTDeposit(dennis)).toString(), dec(1000, 18))
+      assert.equal((await stabilityPool.getCompoundedDCHFDeposit(dennis)).toString(), dec(1000, 18))
 
       await stabilityPoolERC20.provideToSP(dec(1000, 18), { from: dennis })
-      assert.equal((await stabilityPoolERC20.getCompoundedVSTDeposit(dennis)).toString(), dec(1000, 18))
+      assert.equal((await stabilityPoolERC20.getCompoundedDCHFDeposit(dennis)).toString(), dec(1000, 18))
 
       const whale_Debt_After = (await troveManager.Troves(whale, ZERO_ADDRESS,))[0].toString()
       const alice_Debt_After = (await troveManager.Troves(alice, ZERO_ADDRESS,))[0].toString()
@@ -849,19 +849,19 @@ contract('StabilityPool', async accounts => {
     })
 
     it("provideToSP(): doesn't protect the depositor's trove from liquidation", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      // A, B provide 100 VST to SP
+      // A, B provide 100 DCHF to SP
       await stabilityPool.provideToSP(dec(1000, 18), { from: alice })
       await stabilityPool.provideToSP(dec(1000, 18), { from: bob })
 
@@ -876,8 +876,8 @@ contract('StabilityPool', async accounts => {
       assert.equal((await troveManager.getTroveStatus(erc20.address, bob)).toString(), '1')
 
       // Confirm Bob has a Stability deposit
-      assert.equal((await stabilityPool.getCompoundedVSTDeposit(bob)).toString(), dec(1000, 18))
-      assert.equal((await stabilityPoolERC20.getCompoundedVSTDeposit(bob)).toString(), dec(1000, 18))
+      assert.equal((await stabilityPool.getCompoundedDCHFDeposit(bob)).toString(), dec(1000, 18))
+      assert.equal((await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)).toString(), dec(1000, 18))
 
       // Price drops
       await priceFeed.setPrice(dec(105, 18))
@@ -895,21 +895,21 @@ contract('StabilityPool', async accounts => {
       assert.equal((await troveManager.getTroveStatus(erc20.address, bob)).toString(), '3')
     })
 
-    it("provideToSP(): providing 0 VST reverts", async () => {
+    it("provideToSP(): providing 0 DCHF reverts", async () => {
       // --- SETUP ---
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      // A, B, C provides 100, 50, 30 VST to SP
+      // A, B, C provides 100, 50, 30 DCHF to SP
       await stabilityPool.provideToSP(dec(100, 18), { from: alice })
       await stabilityPool.provideToSP(dec(50, 18), { from: bob })
       await stabilityPool.provideToSP(dec(30, 18), { from: carol })
@@ -918,16 +918,16 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.provideToSP(dec(50, 18), { from: bob })
       await stabilityPoolERC20.provideToSP(dec(30, 18), { from: carol })
 
-      const bob_Deposit_Before = (await stabilityPool.getCompoundedVSTDeposit(bob)).toString()
-      const VSTinSP_Before = (await stabilityPool.getTotalVSTDeposits()).toString()
+      const bob_Deposit_Before = (await stabilityPool.getCompoundedDCHFDeposit(bob)).toString()
+      const DCHFinSP_Before = (await stabilityPool.getTotalDCHFDeposits()).toString()
 
-      const bob_Deposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(bob)).toString()
-      const VSTinSP_BeforeERC20 = (await stabilityPoolERC20.getTotalVSTDeposits()).toString()
+      const bob_Deposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)).toString()
+      const DCHFinSP_BeforeERC20 = (await stabilityPoolERC20.getTotalDCHFDeposits()).toString()
 
-      assert.equal(VSTinSP_Before, dec(180, 18))
-      assert.equal(VSTinSP_BeforeERC20, dec(180, 18))
+      assert.equal(DCHFinSP_Before, dec(180, 18))
+      assert.equal(DCHFinSP_BeforeERC20, dec(180, 18))
 
-      // Bob provides 0 VST to the Stability Pool 
+      // Bob provides 0 DCHF to the Stability Pool 
       const txPromise_B = stabilityPool.provideToSP(0, { from: bob })
       await th.assertRevert(txPromise_B)
 
@@ -935,19 +935,19 @@ contract('StabilityPool', async accounts => {
       await th.assertRevert(txPromise_BERC20)
     })
 
-    // --- VSTA functionality ---
-    it("provideToSP(), new deposit: when SP > 0, triggers VSTA reward event - increases the sum G", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+    // --- MON functionality ---
+    it("provideToSP(), new deposit: when SP > 0, triggers MON reward event - increases the sum G", async () => {
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A provides to SP
       await stabilityPool.provideToSP(dec(1000, 18), { from: A })
@@ -975,23 +975,23 @@ contract('StabilityPool', async accounts => {
       currentScaleERC20 = await stabilityPoolERC20.currentScale()
       const G_AfterERC20 = await stabilityPoolERC20.epochToScaleToG(currentEpochERC20, currentScaleERC20)
 
-      // Expect G has increased from the VSTA reward event triggered
+      // Expect G has increased from the MON reward event triggered
       assert.isTrue(G_After.gt(G_Before))
       assert.isTrue(G_AfterERC20.gt(G_BeforeERC20))
     })
 
     it("provideToSP(), new deposit: when SP is empty, doesn't update G", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A provides to SP
       await stabilityPool.provideToSP(dec(1000, 18), { from: A })
@@ -1004,8 +1004,8 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.withdrawFromSP(dec(1000, 18), { from: A })
 
       // Check SP is empty
-      assert.equal((await stabilityPool.getTotalVSTDeposits()), '0')
-      assert.equal((await stabilityPoolERC20.getTotalVSTDeposits()), '0')
+      assert.equal((await stabilityPool.getTotalDCHFDeposits()), '0')
+      assert.equal((await stabilityPoolERC20.getTotalDCHFDeposits()), '0')
 
       // Check G is non-zero
       let currentEpoch = await stabilityPool.currentEpoch()
@@ -1039,19 +1039,19 @@ contract('StabilityPool', async accounts => {
     })
 
     it("provideToSP(), new deposit: sets the correct front end tag", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
-      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+      await openTrove({ asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
       // A, B, C, D open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // A, B, C, D provides to SP
       await stabilityPool.provideToSP(dec(1000, 18), { from: A })
@@ -1065,25 +1065,25 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.provideToSP(dec(4000, 18), { from: D })
     })
 
-    it("provideToSP(), new deposit: depositor does not receive any VSTA rewards", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
+    it("provideToSP(), new deposit: depositor does not receive any MON rewards", async () => {
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: dec(50, 'ether') } })
       await openTrove({
-        asset: erc20.address, assetSent: dec(50, 'ether'), extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale }
+        asset: erc20.address, assetSent: dec(50, 'ether'), extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale }
       })
 
       // A, B, open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
-      // Get A, B, C VSTA balances before and confirm they're zero
-      const A_VSTABalance_Before = await vstaToken.balanceOf(A)
-      const B_VSTABalance_Before = await vstaToken.balanceOf(B)
+      // Get A, B, C MON balances before and confirm they're zero
+      const A_MONBalance_Before = await monToken.balanceOf(A)
+      const B_MONBalance_Before = await monToken.balanceOf(B)
 
-      assert.equal(A_VSTABalance_Before, '0')
-      assert.equal(B_VSTABalance_Before, '0')
+      assert.equal(A_MONBalance_Before, '0')
+      assert.equal(B_MONBalance_Before, '0')
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -1094,36 +1094,36 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.provideToSP(dec(1000, 18), { from: A })
       await stabilityPoolERC20.provideToSP(dec(2000, 18), { from: B })
 
-      // Get A, B, C VSTA balances after, and confirm they're still zero
-      const A_VSTABalance_After = await vstaToken.balanceOf(A)
-      const B_VSTABalance_After = await vstaToken.balanceOf(B)
+      // Get A, B, C MON balances after, and confirm they're still zero
+      const A_MONBalance_After = await monToken.balanceOf(A)
+      const B_MONBalance_After = await monToken.balanceOf(B)
 
-      assert.equal(A_VSTABalance_After, '0')
-      assert.equal(B_VSTABalance_After, '0')
+      assert.equal(A_MONBalance_After, '0')
+      assert.equal(B_MONBalance_After, '0')
     })
 
-    it("provideToSP(), new deposit after past full withdrawal: depositor does not receive any VSTA rewards", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    it("provideToSP(), new deposit after past full withdrawal: depositor does not receive any MON rewards", async () => {
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C, open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraVSTAmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
       // --- SETUP --- 
 
-      const initialDeposit_A = (await vstToken.balanceOf(A)).div(toBN(2))
-      const initialDeposit_B = (await vstToken.balanceOf(B)).div(toBN(2))
+      const initialDeposit_A = (await dchfToken.balanceOf(A)).div(toBN(2))
+      const initialDeposit_B = (await dchfToken.balanceOf(B)).div(toBN(2))
       // A, B provide to SP
       await stabilityPool.provideToSP(initialDeposit_A, { from: A })
       await stabilityPool.provideToSP(initialDeposit_B, { from: B })
@@ -1134,7 +1134,7 @@ contract('StabilityPool', async accounts => {
       // time passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      // C deposits. A, and B earn VSTA
+      // C deposits. A, and B earn MON
       await stabilityPool.provideToSP(dec(5, 18), { from: C })
       await stabilityPoolERC20.provideToSP(dec(5, 18), { from: C })
 
@@ -1158,11 +1158,11 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST --- 
 
-      // Get A, B, C VSTA balances before and confirm they're non-zero
-      const A_VSTABalance_Before = await vstaToken.balanceOf(A)
-      const B_VSTABalance_Before = await vstaToken.balanceOf(B)
-      assert.isTrue(A_VSTABalance_Before.gt(toBN('0')))
-      assert.isTrue(B_VSTABalance_Before.gt(toBN('0')))
+      // Get A, B, C MON balances before and confirm they're non-zero
+      const A_MONBalance_Before = await monToken.balanceOf(A)
+      const B_MONBalance_Before = await monToken.balanceOf(B)
+      assert.isTrue(A_MONBalance_Before.gt(toBN('0')))
+      assert.isTrue(B_MONBalance_Before.gt(toBN('0')))
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
@@ -1173,26 +1173,26 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.provideToSP(dec(100, 18), { from: A })
       await stabilityPoolERC20.provideToSP(dec(200, 18), { from: B })
 
-      // Get A, B, C VSTA balances after, and confirm they have not changed
-      const A_VSTABalance_After = await vstaToken.balanceOf(A)
-      const B_VSTABalance_After = await vstaToken.balanceOf(B)
+      // Get A, B, C MON balances after, and confirm they have not changed
+      const A_MONBalance_After = await monToken.balanceOf(A)
+      const B_MONBalance_After = await monToken.balanceOf(B)
 
-      assert.isTrue(A_VSTABalance_After.eq(A_VSTABalance_Before))
-      assert.isTrue(B_VSTABalance_After.eq(B_VSTABalance_Before))
+      assert.isTrue(A_MONBalance_After.eq(A_MONBalance_Before))
+      assert.isTrue(B_MONBalance_After.eq(B_MONBalance_Before))
     })
 
     it("provideToSP(), new eligible deposit: tagged System's stake increases", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C, open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Get front ends' stakes before
       const stake_Before = await stabilityPool.totalStakes()
@@ -1223,21 +1223,21 @@ contract('StabilityPool', async accounts => {
     })
 
     it("provideToSP(), new eligible deposit: tagged System's snapshots update", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C, open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // D opens trove
-      await openTrove({ extraVSTAmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -1316,19 +1316,19 @@ contract('StabilityPool', async accounts => {
     })
 
     it("provideToSP(), new deposit: depositor does not receive ETH gains", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
-      // Whale transfers VST to A, B
-      await vstToken.transfer(A, dec(200, 18), { from: whale })
-      await vstToken.transfer(B, dec(400, 18), { from: whale })
+      // Whale transfers DCHF to A, B
+      await dchfToken.transfer(A, dec(200, 18), { from: whale })
+      await dchfToken.transfer(B, dec(400, 18), { from: whale })
 
       // C, D open troves
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // --- TEST ---
 
@@ -1378,20 +1378,20 @@ contract('StabilityPool', async accounts => {
     })
 
     it("provideToSP(), new deposit after past full withdrawal: depositor does not receive ETH gains", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
-      // Whale transfers VST to A, B
-      await vstToken.transfer(A, dec(2000, 18), { from: whale })
-      await vstToken.transfer(B, dec(2000, 18), { from: whale })
+      // Whale transfers DCHF to A, B
+      await dchfToken.transfer(A, dec(2000, 18), { from: whale })
+      await dchfToken.transfer(B, dec(2000, 18), { from: whale })
 
       // C, D open troves
-      await openTrove({ extraVSTAmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraVSTAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
       // --- SETUP ---
@@ -1409,7 +1409,7 @@ contract('StabilityPool', async accounts => {
       // time passes
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      // B deposits. A,B,C,D earn VSTA
+      // B deposits. A,B,C,D earn MON
       await stabilityPool.provideToSP(dec(5, 18), { from: B })
       await stabilityPoolERC20.provideToSP(dec(5, 18), { from: B })
 
@@ -1482,19 +1482,19 @@ contract('StabilityPool', async accounts => {
       assert.equal(D_ETHBalance_AfterERC20.toString(), D_ETHBalance_BeforeERC20.toString())
     })
 
-    it("provideToSP(), topup: triggers VSTA reward event - increases the sum G", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    it("provideToSP(), topup: triggers MON reward event - increases the sum G", async () => {
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C provide to SP
       await stabilityPool.provideToSP(dec(100, 18), { from: A })
@@ -1519,23 +1519,23 @@ contract('StabilityPool', async accounts => {
       const G_After = await stabilityPool.epochToScaleToG(0, 0)
       const G_AfterERC20 = await stabilityPoolERC20.epochToScaleToG(0, 0)
 
-      // Expect G has increased from the VSTA reward event triggered by B's topup
+      // Expect G has increased from the MON reward event triggered by B's topup
       assert.isTrue(G_After.gt(G_Before))
       assert.isTrue(G_AfterERC20.gt(G_BeforeERC20))
     })
 
-    it("provideToSP(), topup: depositor receives VSTA rewards", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    it("provideToSP(), topup: depositor receives MON rewards", async () => {
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(200, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(200, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(200, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(200, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(300, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, provide to SP
       await stabilityPool.provideToSP(dec(10, 18), { from: A })
@@ -1548,10 +1548,10 @@ contract('StabilityPool', async accounts => {
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      // Get A, B, C VSTA balance before
-      const A_VSTABalance_Before = await vstaToken.balanceOf(A)
-      const B_VSTABalance_Before = await vstaToken.balanceOf(B)
-      const C_VSTABalance_Before = await vstaToken.balanceOf(C)
+      // Get A, B, C MON balance before
+      const A_MONBalance_Before = await monToken.balanceOf(A)
+      const B_MONBalance_Before = await monToken.balanceOf(B)
+      const C_MONBalance_Before = await monToken.balanceOf(C)
 
       // A, B, C top up
       await stabilityPool.provideToSP(dec(10, 18), { from: A })
@@ -1562,23 +1562,23 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.provideToSP(dec(20, 18), { from: B })
       await stabilityPoolERC20.provideToSP(dec(30, 18), { from: C })
 
-      // Get VSTA balance after
-      const A_VSTABalance_After = await vstaToken.balanceOf(A)
-      const B_VSTABalance_After = await vstaToken.balanceOf(B)
-      const C_VSTABalance_After = await vstaToken.balanceOf(C)
+      // Get MON balance after
+      const A_MONBalance_After = await monToken.balanceOf(A)
+      const B_MONBalance_After = await monToken.balanceOf(B)
+      const C_MONBalance_After = await monToken.balanceOf(C)
 
-      // Check VSTA Balance of A, B, C has increased
-      assert.isTrue(A_VSTABalance_After.gt(A_VSTABalance_Before))
-      assert.isTrue(B_VSTABalance_After.gt(B_VSTABalance_Before))
-      assert.isTrue(C_VSTABalance_After.gt(C_VSTABalance_Before))
+      // Check MON Balance of A, B, C has increased
+      assert.isTrue(A_MONBalance_After.gt(A_MONBalance_Before))
+      assert.isTrue(B_MONBalance_After.gt(B_MONBalance_Before))
+      assert.isTrue(C_MONBalance_After.gt(C_MONBalance_Before))
     })
 
     it("provideToSP(), topup: system's stake increases", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
-      await openTrove({ extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
 
       await stabilityPool.provideToSP(dec(10, 18), { from: A })
 
@@ -1594,23 +1594,23 @@ contract('StabilityPool', async accounts => {
     })
 
     it("provideToSP(), topup: System's snapshots update", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C, open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(200, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(400, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(600, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(200, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(400, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(600, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(200, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(400, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(600, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(200, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(400, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(600, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // D opens trove
-      await openTrove({ extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
       // --- SETUP ---
@@ -1631,9 +1631,9 @@ contract('StabilityPool', async accounts => {
       // fastforward time then make an SP deposit, to make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      const vstD_Balance = toBN(await vstToken.balanceOf(D)).div(toBN(2))
-      await stabilityPool.provideToSP(vstD_Balance, { from: D })
-      await stabilityPoolERC20.provideToSP(vstD_Balance, { from: D })
+      const dchfD_Balance = toBN(await dchfToken.balanceOf(D)).div(toBN(2))
+      await stabilityPool.provideToSP(dchfD_Balance, { from: D })
+      await stabilityPoolERC20.provideToSP(dchfD_Balance, { from: D })
 
       // perform a liquidation to make 0 < P < 1, and S > 0
       await priceFeed.setPrice(dec(100, 18))
@@ -1694,15 +1694,15 @@ contract('StabilityPool', async accounts => {
 
 
     it("provideToSP(): reverts when amount is zero", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(2000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
-      // Whale transfers VST to C, D
-      await vstToken.transfer(C, dec(200, 18), { from: whale })
-      await vstToken.transfer(D, dec(200, 18), { from: whale })
+      // Whale transfers DCHF to C, D
+      await dchfToken.transfer(C, dec(200, 18), { from: whale })
+      await dchfToken.transfer(D, dec(200, 18), { from: whale })
 
       txPromise_A = stabilityPool.provideToSP(0, { from: A })
       txPromise_B = stabilityPool.provideToSP(0, { from: B })
@@ -1728,11 +1728,11 @@ contract('StabilityPool', async accounts => {
     // --- withdrawFromSP ---
 
     it("withdrawFromSP(): reverts when user has no active deposit", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       await stabilityPool.provideToSP(dec(100, 18), { from: alice })
       await stabilityPoolERC20.provideToSP(dec(100, 18), { from: alice })
@@ -1774,8 +1774,8 @@ contract('StabilityPool', async accounts => {
     })
 
     it("withdrawFromSP(): reverts when amount > 0 and system has an undercollateralized trove", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       await stabilityPool.provideToSP(dec(100, 18), { from: alice })
       await stabilityPoolERC20.provideToSP(dec(100, 18), { from: alice })
@@ -1797,11 +1797,11 @@ contract('StabilityPool', async accounts => {
       await th.assertRevert(stabilityPoolERC20.withdrawFromSP(dec(100, 18), { from: alice }))
     })
 
-    it("withdrawFromSP(): partial retrieval - retrieves correct VST amount and the entire ETH Gain, and updates deposit", async () => {
+    it("withdrawFromSP(): partial retrieval - retrieves correct DCHF amount and the entire ETH Gain, and updates deposit", async () => {
       // --- SETUP ---
-      // Whale deposits 185000 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      // Whale deposits 185000 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(185000, 18), { from: whale })
       await stabilityPoolERC20.provideToSP(dec(185000, 18), { from: whale })
 
@@ -1814,22 +1814,22 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
 
-      // Alice makes deposit #1: 15000 VST
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      // Alice makes deposit #1: 15000 DCHF
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(15000, 18), { from: alice })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPoolERC20.provideToSP(dec(15000, 18), { from: alice })
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
       await priceFeed.setPrice(dec(105, 18));
 
-      // 2 users with Trove with 170 VST drawn are closed
-      const liquidationTX_1 = await troveManager.liquidate(ZERO_ADDRESS, defaulter_1, { from: owner })  // 170 VST closed
-      const liquidationTX_2 = await troveManager.liquidate(ZERO_ADDRESS, defaulter_2, { from: owner }) // 170 VST closed
+      // 2 users with Trove with 170 DCHF drawn are closed
+      const liquidationTX_1 = await troveManager.liquidate(ZERO_ADDRESS, defaulter_1, { from: owner })  // 170 DCHF closed
+      const liquidationTX_2 = await troveManager.liquidate(ZERO_ADDRESS, defaulter_2, { from: owner }) // 170 DCHF closed
 
-      const liquidationTX_1ERC20 = await troveManager.liquidate(erc20.address, defaulter_1, { from: owner })  // 170 VST closed
-      const liquidationTX_2ERC20 = await troveManager.liquidate(erc20.address, defaulter_2, { from: owner }) // 170 VST closed
+      const liquidationTX_1ERC20 = await troveManager.liquidate(erc20.address, defaulter_1, { from: owner })  // 170 DCHF closed
+      const liquidationTX_2ERC20 = await troveManager.liquidate(erc20.address, defaulter_2, { from: owner }) // 170 DCHF closed
 
       const [liquidatedDebt_1] = th.getEmittedLiquidationValues(liquidationTX_1)
       const [liquidatedDebt_2] = th.getEmittedLiquidationValues(liquidationTX_2)
@@ -1837,28 +1837,28 @@ contract('StabilityPool', async accounts => {
       const [liquidatedDebt_1ERC20] = th.getEmittedLiquidationValues(liquidationTX_1ERC20)
       const [liquidatedDebt_2ERC20] = th.getEmittedLiquidationValues(liquidationTX_2ERC20)
 
-      // Alice VSTLoss is ((15000/200000) * liquidatedDebt), for each liquidation
-      const expectedVSTLoss_A = (liquidatedDebt_1.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
+      // Alice DCHFLoss is ((15000/200000) * liquidatedDebt), for each liquidation
+      const expectedDCHFLoss_A = (liquidatedDebt_1.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
         .add(liquidatedDebt_2.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
 
-      const expectedVSTLoss_AERC20 = (liquidatedDebt_1ERC20.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
+      const expectedDCHFLoss_AERC20 = (liquidatedDebt_1ERC20.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
         .add(liquidatedDebt_2ERC20.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
 
-      const expectedCompoundedVSTDeposit_A = toBN(dec(15000, 18)).sub(expectedVSTLoss_A)
-      const compoundedVSTDeposit_A = await stabilityPool.getCompoundedVSTDeposit(alice)
+      const expectedCompoundedDCHFDeposit_A = toBN(dec(15000, 18)).sub(expectedDCHFLoss_A)
+      const compoundedDCHFDeposit_A = await stabilityPool.getCompoundedDCHFDeposit(alice)
 
-      const expectedCompoundedVSTDeposit_AERC20 = toBN(dec(15000, 18)).sub(expectedVSTLoss_AERC20)
-      const compoundedVSTDeposit_AERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(alice)
+      const expectedCompoundedDCHFDeposit_AERC20 = toBN(dec(15000, 18)).sub(expectedDCHFLoss_AERC20)
+      const compoundedDCHFDeposit_AERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)
 
-      assert.isAtMost(th.getDifference(expectedCompoundedVSTDeposit_A, compoundedVSTDeposit_A), 100000)
-      assert.isAtMost(th.getDifference(expectedCompoundedVSTDeposit_AERC20, compoundedVSTDeposit_AERC20), 100000)
+      assert.isAtMost(th.getDifference(expectedCompoundedDCHFDeposit_A, compoundedDCHFDeposit_A), 100000)
+      assert.isAtMost(th.getDifference(expectedCompoundedDCHFDeposit_AERC20, compoundedDCHFDeposit_AERC20), 100000)
 
-      // Alice retrieves part of her entitled VST: 9000 VST
+      // Alice retrieves part of her entitled DCHF: 9000 DCHF
       await stabilityPool.withdrawFromSP(dec(9000, 18), { from: alice })
       await stabilityPoolERC20.withdrawFromSP(dec(9000, 18), { from: alice })
 
-      const expectedNewDeposit_A = (compoundedVSTDeposit_A.sub(toBN(dec(9000, 18))))
-      const expectedNewDeposit_AERC20 = (compoundedVSTDeposit_AERC20.sub(toBN(dec(9000, 18))))
+      const expectedNewDeposit_A = (compoundedDCHFDeposit_A.sub(toBN(dec(9000, 18))))
+      const expectedNewDeposit_AERC20 = (compoundedDCHFDeposit_AERC20.sub(toBN(dec(9000, 18))))
 
       // check Alice's deposit has been updated to equal her compounded deposit minus her withdrawal */
       const newDeposit = (await stabilityPool.deposits(alice)).toString()
@@ -1875,11 +1875,11 @@ contract('StabilityPool', async accounts => {
       assert.equal(alice_pendingETHGainERC20, 0)
     })
 
-    it("withdrawFromSP(): partial retrieval - leaves the correct amount of VST in the Stability Pool", async () => {
+    it("withdrawFromSP(): partial retrieval - leaves the correct amount of DCHF in the Stability Pool", async () => {
       // --- SETUP ---
-      // Whale deposits 185000 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      // Whale deposits 185000 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(185000, 18), { from: whale })
       await stabilityPoolERC20.provideToSP(dec(185000, 18), { from: whale })
 
@@ -1890,17 +1890,17 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
       // --- TEST ---
 
-      // Alice makes deposit #1: 15000 VST
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      // Alice makes deposit #1: 15000 DCHF
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(15000, 18), { from: alice })
       await stabilityPoolERC20.provideToSP(dec(15000, 18), { from: alice })
 
-      const SP_VST_Before = await stabilityPool.getTotalVSTDeposits()
-      assert.equal(SP_VST_Before, dec(200000, 18))
+      const SP_DCHF_Before = await stabilityPool.getTotalDCHFDeposits()
+      assert.equal(SP_DCHF_Before, dec(200000, 18))
 
-      const SP_VST_BeforeERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
-      assert.equal(SP_VST_BeforeERC20, dec(200000, 18))
+      const SP_DCHF_BeforeERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
+      assert.equal(SP_DCHF_BeforeERC20, dec(200000, 18))
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
       await priceFeed.setPrice(dec(105, 18));
@@ -1917,34 +1917,34 @@ contract('StabilityPool', async accounts => {
       const [liquidatedDebt_1ERC20] = await th.getEmittedLiquidationValues(liquidationTX_1ERC20)
       const [liquidatedDebt_2ERC20] = await th.getEmittedLiquidationValues(liquidationTX_2ERC20)
 
-      // Alice retrieves part of her entitled VST: 9000 VST
+      // Alice retrieves part of her entitled DCHF: 9000 DCHF
       await stabilityPool.withdrawFromSP(dec(9000, 18), { from: alice })
       await stabilityPoolERC20.withdrawFromSP(dec(9000, 18), { from: alice })
 
       /* Check SP has reduced from 2 liquidations and Alice's withdrawal
-      Expect VST in SP = (200000 - liquidatedDebt_1 - liquidatedDebt_2 - 9000) */
-      const expectedSPVST = toBN(dec(200000, 18))
+      Expect DCHF in SP = (200000 - liquidatedDebt_1 - liquidatedDebt_2 - 9000) */
+      const expectedSPDCHF = toBN(dec(200000, 18))
         .sub(toBN(liquidatedDebt_1))
         .sub(toBN(liquidatedDebt_2))
         .sub(toBN(dec(9000, 18)))
 
-      const expectedSPVSTERC20 = toBN(dec(200000, 18))
+      const expectedSPDCHFERC20 = toBN(dec(200000, 18))
         .sub(toBN(liquidatedDebt_1ERC20))
         .sub(toBN(liquidatedDebt_2ERC20))
         .sub(toBN(dec(9000, 18)))
 
-      const SP_VST_After = (await stabilityPool.getTotalVSTDeposits()).toString()
-      const SP_VST_AfterERC20 = (await stabilityPoolERC20.getTotalVSTDeposits()).toString()
+      const SP_DCHF_After = (await stabilityPool.getTotalDCHFDeposits()).toString()
+      const SP_DCHF_AfterERC20 = (await stabilityPoolERC20.getTotalDCHFDeposits()).toString()
 
-      th.assertIsApproximatelyEqual(SP_VST_After, expectedSPVST)
-      th.assertIsApproximatelyEqual(SP_VST_AfterERC20, expectedSPVSTERC20)
+      th.assertIsApproximatelyEqual(SP_DCHF_After, expectedSPDCHF)
+      th.assertIsApproximatelyEqual(SP_DCHF_AfterERC20, expectedSPDCHFERC20)
     })
 
-    it("withdrawFromSP(): full retrieval - leaves the correct amount of VST in the Stability Pool", async () => {
+    it("withdrawFromSP(): full retrieval - leaves the correct amount of DCHF in the Stability Pool", async () => {
       // --- SETUP ---
-      // Whale deposits 185000 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      // Whale deposits 185000 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(185000, 18), { from: whale })
       await stabilityPoolERC20.provideToSP(dec(185000, 18), { from: whale })
 
@@ -1958,17 +1958,17 @@ contract('StabilityPool', async accounts => {
       // --- TEST ---
 
       // Alice makes deposit #1
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(15000, 18), { from: alice })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPoolERC20.provideToSP(dec(15000, 18), { from: alice })
 
-      const SP_VST_Before = await stabilityPool.getTotalVSTDeposits()
-      assert.equal(SP_VST_Before, dec(200000, 18))
+      const SP_DCHF_Before = await stabilityPool.getTotalDCHFDeposits()
+      assert.equal(SP_DCHF_Before, dec(200000, 18))
 
-      const SP_VST_BeforeERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
-      assert.equal(SP_VST_BeforeERC20, dec(200000, 18))
+      const SP_DCHF_BeforeERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
+      assert.equal(SP_DCHF_BeforeERC20, dec(200000, 18))
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
       await priceFeed.setPrice(dec(105, 18));
@@ -1986,45 +1986,45 @@ contract('StabilityPool', async accounts => {
       const [liquidatedDebt_1ERC20] = await th.getEmittedLiquidationValues(liquidationTX_1ERC20)
       const [liquidatedDebt_2ERC20] = await th.getEmittedLiquidationValues(liquidationTX_2ERC20)
 
-      // Alice VSTLoss is ((15000/200000) * liquidatedDebt), for each liquidation
-      const expectedVSTLoss_A = (liquidatedDebt_1.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
+      // Alice DCHFLoss is ((15000/200000) * liquidatedDebt), for each liquidation
+      const expectedDCHFLoss_A = (liquidatedDebt_1.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
         .add(liquidatedDebt_2.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
 
-      const expectedVSTLoss_AERC20 = (liquidatedDebt_1ERC20.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
+      const expectedDCHFLoss_AERC20 = (liquidatedDebt_1ERC20.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
         .add(liquidatedDebt_2ERC20.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18))))
 
-      const expectedCompoundedVSTDeposit_A = toBN(dec(15000, 18)).sub(expectedVSTLoss_A)
-      const compoundedVSTDeposit_A = await stabilityPool.getCompoundedVSTDeposit(alice)
+      const expectedCompoundedDCHFDeposit_A = toBN(dec(15000, 18)).sub(expectedDCHFLoss_A)
+      const compoundedDCHFDeposit_A = await stabilityPool.getCompoundedDCHFDeposit(alice)
 
-      const expectedCompoundedVSTDeposit_AERC20 = toBN(dec(15000, 18)).sub(expectedVSTLoss_AERC20)
-      const compoundedVSTDeposit_AERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(alice)
+      const expectedCompoundedDCHFDeposit_AERC20 = toBN(dec(15000, 18)).sub(expectedDCHFLoss_AERC20)
+      const compoundedDCHFDeposit_AERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)
 
-      assert.isAtMost(th.getDifference(expectedCompoundedVSTDeposit_A, compoundedVSTDeposit_A), 100000)
-      assert.isAtMost(th.getDifference(expectedCompoundedVSTDeposit_AERC20, compoundedVSTDeposit_AERC20), 100000)
+      assert.isAtMost(th.getDifference(expectedCompoundedDCHFDeposit_A, compoundedDCHFDeposit_A), 100000)
+      assert.isAtMost(th.getDifference(expectedCompoundedDCHFDeposit_AERC20, compoundedDCHFDeposit_AERC20), 100000)
 
-      const VSTinSPBefore = await stabilityPool.getTotalVSTDeposits()
-      const VSTinSPBeforeERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
+      const DCHFinSPBefore = await stabilityPool.getTotalDCHFDeposits()
+      const DCHFinSPBeforeERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
 
-      // Alice retrieves all of her entitled VST:
+      // Alice retrieves all of her entitled DCHF:
       await stabilityPool.withdrawFromSP(dec(15000, 18), { from: alice })
       await stabilityPoolERC20.withdrawFromSP(dec(15000, 18), { from: alice })
 
-      const expectedVSTinSPAfter = VSTinSPBefore.sub(compoundedVSTDeposit_A)
-      const expectedVSTinSPAfterERC20 = VSTinSPBefore.sub(compoundedVSTDeposit_AERC20)
+      const expectedDCHFinSPAfter = DCHFinSPBefore.sub(compoundedDCHFDeposit_A)
+      const expectedDCHFinSPAfterERC20 = DCHFinSPBefore.sub(compoundedDCHFDeposit_AERC20)
 
-      const VSTinSPAfter = await stabilityPool.getTotalVSTDeposits()
-      const VSTinSPAfterERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
-      assert.isAtMost(th.getDifference(expectedVSTinSPAfter, VSTinSPAfter), 100000)
-      assert.isAtMost(th.getDifference(expectedVSTinSPAfterERC20, VSTinSPAfterERC20), 100000)
+      const DCHFinSPAfter = await stabilityPool.getTotalDCHFDeposits()
+      const DCHFinSPAfterERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
+      assert.isAtMost(th.getDifference(expectedDCHFinSPAfter, DCHFinSPAfter), 100000)
+      assert.isAtMost(th.getDifference(expectedDCHFinSPAfterERC20, DCHFinSPAfterERC20), 100000)
     })
 
     it("withdrawFromSP(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero ETH", async () => {
       // --- SETUP ---
-      // Whale deposits 1850 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      // Whale deposits 1850 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(18500, 18), { from: whale })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPoolERC20.provideToSP(dec(18500, 18), { from: whale })
 
       // 2 defaulters open
@@ -2036,11 +2036,11 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
 
-      // Alice makes deposit #1: 15000 VST
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      // Alice makes deposit #1: 15000 DCHF
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(15000, 18), { from: alice })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPoolERC20.provideToSP(dec(15000, 18), { from: alice })
 
       // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
@@ -2053,7 +2053,7 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(erc20.address, defaulter_1, { from: owner })
       await troveManager.liquidate(erc20.address, defaulter_2, { from: owner })
 
-      // Alice retrieves all of her entitled VST:
+      // Alice retrieves all of her entitled DCHF:
       await stabilityPool.withdrawFromSP(dec(15000, 18), { from: alice })
       assert.equal(await stabilityPool.getDepositorAssetGain(alice), 0)
 
@@ -2099,13 +2099,13 @@ contract('StabilityPool', async accounts => {
       await th.assertRevert(txPromise_AERC20)
     })
 
-    it("withdrawFromSP(): it correctly updates the user's VST and ETH snapshots of entitled reward per unit staked", async () => {
+    it("withdrawFromSP(): it correctly updates the user's DCHF and ETH snapshots of entitled reward per unit staked", async () => {
       // --- SETUP ---
-      // Whale deposits 185000 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      // Whale deposits 185000 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(185000, 18), { from: whale })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPoolERC20.provideToSP(dec(185000, 18), { from: whale })
 
       // 2 defaulters open
@@ -2117,11 +2117,11 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
 
-      // Alice makes deposit #1: 15000 VST
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      // Alice makes deposit #1: 15000 DCHF
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(15000, 18), { from: alice })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPoolERC20.provideToSP(dec(15000, 18), { from: alice })
 
       // check 'Before' snapshots
@@ -2148,7 +2148,7 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(erc20.address, defaulter_1, { from: owner })
       await troveManager.liquidate(erc20.address, defaulter_2, { from: owner });
 
-      // Alice retrieves part of her entitled VST: 9000 VST
+      // Alice retrieves part of her entitled DCHF: 9000 DCHF
       await stabilityPool.withdrawFromSP(dec(9000, 18), { from: alice })
       await stabilityPoolERC20.withdrawFromSP(dec(9000, 18), { from: alice })
 
@@ -2174,11 +2174,11 @@ contract('StabilityPool', async accounts => {
 
     it("withdrawFromSP(): decreases StabilityPool ETH", async () => {
       // --- SETUP ---
-      // Whale deposits 185000 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      // Whale deposits 185000 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(185000, 18), { from: whale })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPoolERC20.provideToSP(dec(185000, 18), { from: whale })
 
       // 1 defaulter opens
@@ -2187,21 +2187,21 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
 
-      // Alice makes deposit #1: 15000 VST
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      // Alice makes deposit #1: 15000 DCHF
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(15000, 18), { from: alice })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPoolERC20.provideToSP(dec(15000, 18), { from: alice })
 
       // price drops: defaulter's Trove falls below MCR, alice and whale Trove remain active
       await priceFeed.setPrice('100000000000000000000');
 
       // defaulter's Trove is closed.
-      const liquidationTx_1 = await troveManager.liquidate(ZERO_ADDRESS, defaulter_1, { from: owner })  // 180 VST closed
+      const liquidationTx_1 = await troveManager.liquidate(ZERO_ADDRESS, defaulter_1, { from: owner })  // 180 DCHF closed
       const [, liquidatedColl,] = th.getEmittedLiquidationValues(liquidationTx_1)
 
-      const liquidationTx_1ERC20 = await troveManager.liquidate(erc20.address, defaulter_1, { from: owner })  // 180 VST closed
+      const liquidationTx_1ERC20 = await troveManager.liquidate(erc20.address, defaulter_1, { from: owner })  // 180 DCHF closed
       const [, liquidatedCollERC20,] = th.getEmittedLiquidationValues(liquidationTx_1ERC20)
 
       //Get ActivePool and StabilityPool Ether before retrieval:
@@ -2256,12 +2256,12 @@ contract('StabilityPool', async accounts => {
       // 6 Accounts open troves and provide to SP
       const depositors = [alice, bob, carol, dennis, erin, flyn]
       for (account of depositors) {
-        await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+        await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
         await stabilityPool.provideToSP(dec(10000, 18), { from: account })
       }
 
       for (account of depositors) {
-        await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
         await stabilityPoolERC20.provideToSP(dec(10000, 18), { from: account })
       }
 
@@ -2299,21 +2299,21 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.withdrawFromSP(dec(10000, 18), { from: flyn })
       assert.equal((await stabilityPoolERC20.deposits(alice)).toString(), '0')
 
-      const totalDeposits = (await stabilityPool.getTotalVSTDeposits()).toString()
-      const totalDepositsERC20 = (await stabilityPoolERC20.getTotalVSTDeposits()).toString()
+      const totalDeposits = (await stabilityPool.getTotalDCHFDeposits()).toString()
+      const totalDepositsERC20 = (await stabilityPoolERC20.getTotalDCHFDeposits()).toString()
 
       assert.isAtMost(th.getDifference(totalDeposits, '0'), 100000)
       assert.isAtMost(th.getDifference(totalDepositsERC20, '0'), 100000)
     })
 
-    it("withdrawFromSP(): increases depositor's VST token balance by the expected amount", async () => {
+    it("withdrawFromSP(): increases depositor's DCHF token balance by the expected amount", async () => {
       // Whale opens trove 
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // 1 defaulter opens trove
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveVSTAmount(dec(10000, 18), ZERO_ADDRESS), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(100, 'ether') })
-      await borrowerOperations.openTrove(erc20.address, dec(100, 'ether'), th._100pct, await getOpenTroveVSTAmount(dec(10000, 18), ZERO_ADDRESS), defaulter_1, defaulter_1, { from: defaulter_1 })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18), ZERO_ADDRESS), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(erc20.address, dec(100, 'ether'), th._100pct, await getOpenTroveMONmount(dec(10000, 18), ZERO_ADDRESS), defaulter_1, defaulter_1, { from: defaulter_1 })
 
       const defaulterDebt = (await troveManager.getEntireDebtAndColl(ZERO_ADDRESS, defaulter_1))[0]
       const defaulterDebtERC20 = (await troveManager.getEntireDebtAndColl(erc20.address, defaulter_1))[0]
@@ -2322,12 +2322,12 @@ contract('StabilityPool', async accounts => {
       const depositors = [alice, bob, carol, dennis, erin, flyn]
 
       for (account of depositors) {
-        await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+        await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
         await stabilityPool.provideToSP(dec(10000, 18), { from: account })
       }
 
       for (account of depositors) {
-        await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
         await stabilityPoolERC20.provideToSP(dec(10000, 18), { from: account })
       }
 
@@ -2335,48 +2335,48 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(ZERO_ADDRESS, defaulter_1)
       await troveManager.liquidate(erc20.address, defaulter_1)
 
-      const aliceBalBefore = await vstToken.balanceOf(alice)
-      const bobBalBefore = await vstToken.balanceOf(bob)
+      const aliceBalBefore = await dchfToken.balanceOf(alice)
+      const bobBalBefore = await dchfToken.balanceOf(bob)
 
-      /* From an offset of 10000 VST, each depositor receives
-      VSTLoss = 1666.6666666666666666 VST
+      /* From an offset of 10000 DCHF, each depositor receives
+      DCHFLoss = 1666.6666666666666666 DCHF
 
-      and thus with a deposit of 10000 VST, each should withdraw 8333.3333333333333333 VST (in practice, slightly less due to rounding error)
+      and thus with a deposit of 10000 DCHF, each should withdraw 8333.3333333333333333 DCHF (in practice, slightly less due to rounding error)
       */
 
       // Price bounces back to $200 per ETH
       await priceFeed.setPrice(dec(200, 18))
 
-      // Bob issues a further 5000 VST from his trove 
-      await borrowerOperations.withdrawVST(ZERO_ADDRESS, th._100pct, dec(5000, 18), bob, bob, { from: bob })
-      await borrowerOperations.withdrawVST(erc20.address, th._100pct, dec(5000, 18), bob, bob, { from: bob })
+      // Bob issues a further 5000 DCHF from his trove 
+      await borrowerOperations.withdrawDCHF(ZERO_ADDRESS, th._100pct, dec(5000, 18), bob, bob, { from: bob })
+      await borrowerOperations.withdrawDCHF(erc20.address, th._100pct, dec(5000, 18), bob, bob, { from: bob })
 
-      // Expect Alice's VST balance increase be very close to 8333.3333333333333333 VST
+      // Expect Alice's DCHF balance increase be very close to 8333.3333333333333333 DCHF
       await stabilityPool.withdrawFromSP(dec(10000, 18), { from: alice })
       await stabilityPoolERC20.withdrawFromSP(dec(10000, 18), { from: alice })
-      const aliceBalance = (await vstToken.balanceOf(alice))
+      const aliceBalance = (await dchfToken.balanceOf(alice))
 
       assert.isAtMost(th.getDifference(aliceBalance.sub(aliceBalBefore), toBN('8333333333333333333333').mul(toBN(2))), 200000)
 
-      // expect Bob's VST balance increase to be very close to  13333.33333333333333333 VST
+      // expect Bob's DCHF balance increase to be very close to  13333.33333333333333333 DCHF
       await stabilityPool.withdrawFromSP(dec(10000, 18), { from: bob })
       await stabilityPoolERC20.withdrawFromSP(dec(10000, 18), { from: bob })
-      const bobBalance = (await vstToken.balanceOf(bob))
+      const bobBalance = (await dchfToken.balanceOf(bob))
       assert.isAtMost(th.getDifference(bobBalance.sub(bobBalBefore), toBN('13333333333333333333333').mul(toBN(2))), 200000)
     })
 
     it("withdrawFromSP(): doesn't impact other users Stability deposits or ETH gains", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       await stabilityPool.provideToSP(dec(10000, 18), { from: alice })
       await stabilityPool.provideToSP(dec(20000, 18), { from: bob })
@@ -2406,11 +2406,11 @@ contract('StabilityPool', async accounts => {
       assert.isFalse(await sortedTroves.contains(erc20.address, defaulter_1))
       assert.isFalse(await sortedTroves.contains(erc20.address, defaulter_2))
 
-      const alice_VSTDeposit_Before = (await stabilityPool.getCompoundedVSTDeposit(alice)).toString()
-      const bob_VSTDeposit_Before = (await stabilityPool.getCompoundedVSTDeposit(bob)).toString()
+      const alice_DCHFDeposit_Before = (await stabilityPool.getCompoundedDCHFDeposit(alice)).toString()
+      const bob_DCHFDeposit_Before = (await stabilityPool.getCompoundedDCHFDeposit(bob)).toString()
 
-      const alice_VSTDeposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(alice)).toString()
-      const bob_VSTDeposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(bob)).toString()
+      const alice_DCHFDeposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)).toString()
+      const bob_DCHFDeposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)).toString()
 
       const alice_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(alice)).toString()
       const bob_ETHGain_Before = (await stabilityPool.getDepositorAssetGain(bob)).toString()
@@ -2418,14 +2418,14 @@ contract('StabilityPool', async accounts => {
       const alice_ETHGain_BeforeERC20 = (await stabilityPoolERC20.getDepositorAssetGain(alice)).toString()
       const bob_ETHGain_BeforeERC20 = (await stabilityPoolERC20.getDepositorAssetGain(bob)).toString()
 
-      //check non-zero VST and AssetGain in the Stability Pool
-      const VSTinSP = await stabilityPool.getTotalVSTDeposits()
+      //check non-zero DCHF and AssetGain in the Stability Pool
+      const DCHFinSP = await stabilityPool.getTotalDCHFDeposits()
       const ETHinSP = await stabilityPool.getAssetBalance()
-      const VSTinSPERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
+      const DCHFinSPERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
       const ETHinSPERC20 = await stabilityPoolERC20.getAssetBalance()
-      assert.isTrue(VSTinSP.gt(mv._zeroBN))
+      assert.isTrue(DCHFinSP.gt(mv._zeroBN))
       assert.isTrue(ETHinSP.gt(mv._zeroBN))
-      assert.isTrue(VSTinSPERC20.gt(mv._zeroBN))
+      assert.isTrue(DCHFinSPERC20.gt(mv._zeroBN))
       assert.isTrue(ETHinSPERC20.gt(mv._zeroBN))
 
       // Price rises
@@ -2441,42 +2441,42 @@ contract('StabilityPool', async accounts => {
       assert.equal((await stabilityPool.deposits(carol)).toString(), '0')
       assert.equal((await stabilityPoolERC20.deposits(carol)).toString(), '0')
 
-      const alice_VSTDeposit_After = (await stabilityPool.getCompoundedVSTDeposit(alice)).toString()
-      const bob_VSTDeposit_After = (await stabilityPool.getCompoundedVSTDeposit(bob)).toString()
+      const alice_DCHFDeposit_After = (await stabilityPool.getCompoundedDCHFDeposit(alice)).toString()
+      const bob_DCHFDeposit_After = (await stabilityPool.getCompoundedDCHFDeposit(bob)).toString()
 
       const alice_ETHGain_After = (await stabilityPool.getDepositorAssetGain(alice)).toString()
       const bob_ETHGain_After = (await stabilityPool.getDepositorAssetGain(bob)).toString()
 
-      const alice_VSTDeposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(alice)).toString()
-      const bob_VSTDeposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(bob)).toString()
+      const alice_DCHFDeposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)).toString()
+      const bob_DCHFDeposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)).toString()
 
       const alice_ETHGain_AfterERC20 = (await stabilityPoolERC20.getDepositorAssetGain(alice)).toString()
       const bob_ETHGain_AfterERC20 = (await stabilityPoolERC20.getDepositorAssetGain(bob)).toString()
 
       // Check compounded deposits and ETH gains for A and B have not changed
-      assert.equal(alice_VSTDeposit_Before, alice_VSTDeposit_After)
-      assert.equal(bob_VSTDeposit_Before, bob_VSTDeposit_After)
+      assert.equal(alice_DCHFDeposit_Before, alice_DCHFDeposit_After)
+      assert.equal(bob_DCHFDeposit_Before, bob_DCHFDeposit_After)
       assert.equal(alice_ETHGain_Before, alice_ETHGain_After)
       assert.equal(bob_ETHGain_Before, bob_ETHGain_After)
 
-      assert.equal(alice_VSTDeposit_BeforeERC20, alice_VSTDeposit_AfterERC20)
-      assert.equal(bob_VSTDeposit_BeforeERC20, bob_VSTDeposit_AfterERC20)
+      assert.equal(alice_DCHFDeposit_BeforeERC20, alice_DCHFDeposit_AfterERC20)
+      assert.equal(bob_DCHFDeposit_BeforeERC20, bob_DCHFDeposit_AfterERC20)
       assert.equal(alice_ETHGain_BeforeERC20, alice_ETHGain_AfterERC20)
       assert.equal(bob_ETHGain_BeforeERC20, bob_ETHGain_AfterERC20)
     })
 
     it("withdrawFromSP(): doesn't impact system debt, collateral or TCR ", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       await stabilityPool.provideToSP(dec(10000, 18), { from: alice })
       await stabilityPool.provideToSP(dec(20000, 18), { from: bob })
@@ -2509,15 +2509,15 @@ contract('StabilityPool', async accounts => {
       // Price rises
       await priceFeed.setPrice(dec(200, 18))
 
-      const activeDebt_Before = (await activePool.getVSTDebt(ZERO_ADDRESS)).toString()
-      const defaultedDebt_Before = (await defaultPool.getVSTDebt(ZERO_ADDRESS)).toString()
+      const activeDebt_Before = (await activePool.getDCHFDebt(ZERO_ADDRESS)).toString()
+      const defaultedDebt_Before = (await defaultPool.getDCHFDebt(ZERO_ADDRESS)).toString()
       const activeColl_Before = (await activePool.getAssetBalance(ZERO_ADDRESS)).toString()
       const defaultedColl_Before = (await defaultPool.getAssetBalance(ZERO_ADDRESS)).toString()
       const TCR_Before = (await th.getTCR(contracts)).toString()
 
 
-      const activeDebt_BeforeERC20 = (await activePool.getVSTDebt(erc20.address)).toString()
-      const defaultedDebt_BeforeERC20 = (await defaultPool.getVSTDebt(erc20.address)).toString()
+      const activeDebt_BeforeERC20 = (await activePool.getDCHFDebt(erc20.address)).toString()
+      const defaultedDebt_BeforeERC20 = (await defaultPool.getDCHFDebt(erc20.address)).toString()
       const activeColl_BeforeERC20 = (await activePool.getAssetBalance(erc20.address)).toString()
       const defaultedColl_BeforeERC20 = (await defaultPool.getAssetBalance(erc20.address)).toString()
       const TCR_BeforeERC20 = (await th.getTCR(contracts, erc20.address)).toString()
@@ -2531,15 +2531,15 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.withdrawFromSP(dec(30000, 18), { from: carol })
       assert.equal((await stabilityPoolERC20.deposits(carol)).toString(), '0')
 
-      const activeDebt_After = (await activePool.getVSTDebt(ZERO_ADDRESS)).toString()
-      const defaultedDebt_After = (await defaultPool.getVSTDebt(ZERO_ADDRESS)).toString()
+      const activeDebt_After = (await activePool.getDCHFDebt(ZERO_ADDRESS)).toString()
+      const defaultedDebt_After = (await defaultPool.getDCHFDebt(ZERO_ADDRESS)).toString()
       const activeColl_After = (await activePool.getAssetBalance(ZERO_ADDRESS)).toString()
       const defaultedColl_After = (await defaultPool.getAssetBalance(ZERO_ADDRESS)).toString()
       const TCR_After = (await th.getTCR(contracts)).toString()
 
 
-      const activeDebt_AfterERC20 = (await activePool.getVSTDebt(erc20.address)).toString()
-      const defaultedDebt_AfterERC20 = (await defaultPool.getVSTDebt(erc20.address)).toString()
+      const activeDebt_AfterERC20 = (await activePool.getDCHFDebt(erc20.address)).toString()
+      const defaultedDebt_AfterERC20 = (await defaultPool.getDCHFDebt(erc20.address)).toString()
       const activeColl_AfterERC20 = (await activePool.getAssetBalance(erc20.address)).toString()
       const defaultedColl_AfterERC20 = (await defaultPool.getAssetBalance(erc20.address)).toString()
       const TCR_AfterERC20 = (await th.getTCR(contracts, erc20.address)).toString()
@@ -2559,17 +2559,17 @@ contract('StabilityPool', async accounts => {
     })
 
     it("withdrawFromSP(): doesn't impact any troves, including the caller's trove", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // A, B and C provide to SP
       await stabilityPool.provideToSP(dec(10000, 18), { from: alice })
@@ -2692,8 +2692,8 @@ contract('StabilityPool', async accounts => {
     })
 
     it("withdrawFromSP(): succeeds when amount is 0 and system has an undercollateralized trove", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
 
       await stabilityPool.provideToSP(dec(100, 18), { from: A })
       await stabilityPoolERC20.provideToSP(dec(100, 18), { from: A })
@@ -2735,18 +2735,18 @@ contract('StabilityPool', async accounts => {
 
       const A_ETHBalBefore = toBN(await web3.eth.getBalance(A))
       const A_ETHBalBeforeERC20 = toBN(await erc20.balanceOf(A))
-      const A_VSTABalBefore = await vstaToken.balanceOf(A)
+      const A_MONBalBefore = await monToken.balanceOf(A)
 
       // Check Alice has gains to withdraw
       const A_pendingETHGain = await stabilityPool.getDepositorAssetGain(A)
-      const A_pendingVSTAGain = await stabilityPool.getDepositorVSTAGain(A)
+      const A_pendingMONGain = await stabilityPool.getDepositorMONGain(A)
       assert.isTrue(A_pendingETHGain.gt(toBN('0')))
-      assert.isTrue(A_pendingVSTAGain.gt(toBN('0')))
+      assert.isTrue(A_pendingMONGain.gt(toBN('0')))
 
       const A_pendingETHGainERC20 = await stabilityPoolERC20.getDepositorAssetGain(A)
-      const A_pendingVSTAGainERC20 = await stabilityPoolERC20.getDepositorVSTAGain(A)
+      const A_pendingMONGainERC20 = await stabilityPoolERC20.getDepositorMONGain(A)
       assert.isTrue(A_pendingETHGainERC20.gt(toBN('0')))
-      assert.isTrue(A_pendingVSTAGainERC20.gt(toBN('0')))
+      assert.isTrue(A_pendingMONGainERC20.gt(toBN('0')))
 
       // Check withdrawal of 0 succeeds
       const tx = await stabilityPool.withdrawFromSP(0, { from: A, gasPrice: 0 })
@@ -2758,30 +2758,30 @@ contract('StabilityPool', async accounts => {
       const A_ETHBalAfter = toBN(await web3.eth.getBalance(A))
       const A_ETHBalAfterERC20 = toBN(await erc20.balanceOf(A))
 
-      const A_VSTABalAfter = await vstaToken.balanceOf(A)
-      const A_VSTABalDiff = A_VSTABalAfter.sub(A_VSTABalBefore)
+      const A_MONBalAfter = await monToken.balanceOf(A)
+      const A_MONBalDiff = A_MONBalAfter.sub(A_MONBalBefore)
 
-      // Check A's ETH and VSTA balances have increased correctly
+      // Check A's ETH and MON balances have increased correctly
       assert.isTrue(A_ETHBalAfter.sub(A_ETHBalBefore).eq(A_pendingETHGain))
       assert.isTrue(A_ETHBalAfterERC20.sub(A_ETHBalBeforeERC20).eq(A_pendingETHGainERC20))
-      assert.isAtMost(th.getDifference(A_VSTABalDiff, A_pendingVSTAGain.add(A_pendingVSTAGainERC20)), 1000)
+      assert.isAtMost(th.getDifference(A_MONBalDiff, A_pendingMONGain.add(A_pendingMONGainERC20)), 1000)
     })
 
-    it("withdrawFromSP(): withdrawing 0 VST doesn't alter the caller's deposit or the total VST in the Stability Pool", async () => {
+    it("withdrawFromSP(): withdrawing 0 DCHF doesn't alter the caller's deposit or the total DCHF in the Stability Pool", async () => {
       // --- SETUP ---
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      // A, B, C provides 100, 50, 30 VST to SP
+      // A, B, C provides 100, 50, 30 DCHF to SP
       await stabilityPool.provideToSP(dec(100, 18), { from: alice })
       await stabilityPool.provideToSP(dec(50, 18), { from: bob })
       await stabilityPool.provideToSP(dec(30, 18), { from: carol })
@@ -2790,49 +2790,49 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.provideToSP(dec(50, 18), { from: bob })
       await stabilityPoolERC20.provideToSP(dec(30, 18), { from: carol })
 
-      const bob_Deposit_Before = (await stabilityPool.getCompoundedVSTDeposit(bob)).toString()
-      const VSTinSP_Before = (await stabilityPool.getTotalVSTDeposits()).toString()
+      const bob_Deposit_Before = (await stabilityPool.getCompoundedDCHFDeposit(bob)).toString()
+      const DCHFinSP_Before = (await stabilityPool.getTotalDCHFDeposits()).toString()
 
-      const bob_Deposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(bob)).toString()
-      const VSTinSP_BeforeERC20 = (await stabilityPoolERC20.getTotalVSTDeposits()).toString()
+      const bob_Deposit_BeforeERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)).toString()
+      const DCHFinSP_BeforeERC20 = (await stabilityPoolERC20.getTotalDCHFDeposits()).toString()
 
-      assert.equal(VSTinSP_Before, dec(180, 18))
-      assert.equal(VSTinSP_BeforeERC20, dec(180, 18))
+      assert.equal(DCHFinSP_Before, dec(180, 18))
+      assert.equal(DCHFinSP_BeforeERC20, dec(180, 18))
 
-      // Bob withdraws 0 VST from the Stability Pool 
+      // Bob withdraws 0 DCHF from the Stability Pool 
       await stabilityPool.withdrawFromSP(0, { from: bob })
       await stabilityPoolERC20.withdrawFromSP(0, { from: bob })
 
-      // check Bob's deposit and total VST in Stability Pool has not changed
-      const bob_Deposit_After = (await stabilityPool.getCompoundedVSTDeposit(bob)).toString()
-      const VSTinSP_After = (await stabilityPool.getTotalVSTDeposits()).toString()
+      // check Bob's deposit and total DCHF in Stability Pool has not changed
+      const bob_Deposit_After = (await stabilityPool.getCompoundedDCHFDeposit(bob)).toString()
+      const DCHFinSP_After = (await stabilityPool.getTotalDCHFDeposits()).toString()
 
-      const bob_Deposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(bob)).toString()
-      const VSTinSP_AfterERC20 = (await stabilityPoolERC20.getTotalVSTDeposits()).toString()
+      const bob_Deposit_AfterERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)).toString()
+      const DCHFinSP_AfterERC20 = (await stabilityPoolERC20.getTotalDCHFDeposits()).toString()
 
       assert.equal(bob_Deposit_Before, bob_Deposit_After)
-      assert.equal(VSTinSP_Before, VSTinSP_After)
+      assert.equal(DCHFinSP_Before, DCHFinSP_After)
 
       assert.equal(bob_Deposit_BeforeERC20, bob_Deposit_AfterERC20)
-      assert.equal(VSTinSP_BeforeERC20, VSTinSP_AfterERC20)
+      assert.equal(DCHFinSP_BeforeERC20, DCHFinSP_AfterERC20)
     })
 
     it("withdrawFromSP(): withdrawing 0 ETH Gain does not alter the caller's ETH balance, their trove collateral, or the ETH  in the Stability Pool", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // Would-be defaulter open trove
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
       // Price drops
       await priceFeed.setPrice(dec(105, 18))
@@ -2845,10 +2845,10 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(erc20.address, defaulter_1)
 
       // Dennis opens trove and deposits to Stability Pool
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
       await stabilityPool.provideToSP(dec(100, 18), { from: dennis })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
       await stabilityPoolERC20.provideToSP(dec(100, 18), { from: dennis })
 
       // Check Dennis has 0 AssetGain
@@ -2894,22 +2894,22 @@ contract('StabilityPool', async accounts => {
 
     it("withdrawFromSP(): Request to withdraw > caller's deposit only withdraws the caller's compounded deposit", async () => {
       // --- SETUP ---
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
-      // A, B, C provide VST to SP
+      // A, B, C provide DCHF to SP
       await stabilityPool.provideToSP(dec(10000, 18), { from: alice })
       await stabilityPool.provideToSP(dec(20000, 18), { from: bob })
       await stabilityPool.provideToSP(dec(30000, 18), { from: carol })
@@ -2925,17 +2925,17 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(ZERO_ADDRESS, defaulter_1)
       await troveManager.liquidate(erc20.address, defaulter_1)
 
-      const alice_VST_Balance_Before = await vstToken.balanceOf(alice)
-      const bob_VST_Balance_Before = await vstToken.balanceOf(bob)
+      const alice_DCHF_Balance_Before = await dchfToken.balanceOf(alice)
+      const bob_DCHF_Balance_Before = await dchfToken.balanceOf(bob)
 
-      const alice_Deposit_Before = await stabilityPool.getCompoundedVSTDeposit(alice)
-      const bob_Deposit_Before = await stabilityPool.getCompoundedVSTDeposit(bob)
+      const alice_Deposit_Before = await stabilityPool.getCompoundedDCHFDeposit(alice)
+      const bob_Deposit_Before = await stabilityPool.getCompoundedDCHFDeposit(bob)
 
-      const alice_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(alice)
-      const bob_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(bob)
+      const alice_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)
+      const bob_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)
 
-      const VSTinSP_Before = await stabilityPool.getTotalVSTDeposits()
-      const VSTinSP_BeforeERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
+      const DCHFinSP_Before = await stabilityPool.getTotalDCHFDeposits()
+      const DCHFinSP_BeforeERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
 
       await priceFeed.setPrice(dec(200, 18))
 
@@ -2943,43 +2943,43 @@ contract('StabilityPool', async accounts => {
       await stabilityPool.withdrawFromSP(bob_Deposit_Before.add(toBN(1)), { from: bob })
       await stabilityPoolERC20.withdrawFromSP(bob_Deposit_BeforeERC20.add(toBN(1)), { from: bob })
 
-      // Check Bob's VST balance has risen by only the value of his compounded deposit
-      const bob_expectedVSTBalance = (bob_VST_Balance_Before.add(bob_Deposit_Before).add(bob_Deposit_BeforeERC20)).toString()
-      const bob_VST_Balance_After = (await vstToken.balanceOf(bob)).toString()
-      assert.equal(bob_VST_Balance_After, bob_expectedVSTBalance)
+      // Check Bob's DCHF balance has risen by only the value of his compounded deposit
+      const bob_expectedDCHFBalance = (bob_DCHF_Balance_Before.add(bob_Deposit_Before).add(bob_Deposit_BeforeERC20)).toString()
+      const bob_DCHF_Balance_After = (await dchfToken.balanceOf(bob)).toString()
+      assert.equal(bob_DCHF_Balance_After, bob_expectedDCHFBalance)
 
-      // Alice attempts to withdraws 2309842309.000000000000000000 VST from the Stability Pool 
+      // Alice attempts to withdraws 2309842309.000000000000000000 DCHF from the Stability Pool 
       await stabilityPool.withdrawFromSP('2309842309000000000000000000', { from: alice })
       await stabilityPoolERC20.withdrawFromSP('2309842309000000000000000000', { from: alice })
 
-      // Check Alice's VST balance has risen by only the value of her compounded deposit
-      const alice_expectedVSTBalance = (alice_VST_Balance_Before.add(alice_Deposit_Before).add(alice_Deposit_BeforeERC20)).toString()
-      const alice_VST_Balance_After = (await vstToken.balanceOf(alice)).toString()
-      assert.equal(alice_VST_Balance_After, alice_expectedVSTBalance)
+      // Check Alice's DCHF balance has risen by only the value of her compounded deposit
+      const alice_expectedDCHFBalance = (alice_DCHF_Balance_Before.add(alice_Deposit_Before).add(alice_Deposit_BeforeERC20)).toString()
+      const alice_DCHF_Balance_After = (await dchfToken.balanceOf(alice)).toString()
+      assert.equal(alice_DCHF_Balance_After, alice_expectedDCHFBalance)
 
-      // Check VST in Stability Pool has been reduced by only Alice's compounded deposit and Bob's compounded deposit
-      const expectedVSTinSP = (VSTinSP_Before.sub(alice_Deposit_Before).sub(bob_Deposit_Before)).toString()
-      const VSTinSP_After = (await stabilityPool.getTotalVSTDeposits()).toString()
-      assert.equal(VSTinSP_After, expectedVSTinSP)
+      // Check DCHF in Stability Pool has been reduced by only Alice's compounded deposit and Bob's compounded deposit
+      const expectedDCHFinSP = (DCHFinSP_Before.sub(alice_Deposit_Before).sub(bob_Deposit_Before)).toString()
+      const DCHFinSP_After = (await stabilityPool.getTotalDCHFDeposits()).toString()
+      assert.equal(DCHFinSP_After, expectedDCHFinSP)
     })
 
-    it("withdrawFromSP(): Request to withdraw 2^256-1 VST only withdraws the caller's compounded deposit", async () => {
+    it("withdrawFromSP(): Request to withdraw 2^256-1 DCHF only withdraws the caller's compounded deposit", async () => {
       // --- SETUP ---
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
-      // A, B, C provides 100, 50, 30 VST to SP
+      // A, B, C provides 100, 50, 30 DCHF to SP
       await stabilityPool.provideToSP(dec(100, 18), { from: alice })
       await stabilityPool.provideToSP(dec(50, 18), { from: bob })
       await stabilityPool.provideToSP(dec(30, 18), { from: carol })
@@ -2995,36 +2995,36 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(ZERO_ADDRESS, defaulter_1)
       await troveManager.liquidate(erc20.address, defaulter_1)
 
-      const bob_VST_Balance_Before = await vstToken.balanceOf(bob)
+      const bob_DCHF_Balance_Before = await dchfToken.balanceOf(bob)
 
-      const bob_Deposit_Before = await stabilityPool.getCompoundedVSTDeposit(bob)
-      const bob_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(bob)
+      const bob_Deposit_Before = await stabilityPool.getCompoundedDCHFDeposit(bob)
+      const bob_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)
 
-      const VSTinSP_Before = await stabilityPool.getTotalVSTDeposits()
-      const VSTinSP_BeforeERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
+      const DCHFinSP_Before = await stabilityPool.getTotalDCHFDeposits()
+      const DCHFinSP_BeforeERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
 
       const maxBytes32 = web3.utils.toBN("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 
       // Price drops
       await priceFeed.setPrice(dec(200, 18))
 
-      // Bob attempts to withdraws maxBytes32 VST from the Stability Pool
+      // Bob attempts to withdraws maxBytes32 DCHF from the Stability Pool
       await stabilityPool.withdrawFromSP(maxBytes32, { from: bob })
       await stabilityPoolERC20.withdrawFromSP(maxBytes32, { from: bob })
 
-      // Check Bob's VST balance has risen by only the value of his compounded deposit
-      const bob_expectedVSTBalance = (bob_VST_Balance_Before.add(bob_Deposit_Before).add(bob_Deposit_BeforeERC20)).toString()
-      const bob_VST_Balance_After = (await vstToken.balanceOf(bob)).toString()
-      assert.equal(bob_VST_Balance_After, bob_expectedVSTBalance)
+      // Check Bob's DCHF balance has risen by only the value of his compounded deposit
+      const bob_expectedDCHFBalance = (bob_DCHF_Balance_Before.add(bob_Deposit_Before).add(bob_Deposit_BeforeERC20)).toString()
+      const bob_DCHF_Balance_After = (await dchfToken.balanceOf(bob)).toString()
+      assert.equal(bob_DCHF_Balance_After, bob_expectedDCHFBalance)
 
-      // Check VST in Stability Pool has been reduced by only  Bob's compounded deposit
-      const expectedVSTinSP = (VSTinSP_Before.sub(bob_Deposit_Before)).toString()
-      const VSTinSP_After = (await stabilityPool.getTotalVSTDeposits()).toString()
-      assert.equal(VSTinSP_After, expectedVSTinSP)
+      // Check DCHF in Stability Pool has been reduced by only  Bob's compounded deposit
+      const expectedDCHFinSP = (DCHFinSP_Before.sub(bob_Deposit_Before)).toString()
+      const DCHFinSP_After = (await stabilityPool.getTotalDCHFDeposits()).toString()
+      assert.equal(DCHFinSP_After, expectedDCHFinSP)
 
-      const expectedVSTinSPERC20 = (VSTinSP_BeforeERC20.sub(bob_Deposit_BeforeERC20)).toString()
-      const VSTinSP_AfterERC20 = (await stabilityPoolERC20.getTotalVSTDeposits()).toString()
-      assert.equal(VSTinSP_AfterERC20, expectedVSTinSPERC20)
+      const expectedDCHFinSPERC20 = (DCHFinSP_BeforeERC20.sub(bob_Deposit_BeforeERC20)).toString()
+      const DCHFinSP_AfterERC20 = (await stabilityPoolERC20.getTotalDCHFDeposits()).toString()
+      assert.equal(DCHFinSP_AfterERC20, expectedDCHFinSPERC20)
     })
 
     it("withdrawFromSP(): caller can withdraw full deposit and ETH gain during Recovery Mode", async () => {
@@ -3032,24 +3032,24 @@ contract('StabilityPool', async accounts => {
 
       // Price doubles
       await priceFeed.setPrice(dec(400, 18))
-      await openTrove({ extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
       // Price halves
       await priceFeed.setPrice(dec(200, 18))
 
       // A, B, C open troves and make Stability Pool deposits
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(4, 18)), extraParams: { from: carol } })
 
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveVSTAmount(dec(10000, 18), ZERO_ADDRESS), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(100, 'ether') })
-      await borrowerOperations.openTrove(erc20.address, dec(100, 'ether'), th._100pct, await getOpenTroveVSTAmount(dec(10000, 18), ZERO_ADDRESS), defaulter_1, defaulter_1, { from: defaulter_1 })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18), ZERO_ADDRESS), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(erc20.address, dec(100, 'ether'), th._100pct, await getOpenTroveMONmount(dec(10000, 18), ZERO_ADDRESS), defaulter_1, defaulter_1, { from: defaulter_1 })
 
-      // A, B, C provides 10000, 5000, 3000 VST to SP
+      // A, B, C provides 10000, 5000, 3000 DCHF to SP
       await stabilityPool.provideToSP(dec(10000, 18), { from: alice })
       await stabilityPool.provideToSP(dec(5000, 18), { from: bob })
       await stabilityPool.provideToSP(dec(3000, 18), { from: carol })
@@ -3071,9 +3071,9 @@ contract('StabilityPool', async accounts => {
       assert.isFalse(await sortedTroves.contains(ZERO_ADDRESS, defaulter_1))
       assert.isFalse(await sortedTroves.contains(erc20.address, defaulter_1))
 
-      const alice_VST_Balance_Before = await vstToken.balanceOf(alice)
-      const bob_VST_Balance_Before = await vstToken.balanceOf(bob)
-      const carol_VST_Balance_Before = await vstToken.balanceOf(carol)
+      const alice_DCHF_Balance_Before = await dchfToken.balanceOf(alice)
+      const bob_DCHF_Balance_Before = await dchfToken.balanceOf(bob)
+      const carol_DCHF_Balance_Before = await dchfToken.balanceOf(carol)
 
       const alice_ETH_Balance_Before = web3.utils.toBN(await web3.eth.getBalance(alice))
       const bob_ETH_Balance_Before = web3.utils.toBN(await web3.eth.getBalance(bob))
@@ -3083,13 +3083,13 @@ contract('StabilityPool', async accounts => {
       const bob_ETH_Balance_BeforeERC20 = web3.utils.toBN(await erc20.balanceOf(bob))
       const carol_ETH_Balance_BeforeERC20 = web3.utils.toBN(await erc20.balanceOf(carol))
 
-      const alice_Deposit_Before = await stabilityPool.getCompoundedVSTDeposit(alice)
-      const bob_Deposit_Before = await stabilityPool.getCompoundedVSTDeposit(bob)
-      const carol_Deposit_Before = await stabilityPool.getCompoundedVSTDeposit(carol)
+      const alice_Deposit_Before = await stabilityPool.getCompoundedDCHFDeposit(alice)
+      const bob_Deposit_Before = await stabilityPool.getCompoundedDCHFDeposit(bob)
+      const carol_Deposit_Before = await stabilityPool.getCompoundedDCHFDeposit(carol)
 
-      const alice_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(alice)
-      const bob_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(bob)
-      const carol_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(carol)
+      const alice_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)
+      const bob_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)
+      const carol_Deposit_BeforeERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(carol)
 
       const alice_ETHGain_Before = await stabilityPool.getDepositorAssetGain(alice)
       const bob_ETHGain_Before = await stabilityPool.getDepositorAssetGain(bob)
@@ -3099,8 +3099,8 @@ contract('StabilityPool', async accounts => {
       const bob_ETHGain_BeforeERC20 = await stabilityPoolERC20.getDepositorAssetGain(bob)
       const carol_ETHGain_BeforeERC20 = await stabilityPoolERC20.getDepositorAssetGain(carol)
 
-      const VSTinSP_Before = await stabilityPool.getTotalVSTDeposits()
-      const VSTinSP_BeforeERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
+      const DCHFinSP_Before = await stabilityPool.getTotalDCHFDeposits()
+      const DCHFinSP_BeforeERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
 
       // Price rises
       await priceFeed.setPrice(dec(220, 18))
@@ -3117,18 +3117,18 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.withdrawFromSP(dec(5000, 18), { from: bob, gasPrice: 0 })
       await stabilityPoolERC20.withdrawFromSP(dec(3000, 18), { from: carol, gasPrice: 0 })
 
-      // Check VST balances of A, B, C have risen by the value of their compounded deposits, respectively
-      const alice_expectedVSTBalance = (alice_VST_Balance_Before.add(alice_Deposit_Before).add(alice_Deposit_BeforeERC20)).toString()
-      const bob_expectedVSTBalance = (bob_VST_Balance_Before.add(bob_Deposit_Before).add(bob_Deposit_BeforeERC20)).toString()
-      const carol_expectedVSTBalance = (carol_VST_Balance_Before.add(carol_Deposit_Before).add(carol_Deposit_BeforeERC20)).toString()
+      // Check DCHF balances of A, B, C have risen by the value of their compounded deposits, respectively
+      const alice_expectedDCHFBalance = (alice_DCHF_Balance_Before.add(alice_Deposit_Before).add(alice_Deposit_BeforeERC20)).toString()
+      const bob_expectedDCHFBalance = (bob_DCHF_Balance_Before.add(bob_Deposit_Before).add(bob_Deposit_BeforeERC20)).toString()
+      const carol_expectedDCHFBalance = (carol_DCHF_Balance_Before.add(carol_Deposit_Before).add(carol_Deposit_BeforeERC20)).toString()
 
-      const alice_VST_Balance_After = (await vstToken.balanceOf(alice)).toString()
-      const bob_VST_Balance_After = (await vstToken.balanceOf(bob)).toString()
-      const carol_VST_Balance_After = (await vstToken.balanceOf(carol)).toString()
+      const alice_DCHF_Balance_After = (await dchfToken.balanceOf(alice)).toString()
+      const bob_DCHF_Balance_After = (await dchfToken.balanceOf(bob)).toString()
+      const carol_DCHF_Balance_After = (await dchfToken.balanceOf(carol)).toString()
 
-      assert.equal(alice_VST_Balance_After, alice_expectedVSTBalance)
-      assert.equal(bob_VST_Balance_After, bob_expectedVSTBalance)
-      assert.equal(carol_VST_Balance_After, carol_expectedVSTBalance)
+      assert.equal(alice_DCHF_Balance_After, alice_expectedDCHFBalance)
+      assert.equal(bob_DCHF_Balance_After, bob_expectedDCHFBalance)
+      assert.equal(carol_DCHF_Balance_After, carol_expectedDCHFBalance)
 
       // Check ETH balances of A, B, C have increased by the value of their ETH gain from liquidations, respectively
       const alice_expectedETHBalance = (alice_ETH_Balance_Before.add(alice_ETHGain_Before)).toString()
@@ -3155,23 +3155,23 @@ contract('StabilityPool', async accounts => {
       assert.equal(bob_expectedETHBalanceERC20, bob_ETHBalance_AfterERC20)
       assert.equal(carol_expectedETHBalanceERC20, carol_ETHBalance_AfterERC20)
 
-      // Check VST in Stability Pool has been reduced by A, B and C's compounded deposit
-      const expectedVSTinSP = (VSTinSP_Before
+      // Check DCHF in Stability Pool has been reduced by A, B and C's compounded deposit
+      const expectedDCHFinSP = (DCHFinSP_Before
         .sub(alice_Deposit_Before)
         .sub(bob_Deposit_Before)
         .sub(carol_Deposit_Before))
         .toString()
-      const VSTinSP_After = (await stabilityPool.getTotalVSTDeposits()).toString()
-      assert.equal(VSTinSP_After, expectedVSTinSP)
+      const DCHFinSP_After = (await stabilityPool.getTotalDCHFDeposits()).toString()
+      assert.equal(DCHFinSP_After, expectedDCHFinSP)
 
 
-      const expectedVSTinSPERC20 = (VSTinSP_BeforeERC20
+      const expectedDCHFinSPERC20 = (DCHFinSP_BeforeERC20
         .sub(alice_Deposit_BeforeERC20)
         .sub(bob_Deposit_BeforeERC20)
         .sub(carol_Deposit_BeforeERC20))
         .toString()
-      const VSTinSP_AfterERC20 = (await stabilityPoolERC20.getTotalVSTDeposits()).toString()
-      assert.equal(VSTinSP_AfterERC20, expectedVSTinSPERC20)
+      const DCHFinSP_AfterERC20 = (await stabilityPoolERC20.getTotalDCHFDeposits()).toString()
+      assert.equal(DCHFinSP_AfterERC20, expectedDCHFinSPERC20)
 
       // Check ETH in SP has reduced to zero
       const ETHinSP_After = (await stabilityPool.getAssetBalance()).toString()
@@ -3182,28 +3182,28 @@ contract('StabilityPool', async accounts => {
     })
 
     it("getDepositorETHGain(): depositor does not earn further ETH gains from liquidations while their compounded deposit == 0: ", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // defaulters open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_3 } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_2 } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_3 } })
 
-      // A, B, provide 10000, 5000 VST to SP
+      // A, B, provide 10000, 5000 DCHF to SP
       await stabilityPool.provideToSP(dec(10000, 18), { from: alice })
       await stabilityPool.provideToSP(dec(5000, 18), { from: bob })
 
@@ -3220,18 +3220,18 @@ contract('StabilityPool', async accounts => {
       await troveManager.liquidate(erc20.address, defaulter_1)
       assert.isFalse(await sortedTroves.contains(erc20.address, defaulter_1))
 
-      const VSTinSP = (await stabilityPool.getTotalVSTDeposits()).toString()
-      assert.equal(VSTinSP, '0')
+      const DCHFinSP = (await stabilityPool.getTotalDCHFDeposits()).toString()
+      assert.equal(DCHFinSP, '0')
 
-      const VSTinSPERC20 = (await stabilityPoolERC20.getTotalVSTDeposits()).toString()
-      assert.equal(VSTinSPERC20, '0')
+      const DCHFinSPERC20 = (await stabilityPoolERC20.getTotalDCHFDeposits()).toString()
+      assert.equal(DCHFinSPERC20, '0')
 
       // Check Stability deposits have been fully cancelled with debt, and are now all zero
-      const alice_Deposit = (await stabilityPool.getCompoundedVSTDeposit(alice)).toString()
-      const bob_Deposit = (await stabilityPool.getCompoundedVSTDeposit(bob)).toString()
+      const alice_Deposit = (await stabilityPool.getCompoundedDCHFDeposit(alice)).toString()
+      const bob_Deposit = (await stabilityPool.getCompoundedDCHFDeposit(bob)).toString()
 
-      const alice_DepositERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(alice)).toString()
-      const bob_DepositERC20 = (await stabilityPoolERC20.getCompoundedVSTDeposit(bob)).toString()
+      const alice_DepositERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)).toString()
+      const bob_DepositERC20 = (await stabilityPoolERC20.getCompoundedDCHFDeposit(bob)).toString()
 
       assert.equal(alice_Deposit, '0')
       assert.equal(bob_Deposit, '0')
@@ -3245,7 +3245,7 @@ contract('StabilityPool', async accounts => {
       const alice_ETHGain_1ERC20 = (await stabilityPoolERC20.getDepositorAssetGain(alice)).toString()
       const bob_ETHGain_1ERC20 = (await stabilityPoolERC20.getDepositorAssetGain(bob)).toString()
 
-      // Whale deposits 10000 VST to Stability Pool
+      // Whale deposits 10000 DCHF to Stability Pool
       await stabilityPool.provideToSP(dec(1, 24), { from: whale })
       await stabilityPoolERC20.provideToSP(dec(1, 24), { from: whale })
 
@@ -3290,19 +3290,19 @@ contract('StabilityPool', async accounts => {
       assert.equal(bob_ETHGain_1ERC20, bob_ETHGain_3ERC20)
     })
 
-    // --- VSTA functionality ---
-    it("withdrawFromSP(): triggers VSTA reward event - increases the sum G", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    // --- MON functionality ---
+    it("withdrawFromSP(): triggers MON reward event - increases the sum G", async () => {
+      await openTrove({ extraMONmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1, 24)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A and B provide to SP
       await stabilityPool.provideToSP(dec(10000, 18), { from: A })
@@ -3323,7 +3323,7 @@ contract('StabilityPool', async accounts => {
       const G_1 = await stabilityPool.epochToScaleToG(0, 0)
       const G_1ERC20 = await stabilityPoolERC20.epochToScaleToG(0, 0)
 
-      // Expect G has increased from the VSTA reward event triggered
+      // Expect G has increased from the MON reward event triggered
       assert.isTrue(G_1.gt(G_Before))
       assert.isTrue(G_1ERC20.gt(G_BeforeERC20))
 
@@ -3336,23 +3336,23 @@ contract('StabilityPool', async accounts => {
       const G_2 = await stabilityPool.epochToScaleToG(0, 0)
       const G_2ERC20 = await stabilityPoolERC20.epochToScaleToG(0, 0)
 
-      // Expect G has increased from the VSTA reward event triggered
+      // Expect G has increased from the MON reward event triggered
       assert.isTrue(G_2.gt(G_1))
       assert.isTrue(G_2ERC20.gt(G_1ERC20))
     })
 
-    it("withdrawFromSP(), partial withdrawal: depositor receives VSTA rewards", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    it("withdrawFromSP(), partial withdrawal: depositor receives MON rewards", async () => {
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, provide to SP
       await stabilityPool.provideToSP(dec(10, 18), { from: A })
@@ -3365,10 +3365,10 @@ contract('StabilityPool', async accounts => {
 
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
 
-      // Get A, B, C VSTA balance before
-      const A_VSTABalance_Before = await vstaToken.balanceOf(A)
-      const B_VSTABalance_Before = await vstaToken.balanceOf(B)
-      const C_VSTABalance_Before = await vstaToken.balanceOf(C)
+      // Get A, B, C MON balance before
+      const A_MONBalance_Before = await monToken.balanceOf(A)
+      const B_MONBalance_Before = await monToken.balanceOf(B)
+      const C_MONBalance_Before = await monToken.balanceOf(C)
 
       // A, B, C withdraw
       await stabilityPool.withdrawFromSP(dec(1, 18), { from: A })
@@ -3379,35 +3379,35 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.withdrawFromSP(dec(2, 18), { from: B })
       await stabilityPoolERC20.withdrawFromSP(dec(3, 18), { from: C })
 
-      // Get VSTA balance after
-      const A_VSTABalance_After = await vstaToken.balanceOf(A)
-      const B_VSTABalance_After = await vstaToken.balanceOf(B)
-      const C_VSTABalance_After = await vstaToken.balanceOf(C)
+      // Get MON balance after
+      const A_MONBalance_After = await monToken.balanceOf(A)
+      const B_MONBalance_After = await monToken.balanceOf(B)
+      const C_MONBalance_After = await monToken.balanceOf(C)
 
-      // Check VSTA Balance of A, B, C has increased
-      assert.isTrue(A_VSTABalance_After.gt(A_VSTABalance_Before))
-      assert.isTrue(B_VSTABalance_After.gt(B_VSTABalance_Before))
-      assert.isTrue(C_VSTABalance_After.gt(C_VSTABalance_Before))
+      // Check MON Balance of A, B, C has increased
+      assert.isTrue(A_MONBalance_After.gt(A_MONBalance_Before))
+      assert.isTrue(B_MONBalance_After.gt(B_MONBalance_Before))
+      assert.isTrue(C_MONBalance_After.gt(C_MONBalance_Before))
     })
 
     it("withdrawFromSP(), partial withdrawal: System's stake decreases", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C, D, E, F open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
 
       // A, B, C, D, E, F provide to SP
       await stabilityPool.provideToSP(dec(10, 18), { from: A })
@@ -3449,23 +3449,23 @@ contract('StabilityPool', async accounts => {
     })
 
     it("withdrawFromSP(), partial withdrawal: System's snapshots update", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C, open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(60000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(60000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(60000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(60000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // D opens trove
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
       // --- SETUP ---
@@ -3548,8 +3548,8 @@ contract('StabilityPool', async accounts => {
     })
 
     it("withdrawFromSP(), full withdrawal: zero's depositor's snapshots", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -3557,13 +3557,13 @@ contract('StabilityPool', async accounts => {
       //  SETUP: Execute a series of operations to make G, S > 0 and P < 1  
 
       // E opens trove and makes a deposit
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: E } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: E } })
       await stabilityPool.provideToSP(dec(10000, 18), { from: E })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: E } })
       await stabilityPoolERC20.provideToSP(dec(10000, 18), { from: E })
 
-      // Fast-forward time and make a second deposit, to trigger VSTA reward and make G > 0
+      // Fast-forward time and make a second deposit, to trigger MON reward and make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
       await stabilityPool.provideToSP(dec(10000, 18), { from: E })
       await stabilityPoolERC20.provideToSP(dec(10000, 18), { from: E })
@@ -3602,16 +3602,16 @@ contract('StabilityPool', async accounts => {
       // --- TEST ---
 
       // Whale transfers to A, B
-      await vstToken.transfer(A, dec(20000, 18), { from: whale })
-      await vstToken.transfer(B, dec(40000, 18), { from: whale })
+      await dchfToken.transfer(A, dec(20000, 18), { from: whale })
+      await dchfToken.transfer(B, dec(40000, 18), { from: whale })
 
       await priceFeed.setPrice(dec(200, 18))
 
       // C, D open troves
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: C } })
-      await openTrove({ extraVSTAmount: toBN(dec(40000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(40000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: D } })
 
       // A, B, C, D make their initial deposits
       await stabilityPool.provideToSP(dec(10000, 18), { from: A })
@@ -3686,22 +3686,22 @@ contract('StabilityPool', async accounts => {
     })
 
     it("withdrawFromSP(), reverts when initial deposit value is 0", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A opens trove and join the Stability Pool
-      await openTrove({ extraVSTAmount: toBN(dec(10100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(10100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
       await stabilityPool.provideToSP(dec(10000, 18), { from: A })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10100, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
       await stabilityPoolERC20.provideToSP(dec(10000, 18), { from: A })
 
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
-      //  SETUP: Execute a series of operations to trigger VSTA and ETH rewards for depositor A
+      //  SETUP: Execute a series of operations to trigger MON and ETH rewards for depositor A
 
-      // Fast-forward time and make a second deposit, to trigger VSTA reward and make G > 0
+      // Fast-forward time and make a second deposit, to trigger MON reward and make G > 0
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
       await stabilityPool.provideToSP(dec(100, 18), { from: A })
       await stabilityPoolERC20.provideToSP(dec(100, 18), { from: A })
@@ -3741,13 +3741,13 @@ contract('StabilityPool', async accounts => {
     // --- withdrawETHGainToTrove ---
 
     it("withdrawETHGainToTrove(): reverts when user has no active deposit", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       await stabilityPool.provideToSP(dec(10000, 18), { from: alice })
       await stabilityPoolERC20.provideToSP(dec(10000, 18), { from: alice })
@@ -3791,13 +3791,13 @@ contract('StabilityPool', async accounts => {
       await th.assertRevert(txPromise_BERC20)
     })
 
-    it("withdrawETHGainToTrove(): Applies VSTLoss to user's deposit, and redirects ETH reward to user's Trove", async () => {
+    it("withdrawETHGainToTrove(): Applies DCHFLoss to user's deposit, and redirects ETH reward to user's Trove", async () => {
       // --- SETUP ---
-      // Whale deposits 185000 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      // Whale deposits 185000 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(185000, 18), { from: whale })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPoolERC20.provideToSP(dec(185000, 18), { from: whale })
 
       // Defaulter opens trove
@@ -3806,11 +3806,11 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
 
-      // Alice makes deposit #1: 15000 VST
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      // Alice makes deposit #1: 15000 DCHF
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(15000, 18), { from: alice })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
       await stabilityPoolERC20.provideToSP(dec(15000, 18), { from: alice })
 
       // check Alice's Trove recorded ETH Before:
@@ -3833,20 +3833,20 @@ contract('StabilityPool', async accounts => {
       const [liquidatedDebtERC20, liquidatedCollERC20, ,] = th.getEmittedLiquidationValues(liquidationTx_1ERC20)
 
       const ETHGain_A = await stabilityPool.getDepositorAssetGain(alice)
-      const compoundedDeposit_A = await stabilityPool.getCompoundedVSTDeposit(alice)
+      const compoundedDeposit_A = await stabilityPool.getCompoundedDCHFDeposit(alice)
 
 
       const ETHGain_AERC20 = await stabilityPoolERC20.getDepositorAssetGain(alice)
-      const compoundedDeposit_AERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(alice)
+      const compoundedDeposit_AERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(alice)
 
       // Alice should receive rewards proportional to her deposit as share of total deposits
       const expectedETHGain_A = liquidatedColl.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
-      const expectedVSTLoss_A = liquidatedDebt.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
-      const expectedCompoundedDeposit_A = toBN(dec(15000, 18)).sub(expectedVSTLoss_A)
+      const expectedDCHFLoss_A = liquidatedDebt.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
+      const expectedCompoundedDeposit_A = toBN(dec(15000, 18)).sub(expectedDCHFLoss_A)
 
       const expectedETHGain_AERC20 = liquidatedCollERC20.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
-      const expectedVSTLoss_AERC20 = liquidatedDebtERC20.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
-      const expectedCompoundedDeposit_AERC20 = toBN(dec(15000, 18)).sub(expectedVSTLoss_AERC20)
+      const expectedDCHFLoss_AERC20 = liquidatedDebtERC20.mul(toBN(dec(15000, 18))).div(toBN(dec(200000, 18)))
+      const expectedCompoundedDeposit_AERC20 = toBN(dec(15000, 18)).sub(expectedDCHFLoss_AERC20)
 
       assert.isAtMost(th.getDifference(expectedCompoundedDeposit_A, compoundedDeposit_A), 100000)
       assert.isAtMost(th.getDifference(expectedCompoundedDeposit_AERC20, compoundedDeposit_AERC20), 100000)
@@ -3855,7 +3855,7 @@ contract('StabilityPool', async accounts => {
       await stabilityPool.withdrawAssetGainToTrove(alice, alice, { from: alice })
       await stabilityPoolERC20.withdrawAssetGainToTrove(alice, alice, { from: alice })
 
-      // check Alice's VSTLoss has been applied to her deposit expectedCompoundedDeposit_A
+      // check Alice's DCHFLoss has been applied to her deposit expectedCompoundedDeposit_A
       alice_deposit_afterDefault = (await stabilityPool.deposits(alice))
       assert.isAtMost(th.getDifference(alice_deposit_afterDefault, expectedCompoundedDeposit_A), 100000)
 
@@ -3878,11 +3878,11 @@ contract('StabilityPool', async accounts => {
 
     it("withdrawETHGainToTrove(): reverts if it would leave trove with ICR < MCR", async () => {
       // --- SETUP ---
-      // Whale deposits 1850 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      // Whale deposits 1850 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(185000, 18), { from: whale })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPoolERC20.provideToSP(dec(185000, 18), { from: whale })
 
       // defaulter opened
@@ -3891,11 +3891,11 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
 
-      // Alice makes deposit #1: 15000 VST
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      // Alice makes deposit #1: 15000 DCHF
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(15000, 18), { from: alice })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await stabilityPoolERC20.provideToSP(dec(15000, 18), { from: alice })
 
       // check alice's Trove recorded ETH Before:
@@ -3924,11 +3924,11 @@ contract('StabilityPool', async accounts => {
 
     it("withdrawETHGainToTrove(): Subsequent deposit and withdrawal attempt from same account, with no intermediate liquidations, withdraws zero ETH", async () => {
       // --- SETUP ---
-      // Whale deposits 1850 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      // Whale deposits 1850 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(185000, 18), { from: whale })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPoolERC20.provideToSP(dec(185000, 18), { from: whale })
 
       // defaulter opened
@@ -3937,11 +3937,11 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
 
-      // Alice makes deposit #1: 15000 VST
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      // Alice makes deposit #1: 15000 DCHF
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(15000, 18), { from: alice })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await stabilityPoolERC20.provideToSP(dec(15000, 18), { from: alice })
 
       // check alice's Trove recorded ETH Before:
@@ -4003,11 +4003,11 @@ contract('StabilityPool', async accounts => {
 
     it("withdrawETHGainToTrove(): decreases StabilityPool ETH and increases activePool ETH", async () => {
       // --- SETUP ---
-      // Whale deposits 185000 VST in StabilityPool
-      await openTrove({ extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      // Whale deposits 185000 DCHF in StabilityPool
+      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPool.provideToSP(dec(185000, 18), { from: whale })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await stabilityPoolERC20.provideToSP(dec(185000, 18), { from: whale })
 
       // defaulter opened
@@ -4016,11 +4016,11 @@ contract('StabilityPool', async accounts => {
 
       // --- TEST ---
 
-      // Alice makes deposit #1: 15000 VST
-      await openTrove({ extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      // Alice makes deposit #1: 15000 DCHF
+      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await stabilityPool.provideToSP(dec(15000, 18), { from: alice })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       await stabilityPoolERC20.provideToSP(dec(15000, 18), { from: alice })
 
       // price drops: defaulter's Trove falls below MCR
@@ -4078,8 +4078,8 @@ contract('StabilityPool', async accounts => {
 
     it("withdrawETHGainToTrove(): All depositors are able to withdraw their ETH gain from the SP to their Trove", async () => {
       // Whale opens trove 
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // Defaulter opens trove
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -4088,12 +4088,12 @@ contract('StabilityPool', async accounts => {
       // 6 Accounts open troves and provide to SP
       const depositors = [alice, bob, carol, dennis, erin, flyn]
       for (account of depositors) {
-        await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+        await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
         await stabilityPool.provideToSP(dec(10000, 18), { from: account })
       }
 
       for (account of depositors) {
-        await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
         await stabilityPoolERC20.provideToSP(dec(10000, 18), { from: account })
       }
 
@@ -4134,8 +4134,8 @@ contract('StabilityPool', async accounts => {
 
     it("withdrawETHGainToTrove(): All depositors withdraw, each withdraw their correct ETH gain", async () => {
       // Whale opens trove 
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // defaulter opened
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -4144,12 +4144,12 @@ contract('StabilityPool', async accounts => {
       // 6 Accounts open troves and provide to SP
       const depositors = [alice, bob, carol, dennis, erin, flyn]
       for (account of depositors) {
-        await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+        await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
         await stabilityPool.provideToSP(dec(10000, 18), { from: account })
       }
 
       for (account of depositors) {
-        await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
         await stabilityPoolERC20.provideToSP(dec(10000, 18), { from: account })
       }
 
@@ -4234,15 +4234,15 @@ contract('StabilityPool', async accounts => {
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
       // A, B, C open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      // A, B, C provides 10000, 5000, 3000 VST to SP
+      // A, B, C provides 10000, 5000, 3000 DCHF to SP
       await stabilityPool.provideToSP(dec(10000, 18), { from: alice })
       await stabilityPool.provideToSP(dec(5000, 18), { from: bob })
       await stabilityPool.provideToSP(dec(3000, 18), { from: carol })
@@ -4333,24 +4333,24 @@ contract('StabilityPool', async accounts => {
     })
 
     it("withdrawETHGainToTrove(): reverts if user has no trove", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // Defaulter opens
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
 
-      // A transfers VST to D
-      await vstToken.transfer(dennis, dec(20000, 18), { from: alice })
+      // A transfers DCHF to D
+      await dchfToken.transfer(dennis, dec(20000, 18), { from: alice })
 
       // D deposits to Stability Pool
       await stabilityPool.provideToSP(dec(10000, 18), { from: dennis })
@@ -4373,18 +4373,18 @@ contract('StabilityPool', async accounts => {
       await th.assertRevert(stabilityPoolERC20.withdrawAssetGainToTrove(dennis, dennis, { from: dennis }), "caller must have an active trove to withdraw AssetGain to")
     })
 
-    it("withdrawETHGainToTrove(): triggers VSTA reward event - increases the sum G", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    it("withdrawETHGainToTrove(): triggers MON reward event - increases the sum G", async () => {
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A and B provide to SP
       await stabilityPool.provideToSP(dec(10000, 18), { from: A })
@@ -4418,7 +4418,7 @@ contract('StabilityPool', async accounts => {
       const G_1 = await stabilityPool.epochToScaleToG(0, 0)
       const G_1ERC20 = await stabilityPoolERC20.epochToScaleToG(0, 0)
 
-      // Expect G has increased from the VSTA reward event triggered
+      // Expect G has increased from the MON reward event triggered
       assert.isTrue(G_1.gt(G_Before))
       assert.isTrue(G_1ERC20.gt(G_BeforeERC20))
 
@@ -4435,23 +4435,23 @@ contract('StabilityPool', async accounts => {
       const G_2 = await stabilityPool.epochToScaleToG(0, 0)
       const G_2ERC20 = await stabilityPoolERC20.epochToScaleToG(0, 0)
 
-      // Expect G has increased from the VSTA reward event triggered
+      // Expect G has increased from the MON reward event triggered
       assert.isTrue(G_2.gt(G_1))
       assert.isTrue(G_2ERC20.gt(G_1ERC20))
     })
 
     it("withdrawETHGainToTrove(), partial withdrawal: doesn't change the front end tag", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, D, E provide to SP
       await stabilityPool.provideToSP(dec(10000, 18), { from: A })
@@ -4500,18 +4500,18 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.withdrawAssetGainToTrove(C, C, { from: C })
     })
 
-    it("withdrawETHGainToTrove(), eligible deposit: depositor receives VSTA rewards", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    it("withdrawETHGainToTrove(), eligible deposit: depositor receives MON rewards", async () => {
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, provide to SP
       await stabilityPool.provideToSP(dec(1000, 18), { from: A })
@@ -4538,10 +4538,10 @@ contract('StabilityPool', async accounts => {
       assert.isFalse(await sortedTroves.contains(ZERO_ADDRESS, defaulter_1))
       assert.isFalse(await sortedTroves.contains(erc20.address, defaulter_1))
 
-      // Get A, B, C VSTA balance before
-      const A_VSTABalance_Before = await vstaToken.balanceOf(A)
-      const B_VSTABalance_Before = await vstaToken.balanceOf(B)
-      const C_VSTABalance_Before = await vstaToken.balanceOf(C)
+      // Get A, B, C MON balance before
+      const A_MONBalance_Before = await monToken.balanceOf(A)
+      const B_MONBalance_Before = await monToken.balanceOf(B)
+      const C_MONBalance_Before = await monToken.balanceOf(C)
 
       // Check A, B, C have non-zero ETH gain
       assert.isTrue((await stabilityPool.getDepositorAssetGain(A)).gt(ZERO))
@@ -4559,47 +4559,47 @@ contract('StabilityPool', async accounts => {
       await stabilityPool.withdrawAssetGainToTrove(B, B, { from: B })
       await stabilityPool.withdrawAssetGainToTrove(C, C, { from: C })
 
-      // Get VSTA balance after
-      const A_VSTABalance_After = await vstaToken.balanceOf(A)
-      const B_VSTABalance_After = await vstaToken.balanceOf(B)
-      const C_VSTABalance_After = await vstaToken.balanceOf(C)
+      // Get MON balance after
+      const A_MONBalance_After = await monToken.balanceOf(A)
+      const B_MONBalance_After = await monToken.balanceOf(B)
+      const C_MONBalance_After = await monToken.balanceOf(C)
 
-      // Check VSTA Balance of A, B, C has increased
-      assert.isTrue(A_VSTABalance_After.gt(A_VSTABalance_Before))
-      assert.isTrue(B_VSTABalance_After.gt(B_VSTABalance_Before))
-      assert.isTrue(C_VSTABalance_After.gt(C_VSTABalance_Before))
+      // Check MON Balance of A, B, C has increased
+      assert.isTrue(A_MONBalance_After.gt(A_MONBalance_Before))
+      assert.isTrue(B_MONBalance_After.gt(B_MONBalance_Before))
+      assert.isTrue(C_MONBalance_After.gt(C_MONBalance_Before))
 
 
       await stabilityPoolERC20.withdrawAssetGainToTrove(A, A, { from: A })
       await stabilityPoolERC20.withdrawAssetGainToTrove(B, B, { from: B })
       await stabilityPoolERC20.withdrawAssetGainToTrove(C, C, { from: C })
 
-      // Get VSTA balance after
-      const A_VSTABalance_AfterERC20 = await vstaToken.balanceOf(A)
-      const B_VSTABalance_AfterERC20 = await vstaToken.balanceOf(B)
-      const C_VSTABalance_AfterERC20 = await vstaToken.balanceOf(C)
+      // Get MON balance after
+      const A_MONBalance_AfterERC20 = await monToken.balanceOf(A)
+      const B_MONBalance_AfterERC20 = await monToken.balanceOf(B)
+      const C_MONBalance_AfterERC20 = await monToken.balanceOf(C)
 
-      // Check VSTA Balance of A, B, C has increased
-      assert.isTrue(A_VSTABalance_AfterERC20.gt(A_VSTABalance_After))
-      assert.isTrue(B_VSTABalance_AfterERC20.gt(B_VSTABalance_After))
-      assert.isTrue(C_VSTABalance_AfterERC20.gt(C_VSTABalance_After))
+      // Check MON Balance of A, B, C has increased
+      assert.isTrue(A_MONBalance_AfterERC20.gt(A_MONBalance_After))
+      assert.isTrue(B_MONBalance_AfterERC20.gt(B_MONBalance_After))
+      assert.isTrue(C_MONBalance_AfterERC20.gt(C_MONBalance_After))
 
 
     })
 
     it("withdrawETHGainToTrove(), eligible deposit: System's stake decreases", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C, D, E, F open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // A, B, C, D, E, F provide to SP
       await stabilityPool.provideToSP(dec(1000, 18), { from: A })
@@ -4657,21 +4657,21 @@ contract('StabilityPool', async accounts => {
     })
 
     it("withdrawETHGainToTrove(), eligible deposit: System's snapshots update", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       // A, B, C, open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraVSTAmount: toBN(dec(60000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(60000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(60000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(60000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // D opens trove
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(2, 18)), extraParams: { from: defaulter_1 } })
@@ -4745,7 +4745,7 @@ contract('StabilityPool', async accounts => {
       await priceFeed.setPrice(dec(200, 18))
 
       // A, B, C withdraw ETH gain to troves. Grab G at each stage, as it can increase a bit
-      // between topups, because some block.timestamp time passes (and VSTA is issued) between ops
+      // between topups, because some block.timestamp time passes (and MON is issued) between ops
       const G1 = await stabilityPool.epochToScaleToG(currentScale, currentEpoch)
       await stabilityPool.withdrawAssetGainToTrove(A, A, { from: A })
 
@@ -4769,19 +4769,19 @@ contract('StabilityPool', async accounts => {
     })
 
     it("withdrawETHGainToTrove(): reverts when depositor has no ETH gain", async () => {
-      await openTrove({ extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
-      // Whale transfers VST to A, B
-      await vstToken.transfer(A, dec(20000, 18), { from: whale })
-      await vstToken.transfer(B, dec(40000, 18), { from: whale })
+      // Whale transfers DCHF to A, B
+      await dchfToken.transfer(A, dec(20000, 18), { from: whale })
+      await dchfToken.transfer(B, dec(40000, 18), { from: whale })
 
       // C, D open troves 
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraVSTAmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraMONmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(4000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // A, B, C, D provide to SP
       await stabilityPool.provideToSP(dec(10, 18), { from: A })
@@ -4794,12 +4794,12 @@ contract('StabilityPool', async accounts => {
       await stabilityPoolERC20.provideToSP(dec(30, 18), { from: C })
       await stabilityPoolERC20.provideToSP(dec(40, 18), { from: D })
 
-      // fastforward time, and E makes a deposit, creating VSTA rewards for all
+      // fastforward time, and E makes a deposit, creating MON rewards for all
       await th.fastForwardTime(timeValues.SECONDS_IN_ONE_HOUR, web3.currentProvider)
-      await openTrove({ extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
       await stabilityPool.provideToSP(dec(3000, 18), { from: E })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
       await stabilityPoolERC20.provideToSP(dec(3000, 18), { from: E })
 
       // Confirm A, B, C have zero ETH gain

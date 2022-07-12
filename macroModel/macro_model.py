@@ -34,15 +34,15 @@ price_ether = [price_ether_initial]
 sd_ether=0.02
 drift_ether = 0
 
-#VSTA price & airdrop
-price_VSTA_initial = 1
-price_VSTA = [price_VSTA_initial]
-sd_VSTA=0.005
-drift_VSTA = 0.0035
+#MON price & airdrop
+price_MON_initial = 1
+price_MON = [price_MON_initial]
+sd_MON=0.005
+drift_MON = 0.0035
 #reduced for now. otherwise the initial return too high
-quantity_VSTA_airdrop = 500
-supply_VSTA=[0]
-VSTA_total_supply=100000000
+quantity_MON_airdrop = 500
+supply_MON=[0]
+MON_total_supply=100000000
 
 #PE ratio
 PE_ratio = 50
@@ -69,7 +69,7 @@ delta = -20
 
 #close troves
 sd_closetroves=0.5
-#sensitivity to VST price
+#sensitivity to DCHF price
 beta = 0.2
 
 #open troves
@@ -84,7 +84,7 @@ sd_opentroves=0.5
 n_steady=0.5
 initial_open=10
 
-#sensitivity to VST price & issuance fee
+#sensitivity to DCHF price & issuance fee
 alpha = 0.3
 
 #number of runs in simulation
@@ -109,13 +109,13 @@ for i in range(1, period):
   shock_natural = random.normalvariate(0,sd_natural_rate)
   natural_rate.append(natural_rate[i-1]*(1+shock_natural))
 
-"""VSTA Price - First Month"""
+"""MON Price - First Month"""
 
-#VSTA price
+#MON price
 for i in range(1, month):
   random.seed(2+13*i)
-  shock_VSTA = random.normalvariate(0,sd_VSTA)
-  price_VSTA.append(price_VSTA[i-1]*(1+shock_VSTA)*(1+drift_VSTA))
+  shock_MON = random.normalvariate(0,sd_MON)
+  price_MON.append(price_MON[i-1]*(1+shock_MON)*(1+drift_MON))
 
 """# Troves
 
@@ -125,7 +125,7 @@ Liquidate Troves
 def liquidate_troves(troves, index, data):
   troves['CR_current'] = troves['Ether_Price']*troves['Ether_Quantity']/troves['Supply']
   price_USDV_previous = data.loc[index-1,'Price_USDV']
-  price_VSTA_previous = data.loc[index-1,'price_VSTA']
+  price_MON_previous = data.loc[index-1,'price_MON']
   stability_pool_previous = data.loc[index-1, 'stability']
 
   troves_liquidated = troves[troves.CR_current < 1.1]
@@ -136,7 +136,7 @@ def liquidate_troves(troves, index, data):
   troves = troves.reset_index(drop = True)
 
   liquidation_gain = ether_liquidated*price_ether_current - debt_liquidated*price_USDV_previous
-  airdrop_gain = price_VSTA_previous * quantity_VSTA_airdrop
+  airdrop_gain = price_MON_previous * quantity_MON_airdrop
   
   np.random.seed(2+index)
   shock_return = np.random.normal(0,sd_return)
@@ -241,7 +241,7 @@ def open_troves(troves, index1, price_USDV_previous):
 
   return[troves, number_opentroves, issuance_USDV_open]
 
-"""# VST Market
+"""# DCHF Market
 
 Stability Pool
 """
@@ -256,7 +256,7 @@ def stability_update(stability_pool_previous, return_previous, index):
     stability_pool = stability_pool_previous* (1+shock_stability)* (1+ return_previous- natural_rate_current)**theta
   return[stability_pool]
 
-"""VST Price, liquidity pool, and redemption"""
+"""DCHF Price, liquidity pool, and redemption"""
 
 def price_stabilizer(troves, index, data, stability_pool, n_open):
   issuance_USDV_stabilizer = 0
@@ -340,15 +340,15 @@ def price_stabilizer(troves, index, data, stability_pool, n_open):
   troves = troves.reset_index(drop=True)
   return[price_USDV_current, liquidity_pool, troves, issuance_USDV_stabilizer, redemption_fee, n_redempt, redemption_pool, n_open]
 
-"""# VSTA Market"""
+"""# MON Market"""
 
 
 
-def VSTA_market(index, data):
-  quantity_VSTA = (100000000/3)*(1-0.5**(index/period))
+def MON_market(index, data):
+  quantity_MON = (100000000/3)*(1-0.5**(index/period))
   np.random.seed(2+3*index)
   if index <= month: 
-    price_VSTA_current = price_VSTA[index-1]
+    price_MON_current = price_MON[index-1]
     annualized_earning = (index/month)**0.5*np.random.normal(200000000,500000)
   else:
     revenue_issuance = data.loc[index-month:index, 'issuance_fee'].sum()
@@ -356,10 +356,10 @@ def VSTA_market(index, data):
     annualized_earning = 365*(revenue_issuance+revenue_redemption)/30
     #discountin factor to factor in the risk in early days
     discount=index/period
-    price_VSTA_current = discount*PE_ratio*annualized_earning/VSTA_total_supply
+    price_MON_current = discount*PE_ratio*annualized_earning/MON_total_supply
   
-  MC_VSTA_current = price_VSTA_current * quantity_VSTA
-  return[price_VSTA_current, annualized_earning, MC_VSTA_current]
+  MC_MON_current = price_MON_current * quantity_MON
+  return[price_MON_current, annualized_earning, MC_MON_current]
 
 """# Simulation Program"""
 
@@ -367,7 +367,7 @@ def VSTA_market(index, data):
 initials = {"Price_USDV":[1.00], "Price_Ether":[price_ether_initial], "n_open":[initial_open], "n_close":[0], "n_liquidate": [0], "n_redempt":[0],
             "n_troves":[initial_open], "stability":[0], "liquidity":[0], "redemption_pool":[0],
             "supply_USDV":[0],  "return_stability":[initial_return], "airdrop_gain":[0], "liquidation_gain":[0],  "issuance_fee":[0], "redemption_fee":[0],
-            "price_VSTA":[price_VSTA_initial], "MC_VSTA":[0], "annualized_earning":[0]}
+            "price_MON":[price_MON_initial], "MC_MON":[0], "annualized_earning":[0]}
 data = pd.DataFrame(initials)
 troves= pd.DataFrame({"Ether_Price":[], "Ether_Quantity":[], "CR_initial":[], 
               "Supply":[], "Rational_inattention":[], "CR_current":[]})
@@ -385,7 +385,7 @@ for index in range(1, n_sim):
   price_ether_current = price_ether[index]
   troves['Ether_Price'] = price_ether_current
   price_USDV_previous = data.loc[index-1,'Price_USDV']
-  price_VSTA_previous = data.loc[index-1,'price_VSTA']
+  price_MON_previous = data.loc[index-1,'price_MON']
 
 #trove liquidation & return of stability pool
   result_liquidation = liquidate_troves(troves, index, data)
@@ -431,25 +431,25 @@ for index in range(1, n_sim):
   if liquidity_pool<0:
     break
 
-#VSTA Market
-  result_VSTA = VSTA_market(index, data)
-  price_VSTA_current = result_VSTA[0]
-  annualized_earning = result_VSTA[1]
-  MC_VSTA_current = result_VSTA[2]
+#MON Market
+  result_MON = MON_market(index, data)
+  price_MON_current = result_MON[0]
+  annualized_earning = result_MON[1]
+  MC_MON_current = result_MON[2]
 
 #Summary
   issuance_fee = price_USDV_current * (issuance_USDV_adjust + issuance_USDV_open + issuance_USDV_stabilizer)
   n_troves = troves.shape[0]
   supply_USDV = troves['Supply'].sum()
   if index >= month:
-    price_VSTA.append(price_VSTA_current)
+    price_MON.append(price_MON_current)
 
   new_row = {"Price_USDV":float(price_USDV_current), "Price_Ether":float(price_ether_current), "n_open":float(n_open), "n_close":float(n_close),
              "n_liquidate":float(n_liquidate), "n_redempt": float(n_redempt), "n_troves":float(n_troves),
               "stability":float(stability_pool), "liquidity":float(liquidity_pool), "redemption_pool":float(redemption_pool), "supply_USDV":float(supply_USDV),
              "issuance_fee":float(issuance_fee), "redemption_fee":float(redemption_fee),
              "airdrop_gain":float(airdrop_gain), "liquidation_gain":float(liquidation_gain), "return_stability":float(return_stability), 
-             "annualized_earning":float(annualized_earning), "MC_VSTA":float(MC_VSTA_current), "price_VSTA":float(price_VSTA_current)
+             "annualized_earning":float(annualized_earning), "MC_MON":float(MC_MON_current), "price_MON":float(price_MON_current)
              }
   data = data.append(new_row, ignore_index=True)
   if price_USDV_current < 0:
@@ -465,7 +465,7 @@ def linevis(data, measure):
 
 fig = make_subplots(specs=[[{"secondary_y": True}]])
 fig.add_trace(
-    go.Scatter(x=data.index/720, y=data['Price_USDV'], name="VST Price"),
+    go.Scatter(x=data.index/720, y=data['Price_USDV'], name="DCHF Price"),
     secondary_y=False,
 )
 fig.add_trace(
@@ -473,10 +473,10 @@ fig.add_trace(
     secondary_y=True,
 )
 fig.update_layout(
-    title_text="Price Dynamics of VST and Ether"
+    title_text="Price Dynamics of DCHF and Ether"
 )
 fig.update_xaxes(tick0=0, dtick=1, title_text="Month")
-fig.update_yaxes(title_text="VST Price", secondary_y=False)
+fig.update_yaxes(title_text="DCHF Price", secondary_y=False)
 fig.update_yaxes(title_text="Ether Price", secondary_y=True)
 fig.show()
 
@@ -486,15 +486,15 @@ fig.add_trace(
     secondary_y=False,
 )
 fig.add_trace(
-    go.Scatter(x=data.index/720, y=data['supply_USDV'], name="VST Supply"),
+    go.Scatter(x=data.index/720, y=data['supply_USDV'], name="DCHF Supply"),
     secondary_y=True,
 )
 fig.update_layout(
-    title_text="Dynamics of Trove Numbers and VST Supply"
+    title_text="Dynamics of Trove Numbers and DCHF Supply"
 )
 fig.update_xaxes(tick0=0, dtick=1, title_text="Month")
 fig.update_yaxes(title_text="Number of Troves", secondary_y=False)
-fig.update_yaxes(title_text="VST Supply", secondary_y=True)
+fig.update_yaxes(title_text="DCHF Supply", secondary_y=True)
 fig.show()
 
 fig = make_subplots(rows=2, cols=1)
@@ -594,19 +594,19 @@ fig.show()
 
 fig = make_subplots(specs=[[{"secondary_y": True}]])
 fig.add_trace(
-    go.Scatter(x=data.index/720, y=data['price_VSTA'], name="VSTA Price"),
+    go.Scatter(x=data.index/720, y=data['price_MON'], name="MON Price"),
     secondary_y=False,
 )
 fig.add_trace(
-    go.Scatter(x=data.index/720, y=data['MC_VSTA'], name="VSTA Market Cap"),
+    go.Scatter(x=data.index/720, y=data['MC_MON'], name="MON Market Cap"),
     secondary_y=True,
 )
 fig.update_layout(
-    title_text="Dynamics of the Price and Market Cap of VSTA"
+    title_text="Dynamics of the Price and Market Cap of MON"
 )
 fig.update_xaxes(tick0=0, dtick=1, title_text="Month")
-fig.update_yaxes(title_text="VSTA Price", secondary_y=False)
-fig.update_yaxes(title_text="VSTA Market Cap", secondary_y=True)
+fig.update_yaxes(title_text="MON Price", secondary_y=False)
+fig.update_yaxes(title_text="MON Market Cap", secondary_y=True)
 fig.show()
 
 def trove_histogram(measure):
@@ -647,7 +647,7 @@ issuance fee = redemption fee = base rate
 initials = {"Price_USDV":[1.00], "Price_Ether":[price_ether_initial], "n_open":[initial_open], "n_close":[0], "n_liquidate": [0], "n_redempt":[0],
             "n_troves":[initial_open], "stability":[0], "liquidity":[0], "redemption_pool":[0],
             "supply_USDV":[0],  "return_stability":[initial_return], "airdrop_gain":[0], "liquidation_gain":[0],  "issuance_fee":[0], "redemption_fee":[0],
-            "price_VSTA":[price_VSTA_initial], "MC_VSTA":[0], "annualized_earning":[0], "base_rate":[base_rate_initial]}
+            "price_MON":[price_MON_initial], "MC_MON":[0], "annualized_earning":[0], "base_rate":[base_rate_initial]}
 data2 = pd.DataFrame(initials)
 troves2= pd.DataFrame({"Ether_Price":[], "Ether_Quantity":[], "CR_initial":[], 
               "Supply":[], "Rational_inattention":[], "CR_current":[]})
@@ -665,7 +665,7 @@ for index in range(1, n_sim):
   price_ether_current = price_ether[index]
   troves2['Ether_Price'] = price_ether_current
   price_USDV_previous = data2.loc[index-1,'Price_USDV']
-  price_VSTA_previous = data2.loc[index-1,'price_VSTA']
+  price_MON_previous = data2.loc[index-1,'price_MON']
 
 #policy function determines base rate
   base_rate_current = 0.98 * data2.loc[index-1,'base_rate'] + 0.5*(data2.loc[index-1,'redemption_pool']/troves2['Supply'].sum())
@@ -716,25 +716,25 @@ for index in range(1, n_sim):
   if liquidity_pool<0:
     break
 
-#VSTA Market
-  result_VSTA = VSTA_market(index, data2)
-  price_VSTA_current = result_VSTA[0]
-  annualized_earning = result_VSTA[1]
-  MC_VSTA_current = result_VSTA[2]
+#MON Market
+  result_MON = MON_market(index, data2)
+  price_MON_current = result_MON[0]
+  annualized_earning = result_MON[1]
+  MC_MON_current = result_MON[2]
 
 #Summary
   issuance_fee = price_USDV_current * (issuance_USDV_adjust + issuance_USDV_open + issuance_USDV_stabilizer)
   n_troves = troves2.shape[0]
   supply_USDV = troves2['Supply'].sum()
   if index >= month:
-    price_VSTA.append(price_VSTA_current)
+    price_MON.append(price_MON_current)
 
   new_row = {"Price_USDV":float(price_USDV_current), "Price_Ether":float(price_ether_current), "n_open":float(n_open), "n_close":float(n_close),
              "n_liquidate":float(n_liquidate), "n_redempt": float(n_redempt), "n_troves":float(n_troves),
               "stability":float(stability_pool), "liquidity":float(liquidity_pool), "redemption_pool":float(redemption_pool), "supply_USDV":float(supply_USDV),
              "issuance_fee":float(issuance_fee), "redemption_fee":float(redemption_fee),
              "airdrop_gain":float(airdrop_gain), "liquidation_gain":float(liquidation_gain), "return_stability":float(return_stability), 
-             "annualized_earning":float(annualized_earning), "MC_VSTA":float(MC_VSTA_current), "price_VSTA":float(price_VSTA_current),
+             "annualized_earning":float(annualized_earning), "MC_MON":float(MC_MON_current), "price_MON":float(price_MON_current),
              "base_rate":float(base_rate_current)}
   data2 = data2.append(new_row, ignore_index=True)
   if price_USDV_current < 0:
@@ -746,7 +746,7 @@ data2
 
 fig = make_subplots(specs=[[{"secondary_y": True}]])
 fig.add_trace(
-    go.Scatter(x=data.index/720, y=data['Price_USDV'], name="VST Price"),
+    go.Scatter(x=data.index/720, y=data['Price_USDV'], name="DCHF Price"),
     secondary_y=False,
 )
 fig.add_trace(
@@ -754,14 +754,14 @@ fig.add_trace(
     secondary_y=True,
 )
 fig.add_trace(
-    go.Scatter(x=data2.index/720, y=data2['Price_USDV'], name="VST Price New", line = dict(dash='dot')),
+    go.Scatter(x=data2.index/720, y=data2['Price_USDV'], name="DCHF Price New", line = dict(dash='dot')),
     secondary_y=False,
 )
 fig.update_layout(
-    title_text="Price Dynamics of VST and Ether"
+    title_text="Price Dynamics of DCHF and Ether"
 )
 fig.update_xaxes(tick0=0, dtick=1, title_text="Month")
-fig.update_yaxes(title_text="VST Price", secondary_y=False)
+fig.update_yaxes(title_text="DCHF Price", secondary_y=False)
 fig.update_yaxes(title_text="Ether Price", secondary_y=True)
 fig.show()
 
@@ -771,7 +771,7 @@ fig.add_trace(
     secondary_y=False,
 )
 fig.add_trace(
-    go.Scatter(x=data.index/720, y=data['supply_USDV'], name="VST Supply"),
+    go.Scatter(x=data.index/720, y=data['supply_USDV'], name="DCHF Supply"),
     secondary_y=True,
 )
 fig.add_trace(
@@ -779,15 +779,15 @@ fig.add_trace(
     secondary_y=False,
 )
 fig.add_trace(
-    go.Scatter(x=data2.index/720, y=data2['supply_USDV'], name="VST Supply New", line = dict(dash='dot')),
+    go.Scatter(x=data2.index/720, y=data2['supply_USDV'], name="DCHF Supply New", line = dict(dash='dot')),
     secondary_y=True,
 )
 fig.update_layout(
-    title_text="Dynamics of Trove Numbers and VST Supply"
+    title_text="Dynamics of Trove Numbers and DCHF Supply"
 )
 fig.update_xaxes(tick0=0, dtick=1, title_text="Month")
 fig.update_yaxes(title_text="Number of Troves", secondary_y=False)
-fig.update_yaxes(title_text="VST Supply", secondary_y=True)
+fig.update_yaxes(title_text="DCHF Supply", secondary_y=True)
 fig.show()
 
 fig = make_subplots(rows=2, cols=2)
@@ -956,27 +956,27 @@ fig.show()
 
 fig = make_subplots(specs=[[{"secondary_y": True}]])
 fig.add_trace(
-    go.Scatter(x=data.index/720, y=data['price_VSTA'], name="VSTA Price"),
+    go.Scatter(x=data.index/720, y=data['price_MON'], name="MON Price"),
     secondary_y=False,
 )
 fig.add_trace(
-    go.Scatter(x=data.index/720, y=data['MC_VSTA'], name="VSTA Market Cap"),
+    go.Scatter(x=data.index/720, y=data['MC_MON'], name="MON Market Cap"),
     secondary_y=True,
 )
 fig.add_trace(
-    go.Scatter(x=data2.index/720, y=data2['price_VSTA'], name="VSTA Price New", line = dict(dash='dot')),
+    go.Scatter(x=data2.index/720, y=data2['price_MON'], name="MON Price New", line = dict(dash='dot')),
     secondary_y=False,
 )
 fig.add_trace(
-    go.Scatter(x=data2.index/720, y=data2['MC_VSTA'], name="VSTA Market Cap New", line = dict(dash='dot')),
+    go.Scatter(x=data2.index/720, y=data2['MC_MON'], name="MON Market Cap New", line = dict(dash='dot')),
     secondary_y=True,
 )
 fig.update_layout(
-    title_text="Dynamics of the Price and Market Cap of VSTA"
+    title_text="Dynamics of the Price and Market Cap of MON"
 )
 fig.update_xaxes(tick0=0, dtick=1, title_text="Month")
-fig.update_yaxes(title_text="VSTA Price", secondary_y=False)
-fig.update_yaxes(title_text="VSTA Market Cap", secondary_y=True)
+fig.update_yaxes(title_text="MON Price", secondary_y=False)
+fig.update_yaxes(title_text="MON Market Cap", secondary_y=True)
 fig.show()
 
 fig = make_subplots(specs=[[{"secondary_y": True}]])

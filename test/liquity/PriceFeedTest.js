@@ -129,7 +129,7 @@ contract('PriceFeed', async accounts => {
   })
 
 
-  // Vesta Tests :: Start
+  // Dfranc Tests :: Start
   it("Validate default status on setAddressesAndOracle", async () => {
     await setAddressesAndOracle()
     assert.equal(await priceFeed.status(), '0');
@@ -312,7 +312,7 @@ contract('PriceFeed', async accounts => {
     assert.equal(price, await getFetchPriceWithDifferentValue(DEFAULT_PRICE, DEFAULT_INDEX))
   })
 
-  // Vesta Tests :: End
+  // Dfranc Tests :: End
 
   it("C1 Chainlink working: fetchPrice should return the correct price, taking into account the number of decimal digits on the aggregator", async () => {
     await setAddressesAndOracle()
@@ -514,7 +514,7 @@ contract('PriceFeed', async accounts => {
   })
 
 
-  // Vesta Tests :: Starts
+  // Dfranc Tests :: Starts
 
   it("chainlinkUntrusted: Oracles and Index are still broken, uses lastGoodPrice & lastGoodIndex and keep status", async () => {
     await setAddressesAndOracle()
@@ -621,7 +621,7 @@ contract('PriceFeed', async accounts => {
     assert.equal(price, await getFetchPriceWithDifferentValue(dec(1234, 18), dec(4, 18)));
   })
 
-  // Vesta Tests :: Ends
+  // Dfranc Tests :: Ends
 
 
 })

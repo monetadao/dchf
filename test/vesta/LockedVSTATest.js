@@ -7,7 +7,7 @@ const th = testHelpers.TestHelper
 const dec = th.dec
 const toBN = th.toBN
 
-contract('LockedVSTATest', async accounts => {
+contract('LockedMONTest', async accounts => {
   const ZERO_ADDRESS = th.ZERO_ADDRESS
   const assertRevert = th.assertRevert
   const timeValues = testHelpers.TimeValues
@@ -18,9 +18,9 @@ contract('LockedVSTATest', async accounts => {
   const TWO_YEARS = toBN('63072000');
 
   let contracts
-  let lockedVSTA
-  let vstaToken
-  let TOTAL_VSTA
+  let lockedMON
+  let monToken
+  let TOTAL_MON
 
   async function applyVestingFormula(vestingRule, ignoreClaimed) {
     const currentTime = toBN(await th.getLatestBlockTimestamp(web3));
@@ -38,48 +38,48 @@ contract('LockedVSTATest', async accounts => {
   }
 
 
-  describe("Locked VSTA", async () => {
+  describe("Locked MON", async () => {
     beforeEach(async () => {
       contracts = await deploymentHelper.deployLiquityCore()
       contracts.troveManager = await TroveManagerTester.new()
-      const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(treasury)
+      const MONContracts = await deploymentHelper.deployMONContractsHardhat(treasury)
 
-      lockedVSTA = VSTAContracts.lockedVSTA
-      vstaToken = VSTAContracts.vstaToken;
+      lockedMON = MONContracts.lockedMON
+      monToken = MONContracts.monToken;
 
-      await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-      await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts, true)
+      await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+      await deploymentHelper.connectMONContractsToCore(MONContracts, contracts, true)
 
-      await VSTAContracts.vstaToken.approve(lockedVSTA.address, ethers.constants.MaxUint256, { from: treasury });
+      await MONContracts.monToken.approve(lockedMON.address, ethers.constants.MaxUint256, { from: treasury });
 
-      await lockedVSTA.transferOwnership(treasury);
-      TOTAL_VSTA = await VSTAContracts.vstaToken.balanceOf(treasury)
+      await lockedMON.transferOwnership(treasury);
+      TOTAL_MON = await MONContracts.monToken.balanceOf(treasury)
     })
 
     it("Validate Time Constants", async () => {
-      assert.equal((await lockedVSTA.SIX_MONTHS()).toString(), SIX_MONTHS)
-      assert.equal((await lockedVSTA.TWO_YEARS()).toString(), TWO_YEARS)
+      assert.equal((await lockedMON.SIX_MONTHS()).toString(), SIX_MONTHS)
+      assert.equal((await lockedMON.TWO_YEARS()).toString(), TWO_YEARS)
     })
 
     it("addEntityVesting: called by user, valid inputs, revert transaction", async () => {
-      await assertRevert(lockedVSTA.addEntityVesting(A, dec(100, 18), { from: user }))
+      await assertRevert(lockedMON.addEntityVesting(A, dec(100, 18), { from: user }))
     })
 
     it("addEntityVesting: called by owner, Invalid Address then Invalid Supply (too much), revert transaction", async () => {
-      await assertRevert(lockedVSTA.addEntityVesting(ZERO_ADDRESS, dec(100, 18), { from: treasury }))
-      await assertRevert(lockedVSTA.addEntityVesting(A, TOTAL_VSTA.add(toBN(1)), { from: treasury }))
+      await assertRevert(lockedMON.addEntityVesting(ZERO_ADDRESS, dec(100, 18), { from: treasury }))
+      await assertRevert(lockedMON.addEntityVesting(A, TOTAL_MON.add(toBN(1)), { from: treasury }))
     })
 
     it("addEntityVesting: called by owner, valid input, duplicated Entity, revert transaction", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(100, 18), { from: treasury })
-      await assertRevert(lockedVSTA.addEntityVesting(A, dec(100, 18), { from: treasury }))
+      await lockedMON.addEntityVesting(A, dec(100, 18), { from: treasury })
+      await assertRevert(lockedMON.addEntityVesting(A, dec(100, 18), { from: treasury }))
     })
 
     it("addEntityVesting: called by owner, valid input, add entities", async () => {
       [A, B, C].forEach(async (element) => {
-        await lockedVSTA.addEntityVesting(element, dec(100, 18), { from: treasury })
+        await lockedMON.addEntityVesting(element, dec(100, 18), { from: treasury })
 
-        const entityVestingData = await lockedVSTA.entitiesVesting(element)
+        const entityVestingData = await lockedMON.entitiesVesting(element)
 
         assert.equal(entityVestingData.totalSupply.toString(), dec(100, 18))
         assert.isTrue(entityVestingData.createdDate.gt(0))
@@ -92,38 +92,38 @@ contract('LockedVSTATest', async accounts => {
     })
 
     it("lowerEntityVesting: called by user, valid inputs, revert transaction", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(100, 18), { from: treasury })
-      await assertRevert(lockedVSTA.lowerEntityVesting(A, dec(70, 18), { from: user }))
+      await lockedMON.addEntityVesting(A, dec(100, 18), { from: treasury })
+      await assertRevert(lockedMON.lowerEntityVesting(A, dec(70, 18), { from: user }))
     })
 
     it("lowerEntityVesting: called by owner, invalid entity, revert transaction", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(100, 18), { from: treasury })
-      await assertRevert(lockedVSTA.lowerEntityVesting(B, dec(70, 18), { from: treasury }))
+      await lockedMON.addEntityVesting(A, dec(100, 18), { from: treasury })
+      await assertRevert(lockedMON.lowerEntityVesting(B, dec(70, 18), { from: treasury }))
     })
 
     it("lowerEntityVesting: called by owner, new total supply goes <= total claimed, revert transaction", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(100, 18), { from: treasury })
+      await lockedMON.addEntityVesting(A, dec(100, 18), { from: treasury })
 
       await th.fastForwardTime(SIX_MONTHS, web3.currentProvider)
-      const claimable = await lockedVSTA.getClaimableVSTA(A);
+      const claimable = await lockedMON.getClaimableMON(A);
 
-      await assertRevert(lockedVSTA.lowerEntityVesting(A, claimable, { from: treasury }))
-      await assertRevert(lockedVSTA.lowerEntityVesting(A, dec(2, 18), { from: treasury }))
+      await assertRevert(lockedMON.lowerEntityVesting(A, claimable, { from: treasury }))
+      await assertRevert(lockedMON.lowerEntityVesting(A, dec(2, 18), { from: treasury }))
     })
 
 
     it("lowerEntityVesting: called by owner, valid input, entity receives tokens and total is changed", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(100, 18), { from: treasury })
+      await lockedMON.addEntityVesting(A, dec(100, 18), { from: treasury })
 
       await th.fastForwardTime(SIX_MONTHS, web3.currentProvider)
-      const claimable = await lockedVSTA.getClaimableVSTA(A);
+      const claimable = await lockedMON.getClaimableMON(A);
       const newTotal = claimable.add(toBN(dec(1, 18)));
-      const entityVestingDataBefore = await lockedVSTA.entitiesVesting(A)
+      const entityVestingDataBefore = await lockedMON.entitiesVesting(A)
 
 
-      await lockedVSTA.lowerEntityVesting(A, newTotal, { from: treasury })
-      await assert.equal((await vstaToken.balanceOf(A)).toString(), await applyVestingFormula(entityVestingDataBefore, true))
-      const entityVestingDataAfter = await lockedVSTA.entitiesVesting(A)
+      await lockedMON.lowerEntityVesting(A, newTotal, { from: treasury })
+      await assert.equal((await monToken.balanceOf(A)).toString(), await applyVestingFormula(entityVestingDataBefore, true))
+      const entityVestingDataAfter = await lockedMON.entitiesVesting(A)
 
       await assert.equal(entityVestingDataAfter.totalSupply.toString(), newTotal)
       await assert.equal(entityVestingDataAfter.createdDate.toString(), entityVestingDataBefore.createdDate.toString())
@@ -133,21 +133,21 @@ contract('LockedVSTATest', async accounts => {
     })
 
     it("removeEntityVesting: called by user, valid inputs, revert transaction", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(100, 18), { from: treasury })
-      await assertRevert(lockedVSTA.removeEntityVesting(A, { from: user }))
+      await lockedMON.addEntityVesting(A, dec(100, 18), { from: treasury })
+      await assertRevert(lockedMON.removeEntityVesting(A, { from: user }))
     })
 
     it("removeEntityVesting: called by owner, Not valid Entity, revert transaction", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(100, 18), { from: treasury })
-      await assertRevert(lockedVSTA.removeEntityVesting(B, { from: treasury }))
+      await lockedMON.addEntityVesting(A, dec(100, 18), { from: treasury })
+      await assertRevert(lockedMON.removeEntityVesting(B, { from: treasury }))
     })
 
     it("removeEntityVesting: called by owner, valid input, remove entity and pay due", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(B, dec(1, 24), { from: treasury })
-      await lockedVSTA.removeEntityVesting(A, { from: treasury })
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(B, dec(1, 24), { from: treasury })
+      await lockedMON.removeEntityVesting(A, { from: treasury })
 
-      const entityVestingData = await lockedVSTA.entitiesVesting(A)
+      const entityVestingData = await lockedMON.entitiesVesting(A)
 
       assert.equal(entityVestingData.totalSupply.toString(), 0)
       assert.equal(entityVestingData.createdDate.toString(), 0)
@@ -155,235 +155,235 @@ contract('LockedVSTATest', async accounts => {
       assert.equal(entityVestingData.endVestingDate.toString(), 0)
       assert.equal(entityVestingData.claimed.toString(), 0)
 
-      await lockedVSTA.getClaimableVSTA(B);
+      await lockedMON.getClaimableMON(B);
       await th.fastForwardTime(SIX_MONTHS, web3.currentProvider)
 
-      const claimable = await lockedVSTA.getClaimableVSTA(B);
+      const claimable = await lockedMON.getClaimableMON(B);
       assert.isTrue(claimable.gt(toBN(0)));
-      assert.equal((await vstaToken.balanceOf(B)).toString(), 0);
+      assert.equal((await monToken.balanceOf(B)).toString(), 0);
 
-      await lockedVSTA.removeEntityVesting(B, { from: treasury })
+      await lockedMON.removeEntityVesting(B, { from: treasury })
 
-      const entityVestingData_B = await lockedVSTA.entitiesVesting(B)
+      const entityVestingData_B = await lockedMON.entitiesVesting(B)
       assert.equal(entityVestingData_B.totalSupply.toString(), 0)
       assert.equal(entityVestingData_B.createdDate.toString(), 0)
       assert.equal(entityVestingData_B.startVestingDate.toString(), 0)
       assert.equal(entityVestingData_B.claimed.toString(), 0)
 
-      assert.closeTo(th.getDifferenceEther(await vstaToken.balanceOf(B), claimable), 0, 1)
+      assert.closeTo(th.getDifferenceEther(await monToken.balanceOf(B), claimable), 0, 1)
     })
 
-    it("transferUnassignedVSTA: called by user, valid environment, revert transaction", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.removeEntityVesting(A, { from: treasury })
+    it("transferUnassignedMON: called by user, valid environment, revert transaction", async () => {
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.removeEntityVesting(A, { from: treasury })
 
-      assert.equal((await lockedVSTA.getUnassignVSTATokensAmount()).toString(), dec(1, 24));
-      await assertRevert(lockedVSTA.transferUnassignedVSTA({ from: user }))
+      assert.equal((await lockedMON.getUnassignMONTokensAmount()).toString(), dec(1, 24));
+      await assertRevert(lockedMON.transferUnassignedMON({ from: user }))
     })
 
-    it("transferUnassignedVSTA: called by owner, Add with 1M then Delete, recover 1M", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.removeEntityVesting(A, { from: treasury })
+    it("transferUnassignedMON: called by owner, Add with 1M then Delete, recover 1M", async () => {
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.removeEntityVesting(A, { from: treasury })
 
-      assert.equal((await lockedVSTA.getUnassignVSTATokensAmount()).toString(), dec(1, 24));
+      assert.equal((await lockedMON.getUnassignMONTokensAmount()).toString(), dec(1, 24));
 
-      const currentBalance = await vstaToken.balanceOf(treasury);
-      await lockedVSTA.transferUnassignedVSTA({ from: treasury })
-      assert.equal((await vstaToken.balanceOf(treasury)).toString(), currentBalance.add(toBN(dec(1, 24))));
+      const currentBalance = await monToken.balanceOf(treasury);
+      await lockedMON.transferUnassignedMON({ from: treasury })
+      assert.equal((await monToken.balanceOf(treasury)).toString(), currentBalance.add(toBN(dec(1, 24))));
     })
 
-    it("transferUnassignedVSTA: called by owner, Add with 1M + 6 MONTHS + Delete, recover unassigned tokens", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(B, dec(1, 24), { from: treasury })
+    it("transferUnassignedMON: called by owner, Add with 1M + 6 MONTHS + Delete, recover unassigned tokens", async () => {
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(B, dec(1, 24), { from: treasury })
 
       await th.fastForwardTime(SIX_MONTHS, web3.currentProvider)
 
-      const entityVestingData = await lockedVSTA.entitiesVesting(A)
+      const entityVestingData = await lockedMON.entitiesVesting(A)
 
-      assert.equal((await lockedVSTA.getClaimableVSTA(A)).toString(), await applyVestingFormula(entityVestingData));
-      await lockedVSTA.removeEntityVesting(A, { from: treasury })
+      assert.equal((await lockedMON.getClaimableMON(A)).toString(), await applyVestingFormula(entityVestingData));
+      await lockedMON.removeEntityVesting(A, { from: treasury })
 
       const toClaimCurrentBlock = await applyVestingFormula(entityVestingData);
       const unAssignedTotal = toBN(dec(1, 24)).sub(toClaimCurrentBlock)
 
-      assert.equal((await lockedVSTA.getUnassignVSTATokensAmount()).toString(), unAssignedTotal.toString())
+      assert.equal((await lockedMON.getUnassignMONTokensAmount()).toString(), unAssignedTotal.toString())
 
-      const currentBalance = await vstaToken.balanceOf(treasury);
-      await lockedVSTA.transferUnassignedVSTA({ from: treasury })
-      assert.equal((await vstaToken.balanceOf(treasury)).toString(), currentBalance.add(unAssignedTotal));
+      const currentBalance = await monToken.balanceOf(treasury);
+      await lockedMON.transferUnassignedMON({ from: treasury })
+      assert.equal((await monToken.balanceOf(treasury)).toString(), currentBalance.add(unAssignedTotal));
     })
 
-    it("Vesting Formula 1M over (6 Months - 1 min), returns 0 claimable, unassign VSTA is 0", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(B, dec(1, 24), { from: treasury })
+    it("Vesting Formula 1M over (6 Months - 1 min), returns 0 claimable, unassign MON is 0", async () => {
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(B, dec(1, 24), { from: treasury })
 
       await th.fastForwardTime(SIX_MONTHS.sub(toBN(60)), web3.currentProvider)
-      const entityVestingData = await lockedVSTA.entitiesVesting(A)
+      const entityVestingData = await lockedMON.entitiesVesting(A)
 
-      assert.equal((await lockedVSTA.getClaimableVSTA(A)).toString(), await applyVestingFormula(entityVestingData));
-      assert.equal((await lockedVSTA.getUnassignVSTATokensAmount()).toString(), 0);
+      assert.equal((await lockedMON.getClaimableMON(A)).toString(), await applyVestingFormula(entityVestingData));
+      assert.equal((await lockedMON.getUnassignMONTokensAmount()).toString(), 0);
 
-      assert.equal((await lockedVSTA.entitiesVesting(A)).claimed, 0)
-      assert.equal((await lockedVSTA.entitiesVesting(B)).claimed, 0)
+      assert.equal((await lockedMON.entitiesVesting(A)).claimed, 0)
+      assert.equal((await lockedMON.entitiesVesting(B)).claimed, 0)
     })
 
-    it("Vesting Formula 1M over 6 Months, returns ~250,000 claimable, unassign VSTA is 0", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(B, dec(1, 24), { from: treasury })
+    it("Vesting Formula 1M over 6 Months, returns ~250,000 claimable, unassign MON is 0", async () => {
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(B, dec(1, 24), { from: treasury })
 
       await th.fastForwardTime(SIX_MONTHS, web3.currentProvider)
-      const entityVestingData = await lockedVSTA.entitiesVesting(A)
+      const entityVestingData = await lockedMON.entitiesVesting(A)
 
-      const claimable = (await lockedVSTA.getClaimableVSTA(A)).toString();
+      const claimable = (await lockedMON.getClaimableMON(A)).toString();
       assert.equal(claimable, await applyVestingFormula(entityVestingData));
       assert.closeTo(th.getDifferenceEther(claimable, dec(250000, 18)), 0, 1000)
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), 0);
-      await lockedVSTA.claimVSTAToken({ from: A });
+      assert.equal((await monToken.balanceOf(A)).toString(), 0);
+      await lockedMON.claimMONToken({ from: A });
       const currentBlockClaimData = await applyVestingFormula(entityVestingData)
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), currentBlockClaimData);
-      assert.equal((await lockedVSTA.getUnassignVSTATokensAmount()).toString(), 0);
+      assert.equal((await monToken.balanceOf(A)).toString(), currentBlockClaimData);
+      assert.equal((await lockedMON.getUnassignMONTokensAmount()).toString(), 0);
 
-      assert.equal((await lockedVSTA.entitiesVesting(A)).claimed.toString(), currentBlockClaimData)
-      assert.equal((await lockedVSTA.entitiesVesting(B)).claimed.toString(), 0)
+      assert.equal((await lockedMON.entitiesVesting(A)).claimed.toString(), currentBlockClaimData)
+      assert.equal((await lockedMON.entitiesVesting(B)).claimed.toString(), 0)
     })
 
-    it("Vesting Formula 1M over 1 Year, returns 500,000 claimable, unassign VSTA is 0", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(B, dec(1, 24), { from: treasury })
+    it("Vesting Formula 1M over 1 Year, returns 500,000 claimable, unassign MON is 0", async () => {
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(B, dec(1, 24), { from: treasury })
 
       await th.fastForwardTime(TWO_YEARS.div(toBN(2)), web3.currentProvider)
-      const entityVestingData = await lockedVSTA.entitiesVesting(A)
+      const entityVestingData = await lockedMON.entitiesVesting(A)
 
-      const claimable = (await lockedVSTA.getClaimableVSTA(A)).toString()
+      const claimable = (await lockedMON.getClaimableMON(A)).toString()
       assert.equal(claimable, await applyVestingFormula(entityVestingData))
       assert.closeTo(th.getDifferenceEther(claimable, dec("500000", 18)), 0, 1)
 
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), 0);
+      assert.equal((await monToken.balanceOf(A)).toString(), 0);
 
-      await lockedVSTA.claimVSTAToken({ from: A });
+      await lockedMON.claimMONToken({ from: A });
       const currentBlockClaimData = await applyVestingFormula(entityVestingData)
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), currentBlockClaimData);
-      assert.equal((await lockedVSTA.getUnassignVSTATokensAmount()).toString(), 0);
+      assert.equal((await monToken.balanceOf(A)).toString(), currentBlockClaimData);
+      assert.equal((await lockedMON.getUnassignMONTokensAmount()).toString(), 0);
 
-      assert.equal((await lockedVSTA.entitiesVesting(A)).claimed.toString(), currentBlockClaimData)
-      assert.equal((await lockedVSTA.entitiesVesting(B)).claimed.toString(), 0)
+      assert.equal((await lockedMON.entitiesVesting(A)).claimed.toString(), currentBlockClaimData)
+      assert.equal((await lockedMON.entitiesVesting(B)).claimed.toString(), 0)
     })
 
-    it("Vesting Formula 1M over 1.5 Year, returns 750,000 claimable, unassign VSTA is 0", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(B, dec(1, 24), { from: treasury })
+    it("Vesting Formula 1M over 1.5 Year, returns 750,000 claimable, unassign MON is 0", async () => {
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(B, dec(1, 24), { from: treasury })
 
       await th.fastForwardTime(TWO_YEARS.div(toBN(2)).add(SIX_MONTHS), web3.currentProvider)
-      const entityVestingData = await lockedVSTA.entitiesVesting(A)
+      const entityVestingData = await lockedMON.entitiesVesting(A)
 
-      const claimable = (await lockedVSTA.getClaimableVSTA(A)).toString();
+      const claimable = (await lockedMON.getClaimableMON(A)).toString();
       assert.equal(claimable, await applyVestingFormula(entityVestingData));
       assert.closeTo(th.getDifferenceEther(claimable, dec("750000", 18)), 0, 1000)
 
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), 0);
-      await lockedVSTA.claimVSTAToken({ from: A });
+      assert.equal((await monToken.balanceOf(A)).toString(), 0);
+      await lockedMON.claimMONToken({ from: A });
       const currentBlockClaimData = await applyVestingFormula(entityVestingData)
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), currentBlockClaimData);
-      assert.equal((await lockedVSTA.getUnassignVSTATokensAmount()).toString(), 0);
-      assert.equal((await lockedVSTA.entitiesVesting(A)).claimed.toString(), currentBlockClaimData)
-      assert.equal((await lockedVSTA.entitiesVesting(B)).claimed.toString(), 0)
+      assert.equal((await monToken.balanceOf(A)).toString(), currentBlockClaimData);
+      assert.equal((await lockedMON.getUnassignMONTokensAmount()).toString(), 0);
+      assert.equal((await lockedMON.entitiesVesting(A)).claimed.toString(), currentBlockClaimData)
+      assert.equal((await lockedMON.entitiesVesting(B)).claimed.toString(), 0)
     })
 
-    it("Vesting Formula 1M over 2 Year, returns 1M claimable, unassign VSTA is 0", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(B, dec(1, 24), { from: treasury })
+    it("Vesting Formula 1M over 2 Year, returns 1M claimable, unassign MON is 0", async () => {
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(B, dec(1, 24), { from: treasury })
 
       await th.fastForwardTime(TWO_YEARS, web3.currentProvider)
-      const entityVestingData = await lockedVSTA.entitiesVesting(A)
+      const entityVestingData = await lockedMON.entitiesVesting(A)
 
-      const claimable = (await lockedVSTA.getClaimableVSTA(A)).toString();
+      const claimable = (await lockedMON.getClaimableMON(A)).toString();
       assert.equal(claimable, (await applyVestingFormula(entityVestingData)).toString());
       assert.closeTo(th.getDifferenceEther(claimable, dec(1, 24)), 0, 1000)
 
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), 0);
-      await lockedVSTA.claimVSTAToken({ from: A });
+      assert.equal((await monToken.balanceOf(A)).toString(), 0);
+      await lockedMON.claimMONToken({ from: A });
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), dec(1, 24));
-      assert.equal((await lockedVSTA.getUnassignVSTATokensAmount()).toString(), 0);
-      assert.equal((await lockedVSTA.entitiesVesting(A)).claimed.toString(), dec(1, 24))
-      assert.equal((await lockedVSTA.entitiesVesting(B)).claimed.toString(), 0)
+      assert.equal((await monToken.balanceOf(A)).toString(), dec(1, 24));
+      assert.equal((await lockedMON.getUnassignMONTokensAmount()).toString(), 0);
+      assert.equal((await lockedMON.entitiesVesting(A)).claimed.toString(), dec(1, 24))
+      assert.equal((await lockedMON.entitiesVesting(B)).claimed.toString(), 0)
 
-      assert.equal((await vstaToken.balanceOf(lockedVSTA.address)).toString(), dec(1, 24))
+      assert.equal((await monToken.balanceOf(lockedMON.address)).toString(), dec(1, 24))
     })
 
 
-    it("Vesting Formula 1M over 4 Year, returns 1M claimable, unassign VSTA is 0", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(B, dec(1, 24), { from: treasury })
+    it("Vesting Formula 1M over 4 Year, returns 1M claimable, unassign MON is 0", async () => {
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(B, dec(1, 24), { from: treasury })
 
       await th.fastForwardTime(TWO_YEARS.mul(toBN(2)), web3.currentProvider)
-      const entityVestingData = await lockedVSTA.entitiesVesting(A)
+      const entityVestingData = await lockedMON.entitiesVesting(A)
 
-      const claimable = (await lockedVSTA.getClaimableVSTA(A)).toString();
+      const claimable = (await lockedMON.getClaimableMON(A)).toString();
       assert.equal(claimable, (await applyVestingFormula(entityVestingData)).toString());
       assert.closeTo(th.getDifferenceEther(claimable, dec(1, 24)), 0, 1000)
 
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), 0);
-      await lockedVSTA.claimVSTAToken({ from: A });
+      assert.equal((await monToken.balanceOf(A)).toString(), 0);
+      await lockedMON.claimMONToken({ from: A });
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), dec(1, 24));
-      assert.equal((await lockedVSTA.getUnassignVSTATokensAmount()).toString(), 0);
-      assert.equal((await lockedVSTA.entitiesVesting(A)).claimed.toString(), dec(1, 24))
-      assert.equal((await lockedVSTA.entitiesVesting(B)).claimed.toString(), 0)
+      assert.equal((await monToken.balanceOf(A)).toString(), dec(1, 24));
+      assert.equal((await lockedMON.getUnassignMONTokensAmount()).toString(), 0);
+      assert.equal((await lockedMON.entitiesVesting(A)).claimed.toString(), dec(1, 24))
+      assert.equal((await lockedMON.entitiesVesting(B)).claimed.toString(), 0)
 
-      assert.equal((await vstaToken.balanceOf(lockedVSTA.address)).toString(), dec(1, 24))
+      assert.equal((await monToken.balanceOf(lockedMON.address)).toString(), dec(1, 24))
     })
 
 
     it("Vesting Formula 1M over 2 Years multiple claiming with deleted Entity in the way", async () => {
-      await lockedVSTA.addEntityVesting(A, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(B, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(C, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(D, dec(1, 24), { from: treasury })
-      await lockedVSTA.addEntityVesting(E, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(A, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(B, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(C, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(D, dec(1, 24), { from: treasury })
+      await lockedMON.addEntityVesting(E, dec(1, 24), { from: treasury })
 
       await th.fastForwardTime(SIX_MONTHS, web3.currentProvider)
-      await lockedVSTA.claimVSTAToken({ from: A });
-      await lockedVSTA.claimVSTAToken({ from: D });
+      await lockedMON.claimMONToken({ from: A });
+      await lockedMON.claimMONToken({ from: D });
 
-      await lockedVSTA.removeEntityVesting(C, { from: treasury })
-      await lockedVSTA.transferUnassignedVSTA({ from: treasury })
+      await lockedMON.removeEntityVesting(C, { from: treasury })
+      await lockedMON.transferUnassignedMON({ from: treasury })
 
       await th.fastForwardTime(SIX_MONTHS, web3.currentProvider)
-      await lockedVSTA.claimVSTAToken({ from: A });
-      await lockedVSTA.claimVSTAToken({ from: B });
+      await lockedMON.claimMONToken({ from: A });
+      await lockedMON.claimMONToken({ from: B });
 
 
-      await lockedVSTA.removeEntityVesting(D, { from: treasury })
-      await lockedVSTA.transferUnassignedVSTA({ from: treasury })
+      await lockedMON.removeEntityVesting(D, { from: treasury })
+      await lockedMON.transferUnassignedMON({ from: treasury })
 
-      await lockedVSTA.removeEntityVesting(E, { from: treasury })
-      await lockedVSTA.transferUnassignedVSTA({ from: treasury })
+      await lockedMON.removeEntityVesting(E, { from: treasury })
+      await lockedMON.transferUnassignedMON({ from: treasury })
 
-      let entityVestingData = await lockedVSTA.entitiesVesting(A)
-      let entityVestingData_B = await lockedVSTA.entitiesVesting(B)
+      let entityVestingData = await lockedMON.entitiesVesting(A)
+      let entityVestingData_B = await lockedMON.entitiesVesting(B)
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), (await vstaToken.balanceOf(B)).toString());
+      assert.equal((await monToken.balanceOf(A)).toString(), (await monToken.balanceOf(B)).toString());
       assert.equal(entityVestingData.claimed.toString(), entityVestingData_B.claimed.toString())
 
       await th.fastForwardTime(TWO_YEARS.sub(SIX_MONTHS.mul(toBN(2))), web3.currentProvider)
 
-      await lockedVSTA.claimVSTAToken({ from: A })
-      await lockedVSTA.claimVSTAToken({ from: B })
+      await lockedMON.claimMONToken({ from: A })
+      await lockedMON.claimMONToken({ from: B })
 
-      assert.equal((await vstaToken.balanceOf(A)).toString(), dec(1, 24));
-      assert.equal((await vstaToken.balanceOf(B)).toString(), dec(1, 24));
+      assert.equal((await monToken.balanceOf(A)).toString(), dec(1, 24));
+      assert.equal((await monToken.balanceOf(B)).toString(), dec(1, 24));
 
-      assert.equal((await vstaToken.balanceOf(lockedVSTA.address)).toString(), 0)
-      assert.equal((await lockedVSTA.getUnassignVSTATokensAmount()).toString(), 0);
+      assert.equal((await monToken.balanceOf(lockedMON.address)).toString(), 0)
+      assert.equal((await lockedMON.getUnassignMONTokensAmount()).toString(), 0);
     })
   })
 })

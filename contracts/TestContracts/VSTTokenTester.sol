@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.14;
-import "../VSTToken.sol";
+import "../DCHFToken.sol";
 
-contract VSTTokenTester is VSTToken {
+contract DCHFTokenTester is DCHFToken {
 	constructor(
 		address _troveManagerAddress,
 		address _troveManagerHelpersAddress,
 		address _stabilityPoolAddress,
 		address _borrowerOperationsAddress
-	) VSTToken(_troveManagerAddress, _troveManagerHelpersAddress, _stabilityPoolAddress, _borrowerOperationsAddress) {
+	) DCHFToken(_troveManagerAddress, _troveManagerHelpersAddress, _stabilityPoolAddress, _borrowerOperationsAddress) {
 		_burn(msg.sender, balanceOf(msg.sender));
 	}
 

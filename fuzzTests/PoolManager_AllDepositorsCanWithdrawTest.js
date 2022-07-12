@@ -24,7 +24,7 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
   const lpRewardsAddress = accounts[999]
 
   let priceFeed
-  let VSTToken
+  let DCHFToken
   let troveManager
   let stabilityPool
   let sortedTroves
@@ -51,9 +51,9 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
     const ICRPercent = ICR.slice(0, ICR.length - 16)
 
     console.log(`SP address: ${stabilityPool.address}`)
-    const USDVinPoolBefore = await stabilityPool.getTotalVSTDeposits()
+    const USDVinPoolBefore = await stabilityPool.getTotalDCHFDeposits()
     const liquidatedTx = await troveManager.liquidate(randomDefaulter, { from: accounts[0] })
-    const USDVinPoolAfter = await stabilityPool.getTotalVSTDeposits()
+    const USDVinPoolAfter = await stabilityPool.getTotalDCHFDeposits()
 
     assert.isTrue(liquidatedTx.receipt.status)
 
@@ -63,19 +63,19 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
     }
     if (await troveManager.checkRecoveryMode(price)) { console.log("recovery mode: TRUE") }
 
-    console.log(`Liquidation. addr: ${th.squeezeAddr(randomDefaulter)} ICR: ${ICRPercent}% coll: ${liquidatedETH} debt: ${liquidatedUSDV} SP VST before: ${USDVinPoolBefore} SP VST after: ${USDVinPoolAfter} tx success: ${liquidatedTx.receipt.status}`)
+    console.log(`Liquidation. addr: ${th.squeezeAddr(randomDefaulter)} ICR: ${ICRPercent}% coll: ${liquidatedETH} debt: ${liquidatedUSDV} SP DCHF before: ${USDVinPoolBefore} SP DCHF after: ${USDVinPoolAfter} tx success: ${liquidatedTx.receipt.status}`)
   }
 
   const performSPDeposit = async (depositorAccounts, currentDepositors, currentDepositorsDict) => {
     const randomIndex = Math.floor(Math.random() * (depositorAccounts.length))
     const randomDepositor = depositorAccounts[randomIndex]
 
-    const userBalance = (await VSTToken.balanceOf(randomDepositor))
+    const userBalance = (await DCHFToken.balanceOf(randomDepositor))
     const maxUSDVDeposit = userBalance.div(toBN(dec(1, 18)))
 
-    const randomVSTAmount = th.randAmountInWei(1, maxUSDVDeposit)
+    const randomMONmount = th.randAmountInWei(1, maxUSDVDeposit)
 
-    const depositTx = await stabilityPool.provideToSP(randomVSTAmount, ZERO_ADDRESS, { from: randomDepositor })
+    const depositTx = await stabilityPool.provideToSP(randomMONmount, ZERO_ADDRESS, { from: randomDepositor })
 
     assert.isTrue(depositTx.receipt.status)
 
@@ -84,7 +84,7 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
       currentDepositors.push(randomDepositor)
     }
 
-    console.log(`SP deposit. addr: ${th.squeezeAddr(randomDepositor)} amount: ${randomVSTAmount} tx success: ${depositTx.receipt.status} `)
+    console.log(`SP deposit. addr: ${th.squeezeAddr(randomDepositor)} amount: ${randomMONmount} tx success: ${depositTx.receipt.status} `)
   }
 
   const randomOperation = async (depositorAccounts,
@@ -149,7 +149,7 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
       const lowestTrove = await sortedTroves.getLast()
       const lastTroveDebt = (await troveManager.getEntireDebtAndColl(trove))[0]
       await borrowerOperations.adjustTrove(0, 0, lastTroveDebt, true, whale, { from: whale })
-      await VSTToken.transfer(lowestTrove, lowestTroveDebt, { from: whale })
+      await DCHFToken.transfer(lowestTrove, lowestTroveDebt, { from: whale })
       await borrowerOperations.closeTrove({ from: lowestTrove })
     }
 
@@ -174,18 +174,18 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
 
     for (depositor of currentDepositors) {
       const initialDeposit = (await stabilityPool.deposits(depositor))[0]
-      const finalDeposit = await stabilityPool.getCompoundedVSTDeposit(depositor)
+      const finalDeposit = await stabilityPool.getCompoundedDCHFDeposit(depositor)
       const AssetGain = await stabilityPool.getDepositorETHGain(depositor)
       const ETHinSP = (await stabilityPool.getETH()).toString()
-      const USDVinSP = (await stabilityPool.getTotalVSTDeposits()).toString()
+      const USDVinSP = (await stabilityPool.getTotalDCHFDeposits()).toString()
 
       // Attempt to withdraw
       const withdrawalTx = await stabilityPool.withdrawFromSP(dec(1, 36), { from: depositor })
 
       const ETHinSPAfter = (await stabilityPool.getETH()).toString()
-      const USDVinSPAfter = (await stabilityPool.getTotalVSTDeposits()).toString()
-      const USDVBalanceSPAfter = (await VSTToken.balanceOf(stabilityPool.address))
-      const depositAfter = await stabilityPool.getCompoundedVSTDeposit(depositor)
+      const USDVinSPAfter = (await stabilityPool.getTotalDCHFDeposits()).toString()
+      const USDVBalanceSPAfter = (await DCHFToken.balanceOf(stabilityPool.address))
+      const depositAfter = await stabilityPool.getCompoundedDCHFDeposit(depositor)
 
       console.log(`--Before withdrawal--
                     withdrawer addr: ${th.squeezeAddr(depositor)}
@@ -193,14 +193,14 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
                      ETH gain: ${AssetGain}
                      ETH in SP: ${ETHinSP}
                      compounded deposit: ${finalDeposit} 
-                     VST in SP: ${USDVinSP}
+                     DCHF in SP: ${USDVinSP}
                     
                     --After withdrawal--
                      Withdrawal tx success: ${withdrawalTx.receipt.status} 
                      Deposit after: ${depositAfter}
                      ETH remaining in SP: ${ETHinSPAfter}
-                     SP VST deposits tracker after: ${USDVinSPAfter}
-                     SP VST balance after: ${USDVBalanceSPAfter}
+                     SP DCHF deposits tracker after: ${USDVinSPAfter}
+                     SP DCHF balance after: ${USDVBalanceSPAfter}
                      `)
       // Check each deposit can be withdrawn
       assert.isTrue(withdrawalTx.receipt.status)
@@ -216,16 +216,16 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
 
     beforeEach(async () => {
       contracts = await deploymentHelper.deployLiquityCore()
-      const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+      const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
       priceFeed = contracts.priceFeedTestnet
-      VSTToken = contracts.vstToken
+      DCHFToken = contracts.dchfToken
       troveManager = contracts.troveManager
       borrowerOperations = contracts.borrowerOperations
       sortedTroves = contracts.sortedTroves
 
-      await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-      await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+      await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+      await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
       stabilityPool = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(ZERO_ADDRESS))
     })
 
@@ -261,8 +261,8 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
       const currentDepositorsDict = {}
 
       // setup:
-      // account set L all add coll and withdraw VST
-      await th.openTrove_allAccounts_randomETH_randomVST(defaulterCollMin,
+      // account set L all add coll and withdraw DCHF
+      await th.openTrove_allAccounts_randomETH_randomDCHF(defaulterCollMin,
         defaulterCollMax,
         defaulterAccounts,
         contracts,
@@ -270,8 +270,8 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
         defaulterUSDVProportionMax,
         true)
 
-      // account set S all add coll and withdraw VST
-      await th.openTrove_allAccounts_randomETH_randomVST(depositorCollMin,
+      // account set S all add coll and withdraw DCHF
+      await th.openTrove_allAccounts_randomETH_randomDCHF(depositorCollMin,
         depositorCollMax,
         depositorAccounts,
         contracts,
@@ -293,18 +293,18 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
 
       await skyrocketPriceAndCheckAllTrovesSafe()
 
-      const totalUSDVDepositsBeforeWithdrawals = await stabilityPool.getTotalVSTDeposits()
+      const totalUSDVDepositsBeforeWithdrawals = await stabilityPool.getTotalDCHFDeposits()
       const totalETHRewardsBeforeWithdrawals = await stabilityPool.getETH()
 
       await attemptWithdrawAllDeposits(currentDepositors)
 
-      const totalUSDVDepositsAfterWithdrawals = await stabilityPool.getTotalVSTDeposits()
+      const totalUSDVDepositsAfterWithdrawals = await stabilityPool.getTotalDCHFDeposits()
       const totalETHRewardsAfterWithdrawals = await stabilityPool.getETH()
 
-      console.log(`Total VST deposits before any withdrawals: ${totalUSDVDepositsBeforeWithdrawals}`)
+      console.log(`Total DCHF deposits before any withdrawals: ${totalUSDVDepositsBeforeWithdrawals}`)
       console.log(`Total ETH rewards before any withdrawals: ${totalETHRewardsBeforeWithdrawals}`)
 
-      console.log(`Remaining VST deposits after withdrawals: ${totalUSDVDepositsAfterWithdrawals}`)
+      console.log(`Remaining DCHF deposits after withdrawals: ${totalUSDVDepositsAfterWithdrawals}`)
       console.log(`Remaining ETH rewards after withdrawals: ${totalETHRewardsAfterWithdrawals}`)
 
       console.log(`current depositors length: ${currentDepositors.length}`)
@@ -335,16 +335,16 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
       const currentDepositorsDict = {}
 
       // setup:
-      // account set L all add coll and withdraw VST
-      await th.openTrove_allAccounts_randomETH_randomVST(defaulterCollMin,
+      // account set L all add coll and withdraw DCHF
+      await th.openTrove_allAccounts_randomETH_randomDCHF(defaulterCollMin,
         defaulterCollMax,
         defaulterAccounts,
         contracts,
         defaulterUSDVProportionMin,
         defaulterUSDVProportionMax)
 
-      // account set S all add coll and withdraw VST
-      await th.openTrove_allAccounts_randomETH_randomVST(depositorCollMin,
+      // account set S all add coll and withdraw DCHF
+      await th.openTrove_allAccounts_randomETH_randomDCHF(depositorCollMin,
         depositorCollMax,
         depositorAccounts,
         contracts,
@@ -365,18 +365,18 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
 
       await skyrocketPriceAndCheckAllTrovesSafe()
 
-      const totalUSDVDepositsBeforeWithdrawals = await stabilityPool.getTotalVSTDeposits()
+      const totalUSDVDepositsBeforeWithdrawals = await stabilityPool.getTotalDCHFDeposits()
       const totalETHRewardsBeforeWithdrawals = await stabilityPool.getETH()
 
       await attemptWithdrawAllDeposits(currentDepositors)
 
-      const totalUSDVDepositsAfterWithdrawals = await stabilityPool.getTotalVSTDeposits()
+      const totalUSDVDepositsAfterWithdrawals = await stabilityPool.getTotalDCHFDeposits()
       const totalETHRewardsAfterWithdrawals = await stabilityPool.getETH()
 
-      console.log(`Total VST deposits before any withdrawals: ${totalUSDVDepositsBeforeWithdrawals}`)
+      console.log(`Total DCHF deposits before any withdrawals: ${totalUSDVDepositsBeforeWithdrawals}`)
       console.log(`Total ETH rewards before any withdrawals: ${totalETHRewardsBeforeWithdrawals}`)
 
-      console.log(`Remaining VST deposits after withdrawals: ${totalUSDVDepositsAfterWithdrawals}`)
+      console.log(`Remaining DCHF deposits after withdrawals: ${totalUSDVDepositsAfterWithdrawals}`)
       console.log(`Remaining ETH rewards after withdrawals: ${totalETHRewardsAfterWithdrawals}`)
 
       console.log(`current depositors length: ${currentDepositors.length}`)
@@ -407,16 +407,16 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
       const currentDepositorsDict = {}
 
       // setup:
-      // account set L all add coll and withdraw VST
-      await th.openTrove_allAccounts_randomETH_randomVST(defaulterCollMin,
+      // account set L all add coll and withdraw DCHF
+      await th.openTrove_allAccounts_randomETH_randomDCHF(defaulterCollMin,
         defaulterCollMax,
         defaulterAccounts,
         contracts,
         defaulterUSDVProportionMin,
         defaulterUSDVProportionMax)
 
-      // account set S all add coll and withdraw VST
-      await th.openTrove_allAccounts_randomETH_randomVST(depositorCollMin,
+      // account set S all add coll and withdraw DCHF
+      await th.openTrove_allAccounts_randomETH_randomDCHF(depositorCollMin,
         depositorCollMax,
         depositorAccounts,
         contracts,
@@ -437,18 +437,18 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
 
       await skyrocketPriceAndCheckAllTrovesSafe()
 
-      const totalUSDVDepositsBeforeWithdrawals = await stabilityPool.getTotalVSTDeposits()
+      const totalUSDVDepositsBeforeWithdrawals = await stabilityPool.getTotalDCHFDeposits()
       const totalETHRewardsBeforeWithdrawals = await stabilityPool.getETH()
 
       await attemptWithdrawAllDeposits(currentDepositors)
 
-      const totalUSDVDepositsAfterWithdrawals = await stabilityPool.getTotalVSTDeposits()
+      const totalUSDVDepositsAfterWithdrawals = await stabilityPool.getTotalDCHFDeposits()
       const totalETHRewardsAfterWithdrawals = await stabilityPool.getETH()
 
-      console.log(`Total VST deposits before any withdrawals: ${totalUSDVDepositsBeforeWithdrawals}`)
+      console.log(`Total DCHF deposits before any withdrawals: ${totalUSDVDepositsBeforeWithdrawals}`)
       console.log(`Total ETH rewards before any withdrawals: ${totalETHRewardsBeforeWithdrawals}`)
 
-      console.log(`Remaining VST deposits after withdrawals: ${totalUSDVDepositsAfterWithdrawals}`)
+      console.log(`Remaining DCHF deposits after withdrawals: ${totalUSDVDepositsAfterWithdrawals}`)
       console.log(`Remaining ETH rewards after withdrawals: ${totalETHRewardsAfterWithdrawals}`)
 
       console.log(`current depositors length: ${currentDepositors.length}`)
@@ -480,16 +480,16 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
       const currentDepositorsDict = {}
 
       // setup:
-      // account set L all add coll and withdraw VST
-      await th.openTrove_allAccounts_randomETH_randomVST(defaulterCollMin,
+      // account set L all add coll and withdraw DCHF
+      await th.openTrove_allAccounts_randomETH_randomDCHF(defaulterCollMin,
         defaulterCollMax,
         defaulterAccounts,
         contracts,
         defaulterUSDVProportionMin,
         defaulterUSDVProportionMax)
 
-      // account set S all add coll and withdraw VST
-      await th.openTrove_allAccounts_randomETH_randomVST(depositorCollMin,
+      // account set S all add coll and withdraw DCHF
+      await th.openTrove_allAccounts_randomETH_randomDCHF(depositorCollMin,
         depositorCollMax,
         depositorAccounts,
         contracts,
@@ -510,18 +510,18 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
 
       await skyrocketPriceAndCheckAllTrovesSafe()
 
-      const totalUSDVDepositsBeforeWithdrawals = await stabilityPool.getTotalVSTDeposits()
+      const totalUSDVDepositsBeforeWithdrawals = await stabilityPool.getTotalDCHFDeposits()
       const totalETHRewardsBeforeWithdrawals = await stabilityPool.getETH()
 
       await attemptWithdrawAllDeposits(currentDepositors)
 
-      const totalUSDVDepositsAfterWithdrawals = await stabilityPool.getTotalVSTDeposits()
+      const totalUSDVDepositsAfterWithdrawals = await stabilityPool.getTotalDCHFDeposits()
       const totalETHRewardsAfterWithdrawals = await stabilityPool.getETH()
 
-      console.log(`Total VST deposits before any withdrawals: ${totalUSDVDepositsBeforeWithdrawals}`)
+      console.log(`Total DCHF deposits before any withdrawals: ${totalUSDVDepositsBeforeWithdrawals}`)
       console.log(`Total ETH rewards before any withdrawals: ${totalETHRewardsBeforeWithdrawals}`)
 
-      console.log(`Remaining VST deposits after withdrawals: ${totalUSDVDepositsAfterWithdrawals}`)
+      console.log(`Remaining DCHF deposits after withdrawals: ${totalUSDVDepositsAfterWithdrawals}`)
       console.log(`Remaining ETH rewards after withdrawals: ${totalETHRewardsAfterWithdrawals}`)
 
       console.log(`current depositors length: ${currentDepositors.length}`)

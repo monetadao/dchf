@@ -10,10 +10,10 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
 /*
- * The Default Pool holds the ETH and VST debt (but not VST tokens) from liquidations that have been redistributed
+ * The Default Pool holds the ETH and DCHF debt (but not DCHF tokens) from liquidations that have been redistributed
  * to active troves but not yet "applied", i.e. not yet recorded on a recipient active trove's struct.
  *
- * When a trove makes an operation that applies its pending ETH and VST debt, its pending ETH and VST debt is moved
+ * When a trove makes an operation that applies its pending ETH and DCHF debt, its pending ETH and DCHF debt is moved
  * from the Default Pool to the Active Pool.
  */
 contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
@@ -30,7 +30,7 @@ contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
 	bool public isInitialized;
 
 	mapping(address => uint256) internal assetsBalance;
-	mapping(address => uint256) internal VSTDebts; // debt
+	mapping(address => uint256) internal DCHFDebts; // debt
 
 	// --- Dependency setters ---
 
@@ -65,8 +65,8 @@ contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
 		return assetsBalance[_asset];
 	}
 
-	function getVSTDebt(address _asset) external view override returns (uint256) {
-		return VSTDebts[_asset];
+	function getDCHFDebt(address _asset) external view override returns (uint256) {
+		return DCHFDebts[_asset];
 	}
 
 	// --- Pool functionality ---
@@ -95,22 +95,22 @@ contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
 		emit AssetSent(activePool, _asset, safetyTransferAmount);
 	}
 
-	function increaseVSTDebt(address _asset, uint256 _amount)
+	function increaseDCHFDebt(address _asset, uint256 _amount)
 		external
 		override
 		callerIsTroveManager
 	{
-		VSTDebts[_asset] = VSTDebts[_asset].add(_amount);
-		emit DefaultPoolVSTDebtUpdated(_asset, VSTDebts[_asset]);
+		DCHFDebts[_asset] = DCHFDebts[_asset].add(_amount);
+		emit DefaultPoolDCHFDebtUpdated(_asset, DCHFDebts[_asset]);
 	}
 
-	function decreaseVSTDebt(address _asset, uint256 _amount)
+	function decreaseDCHFDebt(address _asset, uint256 _amount)
 		external
 		override
 		callerIsTroveManager
 	{
-		VSTDebts[_asset] = VSTDebts[_asset].sub(_amount);
-		emit DefaultPoolVSTDebtUpdated(_asset, VSTDebts[_asset]);
+		DCHFDebts[_asset] = DCHFDebts[_asset].sub(_amount);
+		emit DefaultPoolDCHFDebtUpdated(_asset, DCHFDebts[_asset]);
 	}
 
 	// --- 'require' functions ---

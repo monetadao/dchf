@@ -6,8 +6,8 @@ import "../ActivePool.sol";
 contract ActivePoolTester is ActivePool {
 	using SafeMathUpgradeable for uint256;
 
-	function unprotectedIncreaseVSTDebt(address _asset, uint256 _amount) external {
-		VSTDebts[_asset] = VSTDebts[_asset].add(_amount);
+	function unprotectedIncreaseDCHFDebt(address _asset, uint256 _amount) external {
+		DCHFDebts[_asset] = DCHFDebts[_asset].add(_amount);
 	}
 
 	function unprotectedPayable(address _asset, uint256 amount) external payable {

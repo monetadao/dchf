@@ -3,7 +3,7 @@ const { TestHelper: th, MoneyValues: mv } = require("../../utils/testHelpers.js"
 const { toBN, dec, ZERO_ADDRESS } = th
 
 const TroveManagerTester = artifacts.require("./TroveManagerTester")
-const VSTTokenTester = artifacts.require("VSTTokenTester")
+const DCHFTokenTester = artifacts.require("DCHFTokenTester")
 const StabilityPool = artifacts.require('StabilityPool.sol')
 
 contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async accounts => {
@@ -28,12 +28,12 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
     contracts.troveManager = await TroveManagerTester.new()
-    contracts.vstToken = await VSTTokenTester.new(
+    contracts.dchfToken = await DCHFTokenTester.new(
       contracts.troveManager.address,
       contracts.stabilityPoolManager.address,
       contracts.borrowerOperations.address,
     )
-    const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+    const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
     troveManager = contracts.troveManager
     priceFeed = contracts.priceFeedTestnet
@@ -49,8 +49,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
         break;
     }
 
-    await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-    await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+    await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
     stabilityPool = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(ZERO_ADDRESS))
     stabilityPoolERC20 = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(erc20.address));
   })
@@ -68,8 +68,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt).add(C_totalDebt)
       const totalLiquidatedDebt_Asset = A_totalDebt_Asset.add(B_totalDebt_Asset).add(C_totalDebt_Asset)
 
-      await openTrove({ ICR: toBN(dec(340, 16)), extraVSTAmount: totalLiquidatedDebt, extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, ICR: toBN(dec(340, 16)), extraVSTAmount: totalLiquidatedDebt_Asset, extraParams: { from: whale } })
+      await openTrove({ ICR: toBN(dec(340, 16)), extraMONmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, ICR: toBN(dec(340, 16)), extraMONmount: totalLiquidatedDebt_Asset, extraParams: { from: whale } })
       await stabilityPool.provideToSP(totalLiquidatedDebt, { from: whale })
       await stabilityPoolERC20.provideToSP(totalLiquidatedDebt_Asset, { from: whale })
 
@@ -165,10 +165,10 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       } = await setup()
 
       const spEthBefore = await stabilityPool.getAssetBalance()
-      const spVSTBefore = await stabilityPool.getTotalVSTDeposits()
+      const spDCHFBefore = await stabilityPool.getTotalDCHFDeposits()
 
       const spEthBefore_Asset = await stabilityPoolERC20.getAssetBalance()
-      const spVSTBefore_Asset = await stabilityPoolERC20.getTotalVSTDeposits()
+      const spDCHFBefore_Asset = await stabilityPoolERC20.getTotalDCHFDeposits()
 
       const tx = await troveManager.batchLiquidateTroves(ZERO_ADDRESS, [alice, carol])
       const txAsset = await troveManager.batchLiquidateTroves(erc20.address, [alice, carol])
@@ -188,10 +188,10 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       assert.equal((await troveManager.Troves(carol, erc20.address))[th.TROVE_STATUS_INDEX], '3')
 
       const spEthAfter = await stabilityPool.getAssetBalance()
-      const spVSTAfter = await stabilityPool.getTotalVSTDeposits()
+      const spMONfter = await stabilityPool.getTotalDCHFDeposits()
 
       const spEthAfter_Asset = await stabilityPoolERC20.getAssetBalance()
-      const spVSTAfter_Asset = await stabilityPoolERC20.getTotalVSTDeposits()
+      const spMONfter_Asset = await stabilityPoolERC20.getTotalDCHFDeposits()
 
       // liquidate collaterals with the gas compensation fee subtracted
       const expectedCollateralLiquidatedA = th.applyLiquidationFee(A_totalDebt.mul(mv._MCR).div(price))
@@ -199,19 +199,19 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const expectedCollateralLiquidatedA_Asset = th.applyLiquidationFee(A_totalDebt_Asset.mul(mv._MCR).div(price))
       const expectedCollateralLiquidatedC_Asset = th.applyLiquidationFee(C_coll_Asset)
       // Stability Pool gains
-      const expectedGainInVST = expectedCollateralLiquidatedA.mul(price).div(mv._1e18BN).sub(A_totalDebt)
-      const realGainInVST = spEthAfter.sub(spEthBefore).mul(price).div(mv._1e18BN).sub(spVSTBefore.sub(spVSTAfter))
+      const expectedGainInDCHF = expectedCollateralLiquidatedA.mul(price).div(mv._1e18BN).sub(A_totalDebt)
+      const realGainInDCHF = spEthAfter.sub(spEthBefore).mul(price).div(mv._1e18BN).sub(spDCHFBefore.sub(spMONfter))
 
-      const expectedGainInVST_Asset = expectedCollateralLiquidatedA_Asset.mul(price).div(mv._1e18BN).sub(A_totalDebt_Asset)
-      const realGainInVST_Asset = spEthAfter_Asset.sub(spEthBefore_Asset).mul(price).div(mv._1e18BN).sub(spVSTBefore_Asset.sub(spVSTAfter_Asset))
+      const expectedGainInDCHF_Asset = expectedCollateralLiquidatedA_Asset.mul(price).div(mv._1e18BN).sub(A_totalDebt_Asset)
+      const realGainInDCHF_Asset = spEthAfter_Asset.sub(spEthBefore_Asset).mul(price).div(mv._1e18BN).sub(spDCHFBefore_Asset.sub(spMONfter_Asset))
 
       assert.equal(spEthAfter.sub(spEthBefore).toString(), expectedCollateralLiquidatedA.toString(), 'Stability Pool ETH doesn’t match')
-      assert.equal(spVSTBefore.sub(spVSTAfter).toString(), A_totalDebt.toString(), 'Stability Pool VST doesn’t match')
-      assert.equal(realGainInVST.toString(), expectedGainInVST.toString(), 'Stability Pool gains don’t match')
+      assert.equal(spDCHFBefore.sub(spMONfter).toString(), A_totalDebt.toString(), 'Stability Pool DCHF doesn’t match')
+      assert.equal(realGainInDCHF.toString(), expectedGainInDCHF.toString(), 'Stability Pool gains don’t match')
 
       assert.equal(spEthAfter_Asset.sub(spEthBefore_Asset).toString(), expectedCollateralLiquidatedA_Asset.toString(), 'Stability Pool ETH doesn’t match')
-      assert.equal(spVSTBefore_Asset.sub(spVSTAfter_Asset).toString(), A_totalDebt_Asset.toString(), 'Stability Pool VST doesn’t match')
-      assert.equal(realGainInVST_Asset.toString(), expectedGainInVST_Asset.toString(), 'Stability Pool gains don’t match')
+      assert.equal(spDCHFBefore_Asset.sub(spMONfter_Asset).toString(), A_totalDebt_Asset.toString(), 'Stability Pool DCHF doesn’t match')
+      assert.equal(realGainInDCHF_Asset.toString(), expectedGainInDCHF_Asset.toString(), 'Stability Pool gains don’t match')
     })
 
     it('A trove over TCR is not liquidated', async () => {
@@ -226,8 +226,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt).add(C_totalDebt)
       const totalLiquidatedDebt_Asset = A_totalDebt_Asset.add(B_totalDebt_Asset).add(C_totalDebt_Asset)
 
-      await openTrove({ ICR: toBN(dec(310, 16)), extraVSTAmount: totalLiquidatedDebt, extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, ICR: toBN(dec(310, 16)), extraVSTAmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ ICR: toBN(dec(310, 16)), extraMONmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, ICR: toBN(dec(310, 16)), extraMONmount: totalLiquidatedDebt, extraParams: { from: whale } })
       await stabilityPool.provideToSP(totalLiquidatedDebt, { from: whale })
       await stabilityPoolERC20.provideToSP(totalLiquidatedDebt_Asset, { from: whale })
 
@@ -298,8 +298,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt)
       const totalLiquidatedDebt_Asset = A_totalDebt_Asset.add(B_totalDebt_Asset)
 
-      await openTrove({ ICR: toBN(dec(300, 16)), extraVSTAmount: totalLiquidatedDebt, extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, ICR: toBN(dec(300, 16)), extraVSTAmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ ICR: toBN(dec(300, 16)), extraMONmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, ICR: toBN(dec(300, 16)), extraMONmount: totalLiquidatedDebt, extraParams: { from: whale } })
       await stabilityPool.provideToSP(totalLiquidatedDebt, { from: whale })
       await stabilityPoolERC20.provideToSP(totalLiquidatedDebt_Asset, { from: whale })
 

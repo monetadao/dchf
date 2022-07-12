@@ -2,22 +2,22 @@
 
 pragma solidity ^0.8.14;
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "../Dependencies/VestaMath.sol";
+import "../Dependencies/DfrancMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../Interfaces/IBorrowerOperations.sol";
 import "../Interfaces/ITroveManager.sol";
 import "../Interfaces/ITroveManagerHelpers.sol";
 import "../Interfaces/IStabilityPoolManager.sol";
 import "../Interfaces/IPriceFeed.sol";
-import "../Interfaces/IVSTAStaking.sol";
+import "../Interfaces/IMONStaking.sol";
 import "./BorrowerOperationsScript.sol";
 import "./ETHTransferScript.sol";
-import "./VSTAStakingScript.sol";
+import "./MONStakingScript.sol";
 
 contract BorrowerWrappersScript is
 	BorrowerOperationsScript,
 	ETHTransferScript,
-	VSTAStakingScript
+	MONStakingScript
 {
 	using SafeMathUpgradeable for uint256;
 
@@ -26,7 +26,7 @@ contract BorrowerWrappersScript is
 		uint256 _maxFee;
 		address _upperHint;
 		address _lowerHint;
-		uint256 netVSTAmount;
+		uint256 netMONmount;
 	}
 
 	string public constant NAME = "BorrowerWrappersScript";
@@ -35,17 +35,17 @@ contract BorrowerWrappersScript is
 	ITroveManagerHelpers immutable troveManagerHelpers;
 	IStabilityPoolManager immutable stabilityPoolManager;
 	IPriceFeed immutable priceFeed;
-	IERC20 immutable vstToken;
-	IERC20 immutable vstaToken;
+	IERC20 immutable dchfToken;
+	IERC20 immutable monToken;
 
 	constructor(
 		address _borrowerOperationsAddress,
 		address _troveManagerAddress,
 		address _troveManagerHelpersAddress,
-		address _VSTAStakingAddress
+		address _MONStakingAddress
 	)
 		BorrowerOperationsScript(IBorrowerOperations(_borrowerOperationsAddress))
-		VSTAStakingScript(_VSTAStakingAddress)
+		MONStakingScript(_MONStakingAddress)
 	{
 		checkContract(_troveManagerAddress);
 		ITroveManager troveManagerCached = ITroveManager(_troveManagerAddress);
@@ -61,25 +61,25 @@ contract BorrowerWrappersScript is
 		checkContract(address(priceFeedCached));
 		priceFeed = priceFeedCached;
 
-		address vstTokenCached = address(troveManagerCached.vstToken());
-		checkContract(vstTokenCached);
-		vstToken = IERC20(vstTokenCached);
+		address dchfTokenCached = address(troveManagerCached.dchfToken());
+		checkContract(dchfTokenCached);
+		dchfToken = IERC20(dchfTokenCached);
 
-		address vstaTokenCached = address(IVSTAStaking(_VSTAStakingAddress).vstaToken());
-		checkContract(vstaTokenCached);
-		vstaToken = IERC20(vstaTokenCached);
+		address monTokenCached = address(IMONStaking(_MONStakingAddress).monToken());
+		checkContract(monTokenCached);
+		monToken = IERC20(monTokenCached);
 
-		IVSTAStaking vstaStakingCached = troveManagerCached.vstaStaking();
+		IMONStaking monStakingCached = troveManagerCached.monStaking();
 		require(
-			_VSTAStakingAddress == address(vstaStakingCached),
-			"BorrowerWrappersScript: Wrong VSTAStaking address"
+			_MONStakingAddress == address(monStakingCached),
+			"BorrowerWrappersScript: Wrong MONStaking address"
 		);
 	}
 
 	function claimCollateralAndOpenTrove(
 		address _asset,
 		uint256 _maxFee,
-		uint256 _VSTAmount,
+		uint256 _MONmount,
 		address _upperHint,
 		address _lowerHint
 	) external payable {
@@ -100,7 +100,7 @@ contract BorrowerWrappersScript is
 			_asset,
 			totalCollateral,
 			_maxFee,
-			_VSTAmount,
+			_MONmount,
 			_upperHint,
 			_lowerHint
 		);
@@ -114,19 +114,19 @@ contract BorrowerWrappersScript is
 	) external {
 		Local_var memory vars = Local_var(_asset, _maxFee, _upperHint, _lowerHint, 0);
 		uint256 collBalanceBefore = address(this).balance;
-		uint256 VSTABalanceBefore = vstaToken.balanceOf(address(this));
+		uint256 MONBalanceBefore = monToken.balanceOf(address(this));
 
 		// Claim rewards
 		stabilityPoolManager.getAssetStabilityPool(vars._asset).withdrawFromSP(0);
 
 		uint256 collBalanceAfter = address(this).balance;
-		uint256 VSTABalanceAfter = vstaToken.balanceOf(address(this));
+		uint256 MONBalanceAfter = monToken.balanceOf(address(this));
 		uint256 claimedCollateral = collBalanceAfter.sub(collBalanceBefore);
 
-		// Add claimed ETH to trove, get more VST and stake it into the Stability Pool
+		// Add claimed ETH to trove, get more DCHF and stake it into the Stability Pool
 		if (claimedCollateral > 0) {
 			_requireUserHasTrove(vars._asset, address(this));
-			vars.netVSTAmount = _getNetVSTAmount(vars._asset, claimedCollateral);
+			vars.netMONmount = _getNetMONmount(vars._asset, claimedCollateral);
 			borrowerOperations.adjustTrove{
 				value: vars._asset == address(0) ? claimedCollateral : 0
 			}(
@@ -134,21 +134,21 @@ contract BorrowerWrappersScript is
 				claimedCollateral,
 				vars._maxFee,
 				0,
-				vars.netVSTAmount,
+				vars.netMONmount,
 				true,
 				vars._upperHint,
 				vars._lowerHint
 			);
-			// Provide withdrawn VST to Stability Pool
-			if (vars.netVSTAmount > 0) {
-				stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(vars.netVSTAmount);
+			// Provide withdrawn DCHF to Stability Pool
+			if (vars.netMONmount > 0) {
+				stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(vars.netMONmount);
 			}
 		}
 
-		// Stake claimed VSTA
-		uint256 claimedVSTA = VSTABalanceAfter.sub(VSTABalanceBefore);
-		if (claimedVSTA > 0) {
-			vstaStaking.stake(claimedVSTA);
+		// Stake claimed MON
+		uint256 claimedMON = MONBalanceAfter.sub(MONBalanceBefore);
+		if (claimedMON > 0) {
+			monStaking.stake(claimedMON);
 		}
 	}
 
@@ -161,19 +161,19 @@ contract BorrowerWrappersScript is
 		Local_var memory vars = Local_var(_asset, _maxFee, _upperHint, _lowerHint, 0);
 
 		uint256 collBalanceBefore = address(this).balance;
-		uint256 VSTBalanceBefore = vstToken.balanceOf(address(this));
-		uint256 VSTABalanceBefore = vstaToken.balanceOf(address(this));
+		uint256 DCHFBalanceBefore = dchfToken.balanceOf(address(this));
+		uint256 MONBalanceBefore = monToken.balanceOf(address(this));
 
 		// Claim gains
-		vstaStaking.unstake(0);
+		monStaking.unstake(0);
 
 		uint256 gainedCollateral = address(this).balance.sub(collBalanceBefore); // stack too deep issues :'(
-		uint256 gainedVST = vstToken.balanceOf(address(this)).sub(VSTBalanceBefore);
+		uint256 gainedDCHF = dchfToken.balanceOf(address(this)).sub(DCHFBalanceBefore);
 
-		// Top up trove and get more VST, keeping ICR constant
+		// Top up trove and get more DCHF, keeping ICR constant
 		if (gainedCollateral > 0) {
 			_requireUserHasTrove(vars._asset, address(this));
-			vars.netVSTAmount = _getNetVSTAmount(vars._asset, gainedCollateral);
+			vars.netMONmount = _getNetMONmount(vars._asset, gainedCollateral);
 			borrowerOperations.adjustTrove{
 				value: vars._asset == address(0) ? gainedCollateral : 0
 			}(
@@ -181,34 +181,34 @@ contract BorrowerWrappersScript is
 				gainedCollateral,
 				vars._maxFee,
 				0,
-				vars.netVSTAmount,
+				vars.netMONmount,
 				true,
 				vars._upperHint,
 				vars._lowerHint
 			);
 		}
 
-		uint256 totalVST = gainedVST.add(vars.netVSTAmount);
-		if (totalVST > 0) {
-			stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(totalVST);
+		uint256 totalDCHF = gainedDCHF.add(vars.netMONmount);
+		if (totalDCHF > 0) {
+			stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(totalDCHF);
 
-			// Providing to Stability Pool also triggers VSTA claim, so stake it if any
-			uint256 VSTABalanceAfter = vstaToken.balanceOf(address(this));
-			uint256 claimedVSTA = VSTABalanceAfter.sub(VSTABalanceBefore);
-			if (claimedVSTA > 0) {
-				vstaStaking.stake(claimedVSTA);
+			// Providing to Stability Pool also triggers MON claim, so stake it if any
+			uint256 MONBalanceAfter = monToken.balanceOf(address(this));
+			uint256 claimedMON = MONBalanceAfter.sub(MONBalanceBefore);
+			if (claimedMON > 0) {
+				monStaking.stake(claimedMON);
 			}
 		}
 	}
 
-	function _getNetVSTAmount(address _asset, uint256 _collateral) internal returns (uint256) {
+	function _getNetMONmount(address _asset, uint256 _collateral) internal returns (uint256) {
 		uint256 price = priceFeed.fetchPrice(_asset);
 		uint256 ICR = troveManagerHelpers.getCurrentICR(_asset, address(this), price);
 
-		uint256 VSTAmount = _collateral.mul(price).div(ICR);
+		uint256 MONmount = _collateral.mul(price).div(ICR);
 		uint256 borrowingRate = troveManagerHelpers.getBorrowingRateWithDecay(_asset);
-		uint256 netDebt = VSTAmount.mul(VestaMath.DECIMAL_PRECISION).div(
-			VestaMath.DECIMAL_PRECISION.add(borrowingRate)
+		uint256 netDebt = MONmount.mul(DfrancMath.DECIMAL_PRECISION).div(
+			DfrancMath.DECIMAL_PRECISION.add(borrowingRate)
 		);
 
 		return netDebt;

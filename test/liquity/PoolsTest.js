@@ -4,7 +4,7 @@ const CollSurplusPool = artifacts.require("./CollSurplusPool.sol")
 const StabilityPoolManager = artifacts.require("./StabilityPoolManager.sol")
 const DefaultPool = artifacts.require("./DefaultPool.sol")
 const NonPayable = artifacts.require("./NonPayable.sol")
-const VestaParameters = artifacts.require("./VestaParameters.sol")
+const DfrancParameters = artifacts.require("./DfrancParameters.sol")
 const CommunityIssuance = artifacts.require("./CommunityIssuance.sol")
 
 const { ZERO_ADDRESS } = require("@openzeppelin/test-helpers/src/constants")
@@ -27,7 +27,7 @@ contract('StabilityPool', async accounts => {
     stabilityPool = await StabilityPool.new()
     const mockCommunityIssuance = (await CommunityIssuance.new()).address
     const dumbContractAddress = (await NonPayable.new()).address
-    const vestaParameters = await VestaParameters.new();
+    const vestaParameters = await DfrancParameters.new();
     await vestaParameters.sanitizeParameters(ZERO_ADDRESS);
     await stabilityPool.setAddresses(ZERO_ADDRESS, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, mockCommunityIssuance, vestaParameters.address)
   })
@@ -37,8 +37,8 @@ contract('StabilityPool', async accounts => {
     assert.equal(recordedETHBalance, 0)
   })
 
-  it('getTotalVSTDeposits(): gets the recorded VST balance', async () => {
-    const recordedETHBalance = await stabilityPool.getTotalVSTDeposits()
+  it('getTotalDCHFDeposits(): gets the recorded DCHF balance', async () => {
+    const recordedETHBalance = await stabilityPool.getTotalDCHFDeposits()
     assert.equal(recordedETHBalance, 0)
   })
 })
@@ -62,39 +62,39 @@ contract('ActivePool', async accounts => {
     assert.equal(recordedETHBalance, 0)
   })
 
-  it('getVSTDebt(): gets the recorded VST balance', async () => {
-    const recordedETHBalance = await activePool.getVSTDebt(ZERO_ADDRESS)
+  it('getDCHFDebt(): gets the recorded DCHF balance', async () => {
+    const recordedETHBalance = await activePool.getDCHFDebt(ZERO_ADDRESS)
     assert.equal(recordedETHBalance, 0)
   })
 
-  it('increaseVST(): increases the recorded VST balance by the correct amount', async () => {
-    const recordedVST_balanceBefore = await activePool.getVSTDebt(ZERO_ADDRESS)
-    assert.equal(recordedVST_balanceBefore, 0)
+  it('increaseDCHF(): increases the recorded DCHF balance by the correct amount', async () => {
+    const recordedDCHF_balanceBefore = await activePool.getDCHFDebt(ZERO_ADDRESS)
+    assert.equal(recordedDCHF_balanceBefore, 0)
 
-    // await activePool.increaseVSTDebt(100, { from: mockBorrowerOperationsAddress })
-    const increaseVSTDebtData = th.getTransactionData('increaseVSTDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
-    const tx = await mockBorrowerOperations.forward(activePool.address, increaseVSTDebtData)
+    // await activePool.increaseDCHFDebt(100, { from: mockBorrowerOperationsAddress })
+    const increaseDCHFDebtData = th.getTransactionData('increaseDCHFDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
+    const tx = await mockBorrowerOperations.forward(activePool.address, increaseDCHFDebtData)
     assert.isTrue(tx.receipt.status)
-    const recordedVST_balanceAfter = await activePool.getVSTDebt(ZERO_ADDRESS)
-    assert.equal(recordedVST_balanceAfter, 100)
+    const recordedDCHF_balanceAfter = await activePool.getDCHFDebt(ZERO_ADDRESS)
+    assert.equal(recordedDCHF_balanceAfter, 100)
   })
   // Decrease
-  it('decreaseVST(): decreases the recorded VST balance by the correct amount', async () => {
+  it('decreaseDCHF(): decreases the recorded DCHF balance by the correct amount', async () => {
     // start the pool on 100 wei
-    //await activePool.increaseVSTDebt(100, { from: mockBorrowerOperationsAddress })
-    const increaseVSTDebtData = th.getTransactionData('increaseVSTDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
-    const tx1 = await mockBorrowerOperations.forward(activePool.address, increaseVSTDebtData)
+    //await activePool.increaseDCHFDebt(100, { from: mockBorrowerOperationsAddress })
+    const increaseDCHFDebtData = th.getTransactionData('increaseDCHFDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
+    const tx1 = await mockBorrowerOperations.forward(activePool.address, increaseDCHFDebtData)
     assert.isTrue(tx1.receipt.status)
 
-    const recordedVST_balanceBefore = await activePool.getVSTDebt(ZERO_ADDRESS)
-    assert.equal(recordedVST_balanceBefore, 100)
+    const recordedDCHF_balanceBefore = await activePool.getDCHFDebt(ZERO_ADDRESS)
+    assert.equal(recordedDCHF_balanceBefore, 100)
 
-    //await activePool.decreaseVSTDebt(100, { from: mockBorrowerOperationsAddress })
-    const decreaseVSTDebtData = th.getTransactionData('decreaseVSTDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
-    const tx2 = await mockBorrowerOperations.forward(activePool.address, decreaseVSTDebtData)
+    //await activePool.decreaseDCHFDebt(100, { from: mockBorrowerOperationsAddress })
+    const decreaseDCHFDebtData = th.getTransactionData('decreaseDCHFDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
+    const tx2 = await mockBorrowerOperations.forward(activePool.address, decreaseDCHFDebtData)
     assert.isTrue(tx2.receipt.status)
-    const recordedVST_balanceAfter = await activePool.getVSTDebt(ZERO_ADDRESS)
-    assert.equal(recordedVST_balanceAfter, 0)
+    const recordedDCHF_balanceAfter = await activePool.getDCHFDebt(ZERO_ADDRESS)
+    assert.equal(recordedDCHF_balanceAfter, 0)
   })
 
   // send raw ether
@@ -140,46 +140,46 @@ contract('DefaultPool', async accounts => {
     await defaultPool.setAddresses(mockTroveManager.address, mockActivePool.address)
   })
 
-  it('getAssetBalance(): gets the recorded VST balance', async () => {
+  it('getAssetBalance(): gets the recorded DCHF balance', async () => {
     const recordedETHBalance = await defaultPool.getAssetBalance(ZERO_ADDRESS)
     assert.equal(recordedETHBalance, 0)
   })
 
-  it('getVSTDebt(): gets the recorded VST balance', async () => {
-    const recordedETHBalance = await defaultPool.getVSTDebt(ZERO_ADDRESS)
+  it('getDCHFDebt(): gets the recorded DCHF balance', async () => {
+    const recordedETHBalance = await defaultPool.getDCHFDebt(ZERO_ADDRESS)
     assert.equal(recordedETHBalance, 0)
   })
 
-  it('increaseVST(): increases the recorded VST balance by the correct amount', async () => {
-    const recordedVST_balanceBefore = await defaultPool.getVSTDebt(ZERO_ADDRESS)
-    assert.equal(recordedVST_balanceBefore, 0)
+  it('increaseDCHF(): increases the recorded DCHF balance by the correct amount', async () => {
+    const recordedDCHF_balanceBefore = await defaultPool.getDCHFDebt(ZERO_ADDRESS)
+    assert.equal(recordedDCHF_balanceBefore, 0)
 
-    // await defaultPool.increaseVSTDebt(100, { from: mockTroveManagerAddress })
-    const increaseVSTDebtData = th.getTransactionData('increaseVSTDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
-    const tx = await mockTroveManager.forward(defaultPool.address, increaseVSTDebtData)
+    // await defaultPool.increaseDCHFDebt(100, { from: mockTroveManagerAddress })
+    const increaseDCHFDebtData = th.getTransactionData('increaseDCHFDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
+    const tx = await mockTroveManager.forward(defaultPool.address, increaseDCHFDebtData)
     assert.isTrue(tx.receipt.status)
 
-    const recordedVST_balanceAfter = await defaultPool.getVSTDebt(ZERO_ADDRESS)
-    assert.equal(recordedVST_balanceAfter, 100)
+    const recordedDCHF_balanceAfter = await defaultPool.getDCHFDebt(ZERO_ADDRESS)
+    assert.equal(recordedDCHF_balanceAfter, 100)
   })
 
-  it('decreaseVST(): decreases the recorded VST balance by the correct amount', async () => {
+  it('decreaseDCHF(): decreases the recorded DCHF balance by the correct amount', async () => {
     // start the pool on 100 wei
-    //await defaultPool.increaseVSTDebt(100, { from: mockTroveManagerAddress })
-    const increaseVSTDebtData = th.getTransactionData('increaseVSTDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
-    const tx1 = await mockTroveManager.forward(defaultPool.address, increaseVSTDebtData)
+    //await defaultPool.increaseDCHFDebt(100, { from: mockTroveManagerAddress })
+    const increaseDCHFDebtData = th.getTransactionData('increaseDCHFDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
+    const tx1 = await mockTroveManager.forward(defaultPool.address, increaseDCHFDebtData)
     assert.isTrue(tx1.receipt.status)
 
-    const recordedVST_balanceBefore = await defaultPool.getVSTDebt(ZERO_ADDRESS)
-    assert.equal(recordedVST_balanceBefore, 100)
+    const recordedDCHF_balanceBefore = await defaultPool.getDCHFDebt(ZERO_ADDRESS)
+    assert.equal(recordedDCHF_balanceBefore, 100)
 
-    // await defaultPool.decreaseVSTDebt(100, { from: mockTroveManagerAddress })
-    const decreaseVSTDebtData = th.getTransactionData('decreaseVSTDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
-    const tx2 = await mockTroveManager.forward(defaultPool.address, decreaseVSTDebtData)
+    // await defaultPool.decreaseDCHFDebt(100, { from: mockTroveManagerAddress })
+    const decreaseDCHFDebtData = th.getTransactionData('decreaseDCHFDebt(address,uint256)', [ZERO_ADDRESS, '0x64'])
+    const tx2 = await mockTroveManager.forward(defaultPool.address, decreaseDCHFDebtData)
     assert.isTrue(tx2.receipt.status)
 
-    const recordedVST_balanceAfter = await defaultPool.getVSTDebt(ZERO_ADDRESS)
-    assert.equal(recordedVST_balanceAfter, 0)
+    const recordedDCHF_balanceAfter = await defaultPool.getDCHFDebt(ZERO_ADDRESS)
+    assert.equal(recordedDCHF_balanceAfter, 0)
   })
 
   // send raw ether

@@ -36,7 +36,7 @@ const getPermitDigest = (domain,
     ]))
 }
 
-contract('VSTToken', async accounts => {
+contract('DCHFToken', async accounts => {
   const [owner, alice, bob, carol, dennis] = accounts;
 
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
@@ -46,8 +46,8 @@ contract('VSTToken', async accounts => {
   const alicePrivateKey = '0xeaa445c85f7b438dEd6e831d06a4eD0CEBDc2f8527f84Fcda6EBB5fCfAd4C0e9'
 
   let chainId
-  let VSTTokenOriginal
-  let VSTTokenTester
+  let DCHFTokenOriginal
+  let DCHFTokenTester
   let stabilityPool
   let troveManager
   let borrowerOperations
@@ -60,47 +60,47 @@ contract('VSTToken', async accounts => {
     beforeEach(async () => {
 
       const contracts = await deploymentHelper.deployTesterContractsHardhat()
-      const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+      const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
-      await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-      await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+      await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+      await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
 
       erc20 = contracts.erc20
       stabilityPool = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(ZERO_ADDRESS))
       stabilityPoolERC20 = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(erc20.address));
 
-      VSTTokenOriginal = contracts.vstToken
+      DCHFTokenOriginal = contracts.dchfToken
       if (withProxy) {
         const users = [alice, bob, carol, dennis]
-        await deploymentHelper.deployProxyScripts(contracts, VSTAContracts, owner, users)
+        await deploymentHelper.deployProxyScripts(contracts, MONContracts, owner, users)
       }
 
-      VSTTokenTester = contracts.vstToken
+      DCHFTokenTester = contracts.dchfToken
       // for some reason this doesn’t work with coverage network
       //chainId = await web3.eth.getChainId()
-      chainId = await VSTTokenOriginal.getChainId()
+      chainId = await DCHFTokenOriginal.getChainId()
 
       borrowerOperations = contracts.borrowerOperations
 
       tokenVersion = 1
-      tokenName = await VSTTokenOriginal.name()
+      tokenName = await DCHFTokenOriginal.name()
 
       // mint some tokens
       if (withProxy) {
-        await VSTTokenOriginal.unprotectedMint(VSTTokenTester.getProxyAddressFromUser(alice), 150)
-        await VSTTokenOriginal.unprotectedMint(VSTTokenTester.getProxyAddressFromUser(bob), 100)
-        await VSTTokenOriginal.unprotectedMint(VSTTokenTester.getProxyAddressFromUser(carol), 50)
+        await DCHFTokenOriginal.unprotectedMint(DCHFTokenTester.getProxyAddressFromUser(alice), 150)
+        await DCHFTokenOriginal.unprotectedMint(DCHFTokenTester.getProxyAddressFromUser(bob), 100)
+        await DCHFTokenOriginal.unprotectedMint(DCHFTokenTester.getProxyAddressFromUser(carol), 50)
       } else {
-        await VSTTokenOriginal.unprotectedMint(alice, 150)
-        await VSTTokenOriginal.unprotectedMint(bob, 100)
-        await VSTTokenOriginal.unprotectedMint(carol, 50)
+        await DCHFTokenOriginal.unprotectedMint(alice, 150)
+        await DCHFTokenOriginal.unprotectedMint(bob, 100)
+        await DCHFTokenOriginal.unprotectedMint(carol, 50)
       }
     })
 
     it('balanceOf(): gets the balance of the account', async () => {
-      const aliceBalance = (await VSTTokenTester.balanceOf(alice)).toNumber()
-      const bobBalance = (await VSTTokenTester.balanceOf(bob)).toNumber()
-      const carolBalance = (await VSTTokenTester.balanceOf(carol)).toNumber()
+      const aliceBalance = (await DCHFTokenTester.balanceOf(alice)).toNumber()
+      const bobBalance = (await DCHFTokenTester.balanceOf(bob)).toNumber()
+      const carolBalance = (await DCHFTokenTester.balanceOf(carol)).toNumber()
 
       assert.equal(aliceBalance, 150)
       assert.equal(bobBalance, 100)
@@ -108,186 +108,186 @@ contract('VSTToken', async accounts => {
     })
 
     it('totalSupply(): gets the total supply', async () => {
-      const total = (await VSTTokenTester.totalSupply()).toString()
+      const total = (await DCHFTokenTester.totalSupply()).toString()
       assert.equal(total, '300') // 300
     })
 
     it("name(): returns the token's name", async () => {
-      const name = await VSTTokenTester.name()
-      assert.equal(name, "Vesta Stable")
+      const name = await DCHFTokenTester.name()
+      assert.equal(name, "Dfranc Stable")
     })
 
     it("symbol(): returns the token's symbol", async () => {
-      const symbol = await VSTTokenTester.symbol()
-      assert.equal(symbol, "VST")
+      const symbol = await DCHFTokenTester.symbol()
+      assert.equal(symbol, "DCHF")
     })
 
     it("decimal(): returns the number of decimal digits used", async () => {
-      const decimals = await VSTTokenTester.decimals()
+      const decimals = await DCHFTokenTester.decimals()
       assert.equal(decimals, "18")
     })
 
     it("allowance(): returns an account's spending allowance for another account's balance", async () => {
-      await VSTTokenTester.approve(alice, 100, { from: bob })
+      await DCHFTokenTester.approve(alice, 100, { from: bob })
 
-      const allowance_A = await VSTTokenTester.allowance(bob, alice)
-      const allowance_D = await VSTTokenTester.allowance(bob, dennis)
+      const allowance_A = await DCHFTokenTester.allowance(bob, alice)
+      const allowance_D = await DCHFTokenTester.allowance(bob, dennis)
 
       assert.equal(allowance_A, 100)
       assert.equal(allowance_D, '0')
     })
 
     it("approve(): approves an account to spend the specified amount", async () => {
-      const allowance_A_before = await VSTTokenTester.allowance(bob, alice)
+      const allowance_A_before = await DCHFTokenTester.allowance(bob, alice)
       assert.equal(allowance_A_before, '0')
 
-      await VSTTokenTester.approve(alice, 100, { from: bob })
+      await DCHFTokenTester.approve(alice, 100, { from: bob })
 
-      const allowance_A_after = await VSTTokenTester.allowance(bob, alice)
+      const allowance_A_after = await DCHFTokenTester.allowance(bob, alice)
       assert.equal(allowance_A_after, 100)
     })
 
     if (!withProxy) {
       it("approve(): reverts when spender param is address(0)", async () => {
-        const txPromise = VSTTokenTester.approve(ZERO_ADDRESS, 100, { from: bob })
+        const txPromise = DCHFTokenTester.approve(ZERO_ADDRESS, 100, { from: bob })
         await assertAssert(txPromise)
       })
 
       it("approve(): reverts when owner param is address(0)", async () => {
-        const txPromise = VSTTokenTester.callInternalApprove(ZERO_ADDRESS, alice, dec(1000, 18), { from: bob })
+        const txPromise = DCHFTokenTester.callInternalApprove(ZERO_ADDRESS, alice, dec(1000, 18), { from: bob })
         await assertAssert(txPromise)
       })
     }
 
     it("transferFrom(): successfully transfers from an account which is it approved to transfer from", async () => {
-      const allowance_A_0 = await VSTTokenTester.allowance(bob, alice)
+      const allowance_A_0 = await DCHFTokenTester.allowance(bob, alice)
       assert.equal(allowance_A_0, '0')
 
-      await VSTTokenTester.approve(alice, 50, { from: bob })
+      await DCHFTokenTester.approve(alice, 50, { from: bob })
 
       // Check A's allowance of Bob's funds has increased
-      const allowance_A_1 = await VSTTokenTester.allowance(bob, alice)
+      const allowance_A_1 = await DCHFTokenTester.allowance(bob, alice)
       assert.equal(allowance_A_1, 50)
 
 
-      assert.equal(await VSTTokenTester.balanceOf(carol), 50)
+      assert.equal(await DCHFTokenTester.balanceOf(carol), 50)
 
       // Alice transfers from bob to Carol, using up her allowance
-      await VSTTokenTester.transferFrom(bob, carol, 50, { from: alice })
-      assert.equal(await VSTTokenTester.balanceOf(carol), 100)
+      await DCHFTokenTester.transferFrom(bob, carol, 50, { from: alice })
+      assert.equal(await DCHFTokenTester.balanceOf(carol), 100)
 
       // Check A's allowance of Bob's funds has decreased
-      const allowance_A_2 = await VSTTokenTester.allowance(bob, alice)
+      const allowance_A_2 = await DCHFTokenTester.allowance(bob, alice)
       assert.equal(allowance_A_2, '0')
 
       // Check bob's balance has decreased
-      assert.equal(await VSTTokenTester.balanceOf(bob), 50)
+      assert.equal(await DCHFTokenTester.balanceOf(bob), 50)
 
       // Alice tries to transfer more tokens from bob's account to carol than she's allowed
-      await expectRevert.unspecified(VSTTokenTester.transferFrom(bob, carol, 50, { from: alice }));
+      await expectRevert.unspecified(DCHFTokenTester.transferFrom(bob, carol, 50, { from: alice }));
     })
 
     it("transfer(): increases the recipient's balance by the correct amount", async () => {
-      assert.equal(await VSTTokenTester.balanceOf(alice), 150)
+      assert.equal(await DCHFTokenTester.balanceOf(alice), 150)
 
-      await VSTTokenTester.transfer(alice, 37, { from: bob })
+      await DCHFTokenTester.transfer(alice, 37, { from: bob })
 
-      assert.equal(await VSTTokenTester.balanceOf(alice), 187)
+      assert.equal(await DCHFTokenTester.balanceOf(alice), 187)
     })
 
     it("transfer(): reverts if amount exceeds sender's balance", async () => {
-      assert.equal(await VSTTokenTester.balanceOf(bob), 100)
-      await expectRevert.unspecified(VSTTokenTester.transfer(alice, 101, { from: bob }))
+      assert.equal(await DCHFTokenTester.balanceOf(bob), 100)
+      await expectRevert.unspecified(DCHFTokenTester.transfer(alice, 101, { from: bob }))
     })
 
     it("increaseAllowance(): increases an account's allowance by the correct amount", async () => {
-      const allowance_A_Before = await VSTTokenTester.allowance(bob, alice)
+      const allowance_A_Before = await DCHFTokenTester.allowance(bob, alice)
       assert.equal(allowance_A_Before, '0')
 
-      await VSTTokenTester.increaseAllowance(alice, 100, { from: bob })
+      await DCHFTokenTester.increaseAllowance(alice, 100, { from: bob })
 
-      const allowance_A_After = await VSTTokenTester.allowance(bob, alice)
+      const allowance_A_After = await DCHFTokenTester.allowance(bob, alice)
       assert.equal(allowance_A_After, 100)
     })
 
     if (!withProxy) {
       it('mint(): issues correct amount of tokens to the given address', async () => {
-        const alice_balanceBefore = await VSTTokenTester.balanceOf(alice)
+        const alice_balanceBefore = await DCHFTokenTester.balanceOf(alice)
         assert.equal(alice_balanceBefore, 150)
 
-        await VSTTokenTester.unprotectedMint(alice, 100)
+        await DCHFTokenTester.unprotectedMint(alice, 100)
 
-        const alice_BalanceAfter = await VSTTokenTester.balanceOf(alice)
+        const alice_BalanceAfter = await DCHFTokenTester.balanceOf(alice)
         assert.equal(alice_BalanceAfter, 250)
       })
 
       it('burn(): burns correct amount of tokens from the given address', async () => {
-        const alice_balanceBefore = await VSTTokenTester.balanceOf(alice)
+        const alice_balanceBefore = await DCHFTokenTester.balanceOf(alice)
         assert.equal(alice_balanceBefore, 150)
 
-        await VSTTokenTester.unprotectedBurn(alice, 70)
+        await DCHFTokenTester.unprotectedBurn(alice, 70)
 
-        const alice_BalanceAfter = await VSTTokenTester.balanceOf(alice)
+        const alice_BalanceAfter = await DCHFTokenTester.balanceOf(alice)
         assert.equal(alice_BalanceAfter, 80)
       })
 
-      // TODO: Rewrite this test - it should check the actual VSTTokenTester's balance.
+      // TODO: Rewrite this test - it should check the actual DCHFTokenTester's balance.
       it('sendToPool(): changes balances of Stability pool and user by the correct amounts', async () => {
-        const stabilityPool_BalanceBefore = await VSTTokenTester.balanceOf(stabilityPool.address)
-        const bob_BalanceBefore = await VSTTokenTester.balanceOf(bob)
+        const stabilityPool_BalanceBefore = await DCHFTokenTester.balanceOf(stabilityPool.address)
+        const bob_BalanceBefore = await DCHFTokenTester.balanceOf(bob)
         assert.equal(stabilityPool_BalanceBefore, 0)
         assert.equal(bob_BalanceBefore, 100)
 
-        await VSTTokenTester.unprotectedSendToPool(bob, stabilityPool.address, 75)
+        await DCHFTokenTester.unprotectedSendToPool(bob, stabilityPool.address, 75)
 
-        const stabilityPool_BalanceAfter = await VSTTokenTester.balanceOf(stabilityPool.address)
-        const bob_BalanceAfter = await VSTTokenTester.balanceOf(bob)
+        const stabilityPool_BalanceAfter = await DCHFTokenTester.balanceOf(stabilityPool.address)
+        const bob_BalanceAfter = await DCHFTokenTester.balanceOf(bob)
         assert.equal(stabilityPool_BalanceAfter, 75)
         assert.equal(bob_BalanceAfter, 25)
       })
 
       it('returnFromPool(): changes balances of Stability pool and user by the correct amounts', async () => {
-        /// --- SETUP --- give pool 100 VST
-        await VSTTokenTester.unprotectedMint(stabilityPool.address, 100)
+        /// --- SETUP --- give pool 100 DCHF
+        await DCHFTokenTester.unprotectedMint(stabilityPool.address, 100)
 
         /// --- TEST ---
-        const stabilityPool_BalanceBefore = await VSTTokenTester.balanceOf(stabilityPool.address)
-        const bob_BalanceBefore = await VSTTokenTester.balanceOf(bob)
+        const stabilityPool_BalanceBefore = await DCHFTokenTester.balanceOf(stabilityPool.address)
+        const bob_BalanceBefore = await DCHFTokenTester.balanceOf(bob)
         assert.equal(stabilityPool_BalanceBefore, 100)
         assert.equal(bob_BalanceBefore, 100)
 
-        await VSTTokenTester.unprotectedReturnFromPool(stabilityPool.address, bob, 75)
+        await DCHFTokenTester.unprotectedReturnFromPool(stabilityPool.address, bob, 75)
 
-        const stabilityPool_BalanceAfter = await VSTTokenTester.balanceOf(stabilityPool.address)
-        const bob_BalanceAfter = await VSTTokenTester.balanceOf(bob)
+        const stabilityPool_BalanceAfter = await DCHFTokenTester.balanceOf(stabilityPool.address)
+        const bob_BalanceAfter = await DCHFTokenTester.balanceOf(bob)
         assert.equal(stabilityPool_BalanceAfter, 25)
         assert.equal(bob_BalanceAfter, 175)
       })
     }
 
     it('decreaseAllowance(): decreases allowance by the expected amount', async () => {
-      await VSTTokenTester.approve(bob, dec(3, 18), { from: alice })
-      assert.equal((await VSTTokenTester.allowance(alice, bob)).toString(), dec(3, 18))
-      await VSTTokenTester.decreaseAllowance(bob, dec(1, 18), { from: alice })
-      assert.equal((await VSTTokenTester.allowance(alice, bob)).toString(), dec(2, 18))
+      await DCHFTokenTester.approve(bob, dec(3, 18), { from: alice })
+      assert.equal((await DCHFTokenTester.allowance(alice, bob)).toString(), dec(3, 18))
+      await DCHFTokenTester.decreaseAllowance(bob, dec(1, 18), { from: alice })
+      assert.equal((await DCHFTokenTester.allowance(alice, bob)).toString(), dec(2, 18))
     })
 
     it('decreaseAllowance(): fails trying to decrease more than previously allowed', async () => {
-      await VSTTokenTester.approve(bob, dec(3, 18), { from: alice })
-      assert.equal((await VSTTokenTester.allowance(alice, bob)).toString(), dec(3, 18))
-      await expectRevert.unspecified(VSTTokenTester.decreaseAllowance(bob, dec(4, 18), { from: alice }))
-      assert.equal((await VSTTokenTester.allowance(alice, bob)).toString(), dec(3, 18))
+      await DCHFTokenTester.approve(bob, dec(3, 18), { from: alice })
+      assert.equal((await DCHFTokenTester.allowance(alice, bob)).toString(), dec(3, 18))
+      await expectRevert.unspecified(DCHFTokenTester.decreaseAllowance(bob, dec(4, 18), { from: alice }))
+      assert.equal((await DCHFTokenTester.allowance(alice, bob)).toString(), dec(3, 18))
     })
 
     // EIP2612 tests
 
     if (!withProxy) {
       it('Initializes PERMIT_TYPEHASH correctly', async () => {
-        assert.equal(await VSTTokenTester.PERMIT_TYPEHASH(), PERMIT_TYPEHASH)
+        assert.equal(await DCHFTokenTester.PERMIT_TYPEHASH(), PERMIT_TYPEHASH)
       })
 
       it('Initial nonce for a given address is 0', async function () {
-        assert.equal(toBN(await VSTTokenTester.nonces(alice)).toString(), '0');
+        assert.equal(toBN(await DCHFTokenTester.nonces(alice)).toString(), '0');
       });
 
       // Create the approval tx data
@@ -298,18 +298,18 @@ contract('VSTToken', async accounts => {
       }
 
       const buildPermitTx = async (deadline) => {
-        const nonce = (await VSTTokenTester.nonces(approve.owner)).toString()
+        const nonce = (await DCHFTokenTester.nonces(approve.owner)).toString()
 
         // Get the EIP712 digest
         const digest = getPermitDigest(
-          await VSTTokenTester.DOMAIN_SEPARATOR(),
+          await DCHFTokenTester.DOMAIN_SEPARATOR(),
           approve.owner, approve.spender,
           approve.value, nonce, deadline
         )
 
         const { v, r, s } = sign(digest, alicePrivateKey)
 
-        const tx = VSTTokenTester.permit(
+        const tx = DCHFTokenTester.permit(
           approve.owner, approve.spender, approve.value,
           deadline, v, hexlify(r), hexlify(s)
         )
@@ -327,16 +327,16 @@ contract('VSTToken', async accounts => {
 
         // Check that approval was successful
         assert.equal(event.event, 'Approval')
-        assert.equal(await VSTTokenTester.nonces(approve.owner), 1)
-        assert.equal(await VSTTokenTester.allowance(approve.owner, approve.spender), approve.value)
+        assert.equal(await DCHFTokenTester.nonces(approve.owner), 1)
+        assert.equal(await DCHFTokenTester.allowance(approve.owner, approve.spender), approve.value)
 
         // Check that we can not use re-use the same signature, since the user's nonce has been incremented (replay protection)
-        await assertRevert(VSTTokenTester.permit(
+        await assertRevert(DCHFTokenTester.permit(
           approve.owner, approve.spender, approve.value,
-          deadline, v, r, s), 'VST: invalid signature')
+          deadline, v, r, s), 'DCHF: invalid signature')
 
         // Check that the zero address fails
-        await assertAssert(VSTTokenTester.permit('0x0000000000000000000000000000000000000000',
+        await assertAssert(DCHFTokenTester.permit('0x0000000000000000000000000000000000000000',
           approve.spender, approve.value, deadline, '0x99', r, s))
       })
 
@@ -344,7 +344,7 @@ contract('VSTToken', async accounts => {
         const deadline = 1
 
         const { v, r, s, tx } = await buildPermitTx(deadline)
-        await assertRevert(tx, 'VST: expired deadline')
+        await assertRevert(tx, 'DCHF: expired deadline')
       })
 
       it('permits(): fails with the wrong signature', async () => {
@@ -352,12 +352,12 @@ contract('VSTToken', async accounts => {
 
         const { v, r, s } = await buildPermitTx(deadline)
 
-        const tx = VSTTokenTester.permit(
+        const tx = DCHFTokenTester.permit(
           carol, approve.spender, approve.value,
           deadline, v, hexlify(r), hexlify(s)
         )
 
-        await assertRevert(tx, 'VST: invalid signature')
+        await assertRevert(tx, 'DCHF: invalid signature')
       })
     }
   }

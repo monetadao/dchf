@@ -10,22 +10,22 @@ const dec = th.dec
 const toBN = th.toBN
 
 
-const logVSTABalanceAndError = (VSTABalance_A, expectedVSTABalance_A) => {
+const logMONBalanceAndError = (MONBalance_A, expectedMONBalance_A) => {
   console.log(
-    `Expected final balance: ${expectedVSTABalance_A}, \n
-    Actual final balance: ${VSTABalance_A}, \n
-    Abs. error: ${expectedVSTABalance_A.sub(VSTABalance_A)}`
+    `Expected final balance: ${expectedMONBalance_A}, \n
+    Actual final balance: ${MONBalance_A}, \n
+    Abs. error: ${expectedMONBalance_A.sub(MONBalance_A)}`
   )
 }
 
-const repeatedlyIssueVSTA = async (stabilityPool, timeBetweenIssuances, duration) => {
+const repeatedlyIssueMON = async (stabilityPool, timeBetweenIssuances, duration) => {
   const startTimestamp = th.toBN(await th.getLatestBlockTimestamp(web3))
   let timePassed = 0
 
-  // while current time < 1 month from deployment, issue VSTA every minute
+  // while current time < 1 month from deployment, issue MON every minute
   while (timePassed < duration) {
     await th.fastForwardTime(timeBetweenIssuances, web3.currentProvider)
-    await stabilityPool._unprotectedTriggerVSTAIssuance()
+    await stabilityPool._unprotectedTriggerMONIssuance()
 
     const currentTimestamp = th.toBN(await th.getLatestBlockTimestamp(web3))
     timePassed = currentTimestamp.sub(startTimestamp)
@@ -33,12 +33,12 @@ const repeatedlyIssueVSTA = async (stabilityPool, timeBetweenIssuances, duration
 }
 
 
-contract('VSTA community issuance arithmetic tests', async accounts => {
+contract('MON community issuance arithmetic tests', async accounts => {
   const ZERO_ADDRESS = th.ZERO_ADDRESS
   let contracts
   let borrowerOperations
   let communityIssuanceTester
-  let VSTAToken
+  let MONToken
   let stabilityPool
   let stabilityPoolERC20
   let erc20
@@ -64,17 +64,17 @@ contract('VSTA community issuance arithmetic tests', async accounts => {
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
-    const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
-    contracts = await deploymentHelper.deployVSTToken(contracts)
+    const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
+    contracts = await deploymentHelper.deployDCHFToken(contracts)
 
     borrowerOperations = contracts.borrowerOperations
     erc20 = contracts.erc20
 
-    VSTAToken = VSTAContracts.vstaToken
-    communityIssuanceTester = VSTAContracts.communityIssuance
+    MONToken = MONContracts.monToken
+    communityIssuanceTester = MONContracts.communityIssuance
 
-    await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-    await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+    await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
     stabilityPool = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(ZERO_ADDRESS))
     stabilityPoolERC20 = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(erc20.address));
 
@@ -110,8 +110,8 @@ contract('VSTA community issuance arithmetic tests', async accounts => {
 
     await th.fastForwardTime(toBN(timeValues.SECONDS_IN_ONE_WEEK).mul(toBN(4).add(toBN(120))), web3.currentProvider)
 
-    await communityIssuanceTester.unprotectedIssueVSTA(stabilityPool.address)
-    const totalIssued = await communityIssuanceTester.totalVSTAIssued(stabilityPool.address)
+    await communityIssuanceTester.unprotectedIssueMON(stabilityPool.address)
+    const totalIssued = await communityIssuanceTester.totalMONIssued(stabilityPool.address)
     assert.equal(totalIssued.toString(), dec(32_000_000, 18));
 
   })
@@ -122,62 +122,62 @@ contract('VSTA community issuance arithmetic tests', async accounts => {
 
     await th.fastForwardTime(toBN(timeValues.SECONDS_IN_ONE_WEEK).mul(toBN(8)), web3.currentProvider)
 
-    await communityIssuanceTester.unprotectedIssueVSTA(stabilityPool.address)
-    const totalIssued = await communityIssuanceTester.totalVSTAIssued(stabilityPool.address)
+    await communityIssuanceTester.unprotectedIssueMON(stabilityPool.address)
+    const totalIssued = await communityIssuanceTester.totalMONIssued(stabilityPool.address)
     assert.equal(totalIssued.toString(), dec(32_000_000, 18));
   })
 
   // // --- Token issuance for yearly halving ---
 
-  it("Total VSTA tokens issued is correct after a week", async () => {
+  it("Total MON tokens issued is correct after a week", async () => {
     const distribution = toBN(dec(8_000_000, 18));
     const expectedReward = distribution
 
     await communityIssuanceTester.setWeeklyVstaDistribution(stabilityPool.address, distribution);
     await communityIssuanceTester.setWeeklyVstaDistribution(stabilityPoolERC20.address, distribution);
 
-    const initialIssuance = await communityIssuanceTester.totalVSTAIssued(stabilityPool.address)
+    const initialIssuance = await communityIssuanceTester.totalMONIssued(stabilityPool.address)
     assert.equal(initialIssuance, 0)
 
-    const initialIssuanceERC20 = await communityIssuanceTester.totalVSTAIssued(stabilityPoolERC20.address)
+    const initialIssuanceERC20 = await communityIssuanceTester.totalMONIssued(stabilityPoolERC20.address)
     assert.equal(initialIssuanceERC20, 0)
 
     // Fast forward time
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK, web3.currentProvider)
 
-    // Issue VSTA
-    await communityIssuanceTester.unprotectedIssueVSTA(stabilityPool.address)
-    const totalVSTAIssued = await communityIssuanceTester.totalVSTAIssued(stabilityPool.address)
+    // Issue MON
+    await communityIssuanceTester.unprotectedIssueMON(stabilityPool.address)
+    const totalMONIssued = await communityIssuanceTester.totalMONIssued(stabilityPool.address)
 
-    await communityIssuanceTester.unprotectedIssueVSTA(stabilityPoolERC20.address)
-    const totalVSTAIssuedERC20 = await communityIssuanceTester.totalVSTAIssued(stabilityPoolERC20.address)
+    await communityIssuanceTester.unprotectedIssueMON(stabilityPoolERC20.address)
+    const totalMONIssuedERC20 = await communityIssuanceTester.totalMONIssued(stabilityPoolERC20.address)
 
-    assert.isAtMost(th.getDifference(totalVSTAIssued, expectedReward), 1000000000000000)
-    assert.isAtMost(th.getDifference(totalVSTAIssuedERC20, expectedReward), 1000000000000000)
+    assert.isAtMost(th.getDifference(totalMONIssued, expectedReward), 1000000000000000)
+    assert.isAtMost(th.getDifference(totalMONIssuedERC20, expectedReward), 1000000000000000)
   })
 
-  it("Total VSTA tokens issued is correct after a month", async () => {
+  it("Total MON tokens issued is correct after a month", async () => {
     const distribution = toBN(dec(8_000_000, 18))
     await communityIssuanceTester.setWeeklyVstaDistribution(stabilityPool.address, distribution);
     await communityIssuanceTester.setWeeklyVstaDistribution(stabilityPoolERC20.address, dec(distribution.toString(), 18));
 
-    const initialIssuance = await communityIssuanceTester.totalVSTAIssued(stabilityPool.address)
+    const initialIssuance = await communityIssuanceTester.totalMONIssued(stabilityPool.address)
     assert.equal(initialIssuance, 0)
 
-    const initialIssuanceERC20 = await communityIssuanceTester.totalVSTAIssued(stabilityPoolERC20.address)
+    const initialIssuanceERC20 = await communityIssuanceTester.totalMONIssued(stabilityPoolERC20.address)
     assert.equal(initialIssuanceERC20, 0)
 
     // Fast forward time
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_MONTH, web3.currentProvider)
 
-    // Issue VSTA
-    await communityIssuanceTester.unprotectedIssueVSTA(stabilityPool.address)
-    const totalVSTAIssued = await communityIssuanceTester.totalVSTAIssued(stabilityPool.address)
+    // Issue MON
+    await communityIssuanceTester.unprotectedIssueMON(stabilityPool.address)
+    const totalMONIssued = await communityIssuanceTester.totalMONIssued(stabilityPool.address)
 
-    await communityIssuanceTester.unprotectedIssueVSTA(stabilityPoolERC20.address)
-    const totalVSTAIssuedERC20 = await communityIssuanceTester.totalVSTAIssued(stabilityPoolERC20.address)
+    await communityIssuanceTester.unprotectedIssueMON(stabilityPoolERC20.address)
+    const totalMONIssuedERC20 = await communityIssuanceTester.totalMONIssued(stabilityPoolERC20.address)
 
-    assert.isAtMost(th.getDifference(totalVSTAIssued, distribution.mul(toBN(4))), 1000000000000000)
-    assert.isAtMost(th.getDifference(totalVSTAIssuedERC20, distribution.mul(toBN(4))), 1000000000000000)
+    assert.isAtMost(th.getDifference(totalMONIssued, distribution.mul(toBN(4))), 1000000000000000)
+    assert.isAtMost(th.getDifference(totalMONIssuedERC20, distribution.mul(toBN(4))), 1000000000000000)
   })
 })

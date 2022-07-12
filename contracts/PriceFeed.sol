@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/BaseMath.sol";
-import "./Dependencies/VestaMath.sol";
+import "./Dependencies/DfrancMath.sol";
 
 contract PriceFeedOld is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
 	using SafeMathUpgradeable for uint256;
@@ -250,8 +250,8 @@ contract PriceFeedOld is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed
 			_prevResponse.decimals
 		);
 
-		uint256 minPrice = VestaMath._min(currentScaledPrice, prevScaledPrice);
-		uint256 maxPrice = VestaMath._max(currentScaledPrice, prevScaledPrice);
+		uint256 minPrice = DfrancMath._min(currentScaledPrice, prevScaledPrice);
+		uint256 maxPrice = DfrancMath._max(currentScaledPrice, prevScaledPrice);
 
 		/*
 		 * Use the larger price as the denominator:
@@ -271,10 +271,10 @@ contract PriceFeedOld is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed
 	{
 		uint256 price;
 		if (_answerDigits >= TARGET_DIGITS) {
-			// Scale the returned price value down to Vesta's target precision
+			// Scale the returned price value down to Dfranc's target precision
 			price = _price.div(10**(_answerDigits - TARGET_DIGITS));
 		} else if (_answerDigits < TARGET_DIGITS) {
-			// Scale the returned price value up to Vesta's target precision
+			// Scale the returned price value up to Dfranc's target precision
 			price = _price.mul(10**(TARGET_DIGITS - _answerDigits));
 		}
 		return price;

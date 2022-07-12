@@ -7,12 +7,12 @@ import "./IDeposit.sol";
 interface IStabilityPool is IDeposit {
 	// --- Events ---
 	event StabilityPoolAssetBalanceUpdated(uint256 _newBalance);
-	event StabilityPoolVSTBalanceUpdated(uint256 _newBalance);
+	event StabilityPoolDCHFBalanceUpdated(uint256 _newBalance);
 
 	event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
 	event TroveManagerAddressChanged(address _newTroveManagerAddress);
 	event DefaultPoolAddressChanged(address _newDefaultPoolAddress);
-	event VSTTokenAddressChanged(address _newVSTTokenAddress);
+	event DCHFTokenAddressChanged(address _newDCHFTokenAddress);
 	event SortedTrovesAddressChanged(address _newSortedTrovesAddress);
 	event CommunityIssuanceAddressChanged(address _newCommunityIssuanceAddress);
 
@@ -27,8 +27,8 @@ interface IStabilityPool is IDeposit {
 	event UserDepositChanged(address indexed _depositor, uint256 _newDeposit);
 	event StakeChanged(uint256 _newSystemStake, address _depositor);
 
-	event AssetGainWithdrawn(address indexed _depositor, uint256 _Asset, uint256 _VSTLoss);
-	event VSTAPaidToDepositor(address indexed _depositor, uint256 _VSTA);
+	event AssetGainWithdrawn(address indexed _depositor, uint256 _Asset, uint256 _DCHFLoss);
+	event MONPaidToDepositor(address indexed _depositor, uint256 _MON);
 	event AssetSent(address _to, uint256 _amount);
 
 	// --- Functions ---
@@ -36,7 +36,7 @@ interface IStabilityPool is IDeposit {
 	function NAME() external view returns (string memory name);
 
 	/*
-	 * Called only once on init, to set addresses of other Vesta contracts
+	 * Called only once on init, to set addresses of other Dfranc contracts
 	 * Callable only by owner, renounces ownership at the end
 	 */
 	function setAddresses(
@@ -44,7 +44,7 @@ interface IStabilityPool is IDeposit {
 		address _borrowerOperationsAddress,
 		address _troveManagerAddress,
 		address _troveManagerHelperAddress,
-		address _vstTokenAddress,
+		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress,
 		address _vestaParamsAddress
@@ -56,10 +56,10 @@ interface IStabilityPool is IDeposit {
 	 * - Sender is not a registered frontend
 	 * - _amount is not zero
 	 * ---
-	 * - Triggers a VSTA issuance, based on time passed since the last issuance. The VSTA issuance is shared between *all* depositors and front ends
+	 * - Triggers a MON issuance, based on time passed since the last issuance. The MON issuance is shared between *all* depositors and front ends
 	 * - Tags the deposit with the provided front end tag param, if it's a new deposit
-	 * - Sends depositor's accumulated gains (VSTA, ETH) to depositor
-	 * - Sends the tagged front end's accumulated VSTA gains to the tagged front end
+	 * - Sends depositor's accumulated gains (MON, ETH) to depositor
+	 * - Sends the tagged front end's accumulated MON gains to the tagged front end
 	 * - Increases deposit and tagged front end's stake, and takes new snapshots for each.
 	 */
 	function provideToSP(uint256 _amount) external;
@@ -69,10 +69,10 @@ interface IStabilityPool is IDeposit {
 	 * - _amount is zero or there are no under collateralized troves left in the system
 	 * - User has a non zero deposit
 	 * ---
-	 * - Triggers a VSTA issuance, based on time passed since the last issuance. The VSTA issuance is shared between *all* depositors and front ends
+	 * - Triggers a MON issuance, based on time passed since the last issuance. The MON issuance is shared between *all* depositors and front ends
 	 * - Removes the deposit's front end tag if it is a full withdrawal
-	 * - Sends all depositor's accumulated gains (VSTA, ETH) to depositor
-	 * - Sends the tagged front end's accumulated VSTA gains to the tagged front end
+	 * - Sends all depositor's accumulated gains (MON, ETH) to depositor
+	 * - Sends the tagged front end's accumulated MON gains to the tagged front end
 	 * - Decreases deposit and tagged front end's stake, and takes new snapshots for each.
 	 *
 	 * If _amount > userDeposit, the user withdraws all of their compounded deposit.
@@ -85,9 +85,9 @@ interface IStabilityPool is IDeposit {
 	 * - User has an open trove
 	 * - User has some ETH gain
 	 * ---
-	 * - Triggers a VSTA issuance, based on time passed since the last issuance. The VSTA issuance is shared between *all* depositors and front ends
-	 * - Sends all depositor's VSTA gain to  depositor
-	 * - Sends all tagged front end's VSTA gain to the tagged front end
+	 * - Triggers a MON issuance, based on time passed since the last issuance. The MON issuance is shared between *all* depositors and front ends
+	 * - Sends all depositor's MON gain to  depositor
+	 * - Sends all tagged front end's MON gain to the tagged front end
 	 * - Transfers the depositor's entire ETH gain from the Stability Pool to the caller's trove
 	 * - Leaves their compounded deposit in the Stability Pool
 	 * - Updates snapshots for deposit and tagged front end stake
@@ -98,7 +98,7 @@ interface IStabilityPool is IDeposit {
 	 * Initial checks:
 	 * - Caller is TroveManager
 	 * ---
-	 * Cancels out the specified debt against the VST contained in the Stability Pool (as far as possible)
+	 * Cancels out the specified debt against the DCHF contained in the Stability Pool (as far as possible)
 	 * and transfers the Trove's ETH collateral from ActivePool to StabilityPool.
 	 * Only called by liquidation functions in the TroveManager.
 	 */
@@ -111,9 +111,9 @@ interface IStabilityPool is IDeposit {
 	function getAssetBalance() external view returns (uint256);
 
 	/*
-	 * Returns VST held in the pool. Changes when users deposit/withdraw, and when Trove debt is offset.
+	 * Returns DCHF held in the pool. Changes when users deposit/withdraw, and when Trove debt is offset.
 	 */
-	function getTotalVSTDeposits() external view returns (uint256);
+	function getTotalDCHFDeposits() external view returns (uint256);
 
 	/*
 	 * Calculates the ETH gain earned by the deposit since its last snapshots were taken.
@@ -121,17 +121,17 @@ interface IStabilityPool is IDeposit {
 	function getDepositorAssetGain(address _depositor) external view returns (uint256);
 
 	/*
-	 * Calculate the VSTA gain earned by a deposit since its last snapshots were taken.
+	 * Calculate the MON gain earned by a deposit since its last snapshots were taken.
 	 * If not tagged with a front end, the depositor gets a 100% cut of what their deposit earned.
 	 * Otherwise, their cut of the deposit's earnings is equal to the kickbackRate, set by the front end through
 	 * which they made their deposit.
 	 */
-	function getDepositorVSTAGain(address _depositor) external view returns (uint256);
+	function getDepositorMONGain(address _depositor) external view returns (uint256);
 
 	/*
 	 * Return the user's compounded deposit.
 	 */
-	function getCompoundedVSTDeposit(address _depositor) external view returns (uint256);
+	function getCompoundedDCHFDeposit(address _depositor) external view returns (uint256);
 
 	/*
 	 * Return the front end's compounded stake.

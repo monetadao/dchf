@@ -1,5 +1,5 @@
 pragma solidity ^0.8.14;
-import "../VSTA/CommunityIssuance.sol";
+import "../MON/CommunityIssuance.sol";
 
 import "@chainlink/contracts/src/v0.8/interfaces/FlagsInterface.sol";
 

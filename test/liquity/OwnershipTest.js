@@ -3,7 +3,7 @@ const deploymentHelper = require("../../utils/deploymentHelpers.js")
 const { TestHelper: th, MoneyValues: mv } = require("../../utils/testHelpers.js")
 
 const GasPool = artifacts.require("./GasPool.sol")
-const VestaParameters = artifacts.require("./VestaParameters.sol")
+const DfrancParameters = artifacts.require("./DfrancParameters.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 
 contract('All Liquity functions with onlyOwner modifier', async accounts => {
@@ -13,7 +13,7 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
   const [bountyAddress, lpRewardsAddress, multisig, treasury] = accounts.slice(996, 1000)
 
   let contracts
-  let vstToken
+  let dchfToken
   let sortedTroves
   let troveManager
   let activePool
@@ -22,18 +22,18 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
   let defaultPool
   let borrowerOperations
 
-  let vstaStaking
+  let monStaking
   let communityIssuance
-  let vstaToken
+  let monToken
   let adminContract
 
   before(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
     contracts.borrowerOperations = await BorrowerOperationsTester.new()
-    contracts = await deploymentHelper.deployVSTToken(contracts)
-    const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+    contracts = await deploymentHelper.deployDCHFToken(contracts)
+    const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
-    vstToken = contracts.vstToken
+    dchfToken = contracts.dchfToken
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
     activePool = contracts.activePool
@@ -43,9 +43,9 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
     borrowerOperations = contracts.borrowerOperations
     adminContract = contracts.adminContract
 
-    vstaStaking = VSTAContracts.vstaStaking
-    communityIssuance = VSTAContracts.communityIssuance
-    vstaToken = VSTAContracts.vstaToken
+    monStaking = MONContracts.monStaking
+    communityIssuance = MONContracts.communityIssuance
+    monToken = MONContracts.monToken
   })
 
   const testZeroAddress = async (contract, params, method = 'setAddresses', skip = 1, offset = 0) => {
@@ -66,7 +66,7 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
     const dumbContract = await GasPool.new()
     const params = Array(numberOfAddresses).fill(dumbContract.address)
 
-    const v = await VestaParameters.new();
+    const v = await DfrancParameters.new();
     await v.sanitizeParameters(params[0]);
 
     if (useVaultParams) {
@@ -137,7 +137,7 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
 
   describe('CommunityIssuance', async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      const params = [vstaToken.address, stabilityPoolManager.address, adminContract.address]
+      const params = [monToken.address, stabilityPoolManager.address, adminContract.address]
 
       // Attempt to use zero address
       await testZeroAddress(communityIssuance, params)
@@ -153,9 +153,9 @@ contract('All Liquity functions with onlyOwner modifier', async accounts => {
     })
   })
 
-  describe('VSTAStaking', async accounts => {
+  describe('MONStaking', async accounts => {
     it("setAddresses(): reverts when called by non-owner, with wrong addresses, or twice", async () => {
-      await testSetAddresses(vstaStaking, 6)
+      await testSetAddresses(monStaking, 6)
     })
   })
 })

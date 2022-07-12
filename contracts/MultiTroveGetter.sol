@@ -7,7 +7,7 @@ import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/ITroveManagerHelpers.sol";
 import "./SortedTroves.sol";
 
-/*  Helper contract for grabbing Trove data for the front end. Not part of the core Vesta system. */
+/*  Helper contract for grabbing Trove data for the front end. Not part of the core Dfranc system. */
 contract MultiTroveGetter {
 	struct CombinedTroveData {
 		address owner;
@@ -16,7 +16,7 @@ contract MultiTroveGetter {
 		uint256 coll;
 		uint256 stake;
 		uint256 snapshotAsset;
-		uint256 snapshotVSTDebt;
+		uint256 snapshotDCHFDebt;
 	}
 
 	ITroveManager public troveManager; // XXX Troves missing from ITroveManager?
@@ -93,7 +93,7 @@ contract MultiTroveGetter {
 				,
 
 			) = troveManagerHelpers.getTrove(_asset, currentTroveowner);
-			(_troves[idx].snapshotAsset, _troves[idx].snapshotVSTDebt) = troveManagerHelpers
+			(_troves[idx].snapshotAsset, _troves[idx].snapshotDCHFDebt) = troveManagerHelpers
 				.getRewardSnapshots(_asset, currentTroveowner);
 
 			currentTroveowner = sortedTroves.getNext(_asset, currentTroveowner);
@@ -125,7 +125,7 @@ contract MultiTroveGetter {
 				,
 
 			) = troveManagerHelpers.getTrove(_asset, currentTroveowner);
-			(_troves[idx].snapshotAsset, _troves[idx].snapshotVSTDebt) = troveManagerHelpers
+			(_troves[idx].snapshotAsset, _troves[idx].snapshotDCHFDebt) = troveManagerHelpers
 				.getRewardSnapshots(_asset, currentTroveowner);
 
 			currentTroveowner = sortedTroves.getPrev(_asset, currentTroveowner);

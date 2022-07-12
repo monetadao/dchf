@@ -5,10 +5,10 @@ import "../Interfaces/ITroveManager.sol";
 import "../Interfaces/ITroveManagerHelpers.sol";
 import "../Interfaces/ISortedTroves.sol";
 import "../Interfaces/IPriceFeed.sol";
-import "../Dependencies/VestaMath.sol";
+import "../Dependencies/DfrancMath.sol";
 
 /* Wrapper contract - used for calculating gas of read-only and internal functions. 
-Not part of the Vesta application. */
+Not part of the Dfranc application. */
 contract FunctionCaller {
 	ITroveManager troveManager;
 	address public troveManagerAddress;

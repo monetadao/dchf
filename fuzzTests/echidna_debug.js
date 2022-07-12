@@ -2,7 +2,7 @@ const { TestHelper: { dec } } = require("../utils/testHelpers.js")
 
 const EchidnaTester = artifacts.require('EchidnaTester')
 const TroveManager = artifacts.require('TroveManager')
-const VSTToken = artifacts.require('VSTToken')
+const DCHFToken = artifacts.require('DCHFToken')
 const ActivePool = artifacts.require('ActivePool')
 const DefaultPool = artifacts.require('DefaultPool')
 const StabilityPool = artifacts.require('StabilityPool')
@@ -13,7 +13,7 @@ const StabilityPool = artifacts.require('StabilityPool')
 contract('Echidna debugger', async accounts => {
   let echidnaTester
   let troveManager
-  let VSTToken
+  let DCHFToken
   let activePool
   let defaultPool
   let stabilityPool
@@ -22,7 +22,7 @@ contract('Echidna debugger', async accounts => {
   before(async () => {
     echidnaTester = await EchidnaTester.new({ value: dec(11, 25) })
     troveManager = await TroveManager.at(await echidnaTester.troveManager())
-    VSTToken = await VSTToken.at(await echidnaTester.VSTToken())
+    DCHFToken = await DCHFToken.at(await echidnaTester.DCHFToken())
     activePool = await ActivePool.at(await echidnaTester.activePool())
     defaultPool = await DefaultPool.at(await echidnaTester.defaultPool())
     stabilityPool = await StabilityPool.at(await echidnaTester.stabilityPool())
@@ -65,16 +65,16 @@ contract('Echidna debugger', async accounts => {
     console.log('Trove 2', icr2_after_price, icr2_after_price.toString())
   })
 
-  it.only('VST balance', async () => {
+  it.only('DCHF balance', async () => {
     await echidnaTester.openTroveExt('0', '0', '4210965169908805439447313562489173090')
 
-    const totalSupply = await VSTToken.totalSupply();
-    const gasPoolBalance = await VSTToken.balanceOf(GAS_POOL_ADDRESS);
-    const activePoolBalance = await activePool.getVSTDebt();
-    const defaultPoolBalance = await defaultPool.getVSTDebt();
-    const stabilityPoolBalance = await stabilityPool.getTotalVSTDeposits();
+    const totalSupply = await DCHFToken.totalSupply();
+    const gasPoolBalance = await DCHFToken.balanceOf(GAS_POOL_ADDRESS);
+    const activePoolBalance = await activePool.getDCHFDebt();
+    const defaultPoolBalance = await defaultPool.getDCHFDebt();
+    const stabilityPoolBalance = await stabilityPool.getTotalDCHFDeposits();
     const currentTrove = await echidnaTester.echidnaProxies(0);
-    const troveBalance = VSTToken.balanceOf(currentTrove);
+    const troveBalance = DCHFToken.balanceOf(currentTrove);
 
     console.log('totalSupply', totalSupply.toString());
     console.log('gasPoolBalance', gasPoolBalance.toString());

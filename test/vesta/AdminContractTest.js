@@ -18,28 +18,28 @@ contract('AdminContract', async accounts => {
 
   let contracts
   let adminContract
-  let vstaToken
+  let monToken
   let stabilityPoolV1;
   let stabilityPoolV2;
   let stabilityPoolManager;
-  let VSTAContracts;
+  let MONContracts;
 
   describe("Admin Contract", async () => {
     beforeEach(async () => {
       contracts = await deploymentHelper.deployLiquityCore()
       contracts.troveManager = await TroveManagerTester.new()
-      VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(owner)
+      MONContracts = await deploymentHelper.deployMONContractsHardhat(owner)
 
       adminContract = contracts.adminContract
-      vstaToken = VSTAContracts.vstaToken;
+      monToken = MONContracts.monToken;
       stabilityPoolV1 = contracts.stabilityPoolTemplate;
       stabilityPoolV2 = contracts.stabilityPoolTemplateV2;
       stabilityPoolManager = contracts.stabilityPoolManager;
 
-      await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-      await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts, true)
+      await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+      await deploymentHelper.connectMONContractsToCore(MONContracts, contracts, true)
 
-      await VSTAContracts.vstaToken.approve(VSTAContracts.communityIssuance.address, ethers.constants.MaxUint256);
+      await MONContracts.monToken.approve(MONContracts.communityIssuance.address, ethers.constants.MaxUint256);
     })
 
     it("AddNewCollateral: As User then reverts", async () => {
@@ -65,8 +65,8 @@ contract('AdminContract', async accounts => {
 
       assert.notEqual((await contracts.vestaParameters.redemptionBlock(ZERO_ADDRESS)).toString(), 0);
       assert.notEqual(await stabilityPoolManager.unsafeGetAssetStabilityPool(ZERO_ADDRESS), ZERO_ADDRESS)
-      assert.equal((await vstaToken.balanceOf(VSTAContracts.communityIssuance.address)).toString(), dec(100, 18))
-      assert.notEqual((await VSTAContracts.communityIssuance.vstaDistributionsByPool), 0);
+      assert.equal((await monToken.balanceOf(MONContracts.communityIssuance.address)).toString(), dec(100, 18))
+      assert.notEqual((await MONContracts.communityIssuance.monDistributionsByPool), 0);
     })
 
     it("UpgradeStabilityPool: As Owner - Upgrade stability pool to V2", async () => {
@@ -81,9 +81,9 @@ contract('AdminContract', async accounts => {
         ZERO_ADDRESS,
         contracts.borrowerOperations.address,
         contracts.troveManager.address,
-        contracts.vstToken.address,
+        contracts.dchfToken.address,
         contracts.sortedTroves.address,
-        VSTAContracts.communityIssuance.address,
+        MONContracts.communityIssuance.address,
         contracts.vestaParameters.address
       ));
 

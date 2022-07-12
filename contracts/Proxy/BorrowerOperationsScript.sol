@@ -16,7 +16,7 @@ contract BorrowerOperationsScript is CheckContract {
 		address _asset,
 		uint256 _assetAmountSent,
 		uint256 _maxFee,
-		uint256 _VSTAmount,
+		uint256 _MONmount,
 		address _upperHint,
 		address _lowerHint
 	) external payable {
@@ -24,7 +24,7 @@ contract BorrowerOperationsScript is CheckContract {
 			_asset,
 			_assetAmountSent,
 			_maxFee,
-			_VSTAmount,
+			_MONmount,
 			_upperHint,
 			_lowerHint
 		);
@@ -53,23 +53,23 @@ contract BorrowerOperationsScript is CheckContract {
 		borrowerOperations.withdrawColl(_asset, _amount, _upperHint, _lowerHint);
 	}
 
-	function withdrawVST(
+	function withdrawDCHF(
 		address _asset,
 		uint256 _maxFee,
 		uint256 _amount,
 		address _upperHint,
 		address _lowerHint
 	) external {
-		borrowerOperations.withdrawVST(_asset, _maxFee, _amount, _upperHint, _lowerHint);
+		borrowerOperations.withdrawDCHF(_asset, _maxFee, _amount, _upperHint, _lowerHint);
 	}
 
-	function repayVST(
+	function repayDCHF(
 		address _asset,
 		uint256 _amount,
 		address _upperHint,
 		address _lowerHint
 	) external {
-		borrowerOperations.repayVST(_asset, _amount, _upperHint, _lowerHint);
+		borrowerOperations.repayDCHF(_asset, _amount, _upperHint, _lowerHint);
 	}
 
 	function closeTrove(address _asset) external {

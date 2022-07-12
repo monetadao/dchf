@@ -26,10 +26,10 @@ def setAddresses(contracts):
         contracts.gasPool.address,
         contracts.collSurplusPool.address,
         contracts.priceFeedTestnet.address,
-        contracts.vstToken.address,
+        contracts.dchfToken.address,
         contracts.sortedTroves.address,
-        contracts.VSTAToken.address,
-        contracts.VSTAStaking.address,
+        contracts.MONToken.address,
+        contracts.MONStaking.address,
         { 'from': accounts[0] }
     )
 
@@ -42,8 +42,8 @@ def setAddresses(contracts):
         contracts.collSurplusPool.address,
         contracts.priceFeedTestnet.address,
         contracts.sortedTroves.address,
-        contracts.vstToken.address,
-        contracts.VSTAStaking.address,
+        contracts.dchfToken.address,
+        contracts.MONStaking.address,
         { 'from': accounts[0] }
     )
 
@@ -51,7 +51,7 @@ def setAddresses(contracts):
         contracts.borrowerOperations.address,
         contracts.troveManager.address,
         contracts.activePool.address,
-        contracts.vstToken.address,
+        contracts.dchfToken.address,
         contracts.sortedTroves.address,
         contracts.priceFeedTestnet.address,
         contracts.communityIssuance.address,
@@ -85,10 +85,10 @@ def setAddresses(contracts):
         { 'from': accounts[0] }
     )
 
-    # VSTA
-    contracts.VSTAStaking.setAddresses(
-        contracts.VSTAToken.address,
-        contracts.vstToken.address,
+    # MON
+    contracts.MONStaking.setAddresses(
+        contracts.MONToken.address,
+        contracts.dchfToken.address,
         contracts.troveManager.address,
         contracts.borrowerOperations.address,
         contracts.activePool.address,
@@ -96,7 +96,7 @@ def setAddresses(contracts):
     )
 
     contracts.communityIssuance.setAddresses(
-        contracts.VSTAToken.address,
+        contracts.MONToken.address,
         contracts.stabilityPool.address,
         { 'from': accounts[0] }
     )
@@ -121,18 +121,18 @@ def contracts():
     contracts.collSurplusPool = CollSurplusPool.deploy({ 'from': accounts[0] })
     contracts.borrowerOperations = BorrowerOperationsTester.deploy({ 'from': accounts[0] })
     contracts.hintHelpers = HintHelpers.deploy({ 'from': accounts[0] })
-    contracts.vstToken = VSTToken.deploy(
+    contracts.dchfToken = DCHFToken.deploy(
         contracts.troveManager.address,
         contracts.stabilityPool.address,
         contracts.borrowerOperations.address,
         { 'from': accounts[0] }
     )
-    # VSTA
-    contracts.VSTAStaking = VSTAStaking.deploy({ 'from': accounts[0] })
+    # MON
+    contracts.MONStaking = MONStaking.deploy({ 'from': accounts[0] })
     contracts.communityIssuance = CommunityIssuance.deploy({ 'from': accounts[0] })
-    contracts.VSTAToken = VSTAToken.deploy(
+    contracts.MONToken = MONToken.deploy(
         contracts.communityIssuance.address,
-        contracts.VSTAStaking.address,
+        contracts.MONStaking.address,
         accounts[0], # bountyAddress
         accounts[0],  # lpRewardsAddress
         accounts[0],  # multisigAddress
@@ -147,7 +147,7 @@ def contracts():
 def print_expectations():
     # ether_price_one_year = price_ether_initial * (1 + drift_ether)**8760
     # print("Expected ether price at the end of the year: $", ether_price_one_year)
-    print("Expected VSTA price at the end of first month: $", price_VSTA_initial * (1 + drift_VSTA)**720)
+    print("Expected MON price at the end of first month: $", price_MON_initial * (1 + drift_MON)**720)
 
     print("\n Open troves")
     print("E(Q_t^e)    = ", collateral_gamma_k * collateral_gamma_theta)
@@ -173,21 +173,21 @@ def _test_test(contracts):
 
 * exogenous ether price input
 * trove liquidation
-* return of the previous period's stability pool determined (liquidation gain & airdropped VSTA gain)
+* return of the previous period's stability pool determined (liquidation gain & airdropped MON gain)
 * trove closure
 * trove adjustment
 * open troves
 * issuance fee
 * trove pool formed
-* VST supply determined
-* VST stability pool demand determined
-* VST liquidity pool demand determined
-* VST price determined
+* DCHF supply determined
+* DCHF stability pool demand determined
+* DCHF liquidity pool demand determined
+* DCHF price determined
 * redemption & redemption fee
-* VSTA pool return determined
+* MON pool return determined
 """
 def test_run_simulation(add_accounts, contracts, print_expectations):
-    VST_GAS_COMPENSATION = contracts.troveManager.VST_GAS_COMPENSATION() / 1e18
+    DCHF_GAS_COMPENSATION = contracts.troveManager.DCHF_GAS_COMPENSATION() / 1e18
     MIN_NET_DEBT = contracts.troveManager.MIN_NET_DEBT() / 1e18
 
     contracts.priceFeedTestnet.setPrice(floatToWei(price_ether[0]), { 'from': accounts[0] })
@@ -201,7 +201,7 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
     inactive_accounts = [*range(1, len(accounts))]
 
     price_USDV = 1
-    price_VSTA_current = price_VSTA_initial
+    price_MON_current = price_MON_initial
 
     data = {"airdrop_gain": [0] * n_sim, "liquidation_gain": [0] * n_sim, "issuance_fee": [0] * n_sim, "redemption_fee": [0] * n_sim}
     total_USDV_redempted = 0
@@ -215,7 +215,7 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
 
     with open('tests/simulation.csv', 'w', newline='') as csvfile:
         datawriter = csv.writer(csvfile, delimiter=',')
-        datawriter.writerow(['iteration', 'ETH_price', 'price_USDV', 'price_VSTA', 'num_troves', 'total_coll', 'total_debt', 'TCR', 'recovery_mode', 'last_ICR', 'SP_USDV', 'SP_ETH', 'total_coll_added', 'total_coll_liquidated', 'total_USDV_redempted'])
+        datawriter.writerow(['iteration', 'ETH_price', 'price_USDV', 'price_MON', 'num_troves', 'total_coll', 'total_debt', 'TCR', 'recovery_mode', 'last_ICR', 'SP_USDV', 'SP_ETH', 'total_coll_added', 'total_coll_liquidated', 'total_USDV_redempted'])
 
         #Simulation Process
         for index in range(1, n_sim):
@@ -226,7 +226,7 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
             contracts.priceFeedTestnet.setPrice(floatToWei(price_ether_current), { 'from': accounts[0] })
 
             #trove liquidation & return of stability pool
-            result_liquidation = liquidate_troves(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_USDV, price_VSTA_current, data, index)
+            result_liquidation = liquidate_troves(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_USDV, price_MON_current, data, index)
             total_coll_liquidated = total_coll_liquidated + result_liquidation[0]
             return_stability = result_liquidation[1]
 
@@ -247,18 +247,18 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
             #Calculating Price, Liquidity Pool, and Redemption
             [price_USDV, redemption_pool, redemption_fee, issuance_USDV_stabilizer] = price_stabilizer(accounts, contracts, active_accounts, inactive_accounts, price_ether_current, price_USDV, index)
             total_USDV_redempted = total_USDV_redempted + redemption_pool
-            print('VST price', price_USDV)
-            print('VSTA price', price_VSTA_current)
+            print('DCHF price', price_USDV)
+            print('MON price', price_MON_current)
 
             issuance_fee = price_USDV * (issuance_USDV_adjust + issuance_USDV_open + issuance_USDV_stabilizer)
             data['issuance_fee'][index] = issuance_fee
             data['redemption_fee'][index] = redemption_fee
 
-            #VSTA Market
-            result_VSTA = VSTA_market(index, data)
-            price_VSTA_current = result_VSTA[0]
-            #annualized_earning = result_VSTA[1]
-            #MC_VSTA_current = result_VSTA[2]
+            #MON Market
+            result_MON = MON_market(index, data)
+            price_MON_current = result_MON[0]
+            #annualized_earning = result_MON[1]
+            #MC_MON_current = result_MON[2]
 
             [ETH_price, num_troves, total_coll, total_debt, TCR, recovery_mode, last_ICR, SP_USDV, SP_ETH] = logGlobalState(contracts)
             print('Total redempted ', total_USDV_redempted)
@@ -267,6 +267,6 @@ def test_run_simulation(add_accounts, contracts, print_expectations):
             print(f'Ratio ETH liquid {100 * total_coll_liquidated / total_coll_added}%')
             print(' ----------------------\n')
 
-            datawriter.writerow([index, ETH_price, price_USDV, price_VSTA_current, num_troves, total_coll, total_debt, TCR, recovery_mode, last_ICR, SP_USDV, SP_ETH, total_coll_added, total_coll_liquidated, total_USDV_redempted])
+            datawriter.writerow([index, ETH_price, price_USDV, price_MON_current, num_troves, total_coll, total_debt, TCR, recovery_mode, last_ICR, SP_USDV, SP_ETH, total_coll_added, total_coll_liquidated, total_USDV_redempted])
 
             assert price_USDV > 0

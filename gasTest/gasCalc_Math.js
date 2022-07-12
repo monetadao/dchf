@@ -2,7 +2,7 @@ const fs = require('fs')
 const deploymentHelper = require("../utils/deploymentHelpers.js")
 const testHelpers = require("../utils/testHelpers.js")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
-const VestaMathTester = artifacts.require("./VestaMathTester.sol")
+const DfrancMathTester = artifacts.require("./DfrancMathTester.sol")
 
 const th = testHelpers.TestHelper
 
@@ -22,16 +22,16 @@ contract('Gas costs for math functions', async accounts => {
     troveManagerTester = await TroveManagerTester.new()
     TroveManagerTester.setAsDeployed(troveManagerTester)
 
-    mathTester = await VestaMathTester.new()
-    VestaMathTester.setAsDeployed(mathTester)
+    mathTester = await DfrancMathTester.new()
+    DfrancMathTester.setAsDeployed(mathTester)
   })
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
-    const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+    const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
     priceFeed = contracts.priceFeedTestnet
-    VSTToken = contracts.vstToken
+    DCHFToken = contracts.dchfToken
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
     activePool = contracts.activePool
@@ -40,12 +40,12 @@ contract('Gas costs for math functions', async accounts => {
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
 
-    gtStaking = VSTAContracts.gtStaking
-    VSTAToken = VSTAContracts.VSTAToken
-    communityIssuance = VSTAContracts.communityIssuance
+    gtStaking = MONContracts.gtStaking
+    MONToken = MONContracts.MONToken
+    communityIssuance = MONContracts.communityIssuance
 
-    await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-    await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+    await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
   })
 
   // performs n runs of exponentiation on a random base

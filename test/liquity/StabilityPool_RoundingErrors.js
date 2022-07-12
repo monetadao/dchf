@@ -5,7 +5,7 @@ const th = testHelpers.TestHelper
 const dec = th.dec
 const toBN = th.toBN
 
-const VSTToken = artifacts.require("VSTToken")
+const DCHFToken = artifacts.require("DCHFToken")
 const TroveManagerTester = artifacts.require("TroveManagerTester")
 const StabilityPool = artifacts.require('StabilityPool.sol')
 
@@ -28,12 +28,12 @@ contract('Pool Manager: Sum-Product rounding errors', async accounts => {
   beforeEach(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
     contracts.troveManager = await TroveManagerTester.new()
-    contracts.vstToken = await VSTTokenTester.new(
+    contracts.dchfToken = await DCHFTokenTester.new(
       contracts.troveManager.address,
       contracts.stabilityPoolManager.address,
       contracts.borrowerOperations.address
     )
-    const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+    const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
 
     priceFeed = contracts.priceFeedTestnet
@@ -50,24 +50,24 @@ contract('Pool Manager: Sum-Product rounding errors', async accounts => {
         break;
     }
 
-    await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-    await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+    await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
 
     stabilityPool = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(ZERO_ADDRESS))
     stabilityPoolERC20 = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(erc20.address));
   })
 
   // skipped to not slow down CI
-  it.skip("Rounding errors: 100 deposits of 100VST into SP, then 200 liquidations of 49VST", async () => {
+  it.skip("Rounding errors: 100 deposits of 100DCHF into SP, then 200 liquidations of 49DCHF", async () => {
     const owner = accounts[0]
     const depositors = accounts.slice(1, 101)
     const defaulters = accounts.slice(101, 301)
 
     for (let account of depositors) {
-      await openTrove({ extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
       await stabilityPool.provideToSP(dec(100, 18), { from: account })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
       await stabilityPoolERC20.provideToSP(dec(100, 18), { from: account })
     }
 
@@ -87,9 +87,9 @@ contract('Pool Manager: Sum-Product rounding errors', async accounts => {
       await troveManager.liquidate(erc20.address, defaulter, { from: owner });
     }
 
-    const SP_TotalDeposits = await stabilityPool.getTotalVSTDeposits()
+    const SP_TotalDeposits = await stabilityPool.getTotalDCHFDeposits()
     const SP_ETH = await stabilityPool.getAssetBalance()
-    const compoundedDeposit = await stabilityPool.getCompoundedVSTDeposit(depositors[0])
+    const compoundedDeposit = await stabilityPool.getCompoundedDCHFDeposit(depositors[0])
     const ETH_Gain = await stabilityPool.getDepositorAssetGain(depositors[0])
 
     // Check depostiors receive their share without too much error
@@ -97,9 +97,9 @@ contract('Pool Manager: Sum-Product rounding errors', async accounts => {
     assert.isAtMost(th.getDifference(SP_ETH.div(th.toBN(depositors.length)), ETH_Gain), 100000)
 
 
-    const SP_TotalDepositsERC20 = await stabilityPoolERC20.getTotalVSTDeposits()
+    const SP_TotalDepositsERC20 = await stabilityPoolERC20.getTotalDCHFDeposits()
     const SP_ETHERC20 = await stabilityPoolERC20.getAssetBalance()
-    const compoundedDepositERC20 = await stabilityPoolERC20.getCompoundedVSTDeposit(depositors[0])
+    const compoundedDepositERC20 = await stabilityPoolERC20.getCompoundedDCHFDeposit(depositors[0])
     const ETH_GainERC20 = await stabilityPoolERC20.getDepositorAssetGain(depositors[0])
 
     // Check depostiors receive their share without too much error

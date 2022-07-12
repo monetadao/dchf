@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../Interfaces/IStabilityPoolManager.sol";
 import "../Interfaces/ICommunityIssuance.sol";
 import "../Dependencies/BaseMath.sol";
-import "../Dependencies/VestaMath.sol";
+import "../Dependencies/DfrancMath.sol";
 import "../Dependencies/CheckContract.sol";
 
 contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContract, BaseMath {
@@ -20,13 +20,13 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 	uint256 public constant DISTRIBUTION_DURATION = 7 days / 60;
 	uint256 public constant SECONDS_IN_ONE_MINUTE = 60;
 
-	IERC20Upgradeable public vstaToken;
+	IERC20Upgradeable public monToken;
 	IStabilityPoolManager public stabilityPoolManager;
 
-	mapping(address => uint256) public totalVSTAIssued;
+	mapping(address => uint256) public totalMONIssued;
 	mapping(address => uint256) public lastUpdateTime;
-	mapping(address => uint256) public VSTASupplyCaps;
-	mapping(address => uint256) public vstaDistributionsByPool;
+	mapping(address => uint256) public MONSupplyCaps;
+	mapping(address => uint256) public monDistributionsByPool;
 
 	address public adminContract;
 
@@ -60,12 +60,12 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 
 	// --- Functions ---
 	function setAddresses(
-		address _vstaTokenAddress,
+		address _monTokenAddress,
 		address _stabilityPoolManagerAddress,
 		address _adminContract
 	) external override initializer {
 		require(!isInitialized, "Already initialized");
-		checkContract(_vstaTokenAddress);
+		checkContract(_monTokenAddress);
 		checkContract(_stabilityPoolManagerAddress);
 		checkContract(_adminContract);
 		isInitialized = true;
@@ -73,10 +73,10 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 
 		adminContract = _adminContract;
 
-		vstaToken = IERC20Upgradeable(_vstaTokenAddress);
+		monToken = IERC20Upgradeable(_monTokenAddress);
 		stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
 
-		emit VSTATokenAddressSet(_vstaTokenAddress);
+		emit MONTokenAddressSet(_monTokenAddress);
 		emit StabilityPoolAddressSet(_stabilityPoolManagerAddress);
 	}
 
@@ -98,19 +98,19 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 		onlyOwner
 		activeStabilityPoolOnly(_pool)
 	{
-		uint256 newCap = VSTASupplyCaps[_pool].sub(_fundToRemove);
+		uint256 newCap = MONSupplyCaps[_pool].sub(_fundToRemove);
 		require(
-			totalVSTAIssued[_pool] <= newCap,
+			totalMONIssued[_pool] <= newCap,
 			"CommunityIssuance: Stability Pool doesn't have enough supply."
 		);
 
-		VSTASupplyCaps[_pool] -= _fundToRemove;
+		MONSupplyCaps[_pool] -= _fundToRemove;
 
-		if (totalVSTAIssued[_pool] == VSTASupplyCaps[_pool]) {
+		if (totalMONIssued[_pool] == MONSupplyCaps[_pool]) {
 			disableStabilityPool(_pool);
 		}
 
-		vstaToken.safeTransfer(msg.sender, _fundToRemove);
+		monToken.safeTransfer(msg.sender, _fundToRemove);
 	}
 
 	function addFundToStabilityPoolFrom(
@@ -135,8 +135,8 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 			lastUpdateTime[_pool] = block.timestamp;
 		}
 
-		VSTASupplyCaps[_pool] += _assignedSupply;
-		vstaToken.safeTransferFrom(_spender, address(this), _assignedSupply);
+		MONSupplyCaps[_pool] += _assignedSupply;
+		monToken.safeTransferFrom(_spender, address(this), _assignedSupply);
 	}
 
 	function transferFundToAnotherStabilityPool(
@@ -150,46 +150,46 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 		activeStabilityPoolOnly(_target)
 		activeStabilityPoolOnly(_receiver)
 	{
-		uint256 newCap = VSTASupplyCaps[_target].sub(_quantity);
+		uint256 newCap = MONSupplyCaps[_target].sub(_quantity);
 		require(
-			totalVSTAIssued[_target] <= newCap,
+			totalMONIssued[_target] <= newCap,
 			"CommunityIssuance: Stability Pool doesn't have enough supply."
 		);
 
-		VSTASupplyCaps[_target] -= _quantity;
-		VSTASupplyCaps[_receiver] += _quantity;
+		MONSupplyCaps[_target] -= _quantity;
+		MONSupplyCaps[_receiver] += _quantity;
 
-		if (totalVSTAIssued[_target] == VSTASupplyCaps[_target]) {
+		if (totalMONIssued[_target] == MONSupplyCaps[_target]) {
 			disableStabilityPool(_target);
 		}
 	}
 
 	function disableStabilityPool(address _pool) internal {
 		lastUpdateTime[_pool] = 0;
-		VSTASupplyCaps[_pool] = 0;
-		totalVSTAIssued[_pool] = 0;
+		MONSupplyCaps[_pool] = 0;
+		totalMONIssued[_pool] = 0;
 	}
 
-	function issueVSTA() external override onlyStabilityPool returns (uint256) {
-		return _issueVSTA(msg.sender);
+	function issueMON() external override onlyStabilityPool returns (uint256) {
+		return _issueMON(msg.sender);
 	}
 
-	function _issueVSTA(address _pool) internal isStabilityPool(_pool) returns (uint256) {
-		uint256 maxPoolSupply = VSTASupplyCaps[_pool];
+	function _issueMON(address _pool) internal isStabilityPool(_pool) returns (uint256) {
+		uint256 maxPoolSupply = MONSupplyCaps[_pool];
 
-		if (totalVSTAIssued[_pool] >= maxPoolSupply) return 0;
+		if (totalMONIssued[_pool] >= maxPoolSupply) return 0;
 
 		uint256 issuance = _getLastUpdateTokenDistribution(_pool);
-		uint256 totalIssuance = issuance.add(totalVSTAIssued[_pool]);
+		uint256 totalIssuance = issuance.add(totalMONIssued[_pool]);
 
 		if (totalIssuance > maxPoolSupply) {
-			issuance = maxPoolSupply.sub(totalVSTAIssued[_pool]);
+			issuance = maxPoolSupply.sub(totalMONIssued[_pool]);
 			totalIssuance = maxPoolSupply;
 		}
 
 		lastUpdateTime[_pool] = block.timestamp;
-		totalVSTAIssued[_pool] = totalIssuance;
-		emit TotalVSTAIssuedUpdated(_pool, totalIssuance);
+		totalMONIssued[_pool] = totalIssuance;
+		emit TotalMONIssuedUpdated(_pool, totalIssuance);
 
 		return issuance;
 	}
@@ -203,26 +203,26 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 		uint256 timePassed = block.timestamp.sub(lastUpdateTime[stabilityPool]).div(
 			SECONDS_IN_ONE_MINUTE
 		);
-		uint256 totalDistribuedSinceBeginning = vstaDistributionsByPool[stabilityPool].mul(
+		uint256 totalDistribuedSinceBeginning = monDistributionsByPool[stabilityPool].mul(
 			timePassed
 		);
 
 		return totalDistribuedSinceBeginning;
 	}
 
-	function sendVSTA(address _account, uint256 _VSTAamount)
+	function sendMON(address _account, uint256 _MONamount)
 		external
 		override
 		onlyStabilityPool
 	{
-		uint256 balanceVSTA = vstaToken.balanceOf(address(this));
-		uint256 safeAmount = balanceVSTA >= _VSTAamount ? _VSTAamount : balanceVSTA;
+		uint256 balanceMON = monToken.balanceOf(address(this));
+		uint256 safeAmount = balanceMON >= _MONamount ? _MONamount : balanceMON;
 
 		if (safeAmount == 0) {
 			return;
 		}
 
-		vstaToken.transfer(_account, safeAmount);
+		monToken.transfer(_account, safeAmount);
 	}
 
 	function setWeeklyVstaDistribution(address _stabilityPool, uint256 _weeklyReward)
@@ -230,6 +230,6 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 		isController
 		isStabilityPool(_stabilityPool)
 	{
-		vstaDistributionsByPool[_stabilityPool] = _weeklyReward.div(DISTRIBUTION_DURATION);
+		monDistributionsByPool[_stabilityPool] = _weeklyReward.div(DISTRIBUTION_DURATION);
 	}
 }

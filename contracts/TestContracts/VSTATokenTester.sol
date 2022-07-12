@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.14;
-import "../VSTA/VSTAToken.sol";
+import "../MON/MONToken.sol";
 
-contract VSTATokenTester is VSTAToken {
-	constructor(address _treasury) VSTAToken(_treasury) {}
+contract MONTokenTester is MONToken {
+	constructor(address _treasury) MONToken(_treasury) {}
 
 	function unprotectedMint(address account, uint256 amount) external {
 		// No check for the caller here

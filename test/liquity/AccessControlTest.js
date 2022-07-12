@@ -26,7 +26,7 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
   let coreContracts
 
   let priceFeed
-  let vstToken
+  let dchfToken
   let sortedTroves
   let troveManager
   let nameRegistry
@@ -36,18 +36,18 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
   let functionCaller
   let borrowerOperations
 
-  let vstaStaking
-  let vstaToken
+  let monStaking
+  let monToken
   let communityIssuance
 
   before(async () => {
     coreContracts = await deploymentHelper.deployLiquityCore()
     coreContracts.troveManager = await TroveManagerTester.new()
-    coreContracts = await deploymentHelper.deployVSTToken(coreContracts)
-    const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(treasury)
+    coreContracts = await deploymentHelper.deployDCHFToken(coreContracts)
+    const MONContracts = await deploymentHelper.deployMONContractsHardhat(treasury)
 
     priceFeed = coreContracts.priceFeed
-    vstToken = coreContracts.vstToken
+    dchfToken = coreContracts.dchfToken
     sortedTroves = coreContracts.sortedTroves
     troveManager = coreContracts.troveManager
     nameRegistry = coreContracts.nameRegistry
@@ -57,22 +57,22 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     functionCaller = coreContracts.functionCaller
     borrowerOperations = coreContracts.borrowerOperations
 
-    vstaStaking = VSTAContracts.vstaStaking
-    vstaToken = VSTAContracts.vstaToken
-    communityIssuance = VSTAContracts.communityIssuance
+    monStaking = MONContracts.monStaking
+    monToken = MONContracts.monToken
+    communityIssuance = MONContracts.communityIssuance
 
-    await deploymentHelper.connectCoreContracts(coreContracts, VSTAContracts)
-    await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, coreContracts)
+    await deploymentHelper.connectCoreContracts(coreContracts, MONContracts)
+    await deploymentHelper.connectMONContractsToCore(MONContracts, coreContracts)
     stabilityPool = await StabilityPool.at(await coreContracts.stabilityPoolManager.getAssetStabilityPool(EMPTY_ADDRESS))
 
     for (account of accounts.slice(0, 10)) {
-      await th.openTrove(coreContracts, { extraVSTAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+      await th.openTrove(coreContracts, { extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
     }
 
     const expectedCISupplyCap = '64000000000000000000000000' // 32mil
 
     // Check CI has been properly funded
-    const bal = await vstaToken.balanceOf(communityIssuance.address)
+    const bal = await monToken.balanceOf(communityIssuance.address)
     assert.equal(bal.toString(), expectedCISupplyCap)
   })
 
@@ -235,11 +235,11 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
       }
     })
 
-    // increaseVST
-    it("increaseVSTDebt(): reverts when called by an account that is not BO nor TroveM", async () => {
+    // increaseDCHF
+    it("increaseDCHFDebt(): reverts when called by an account that is not BO nor TroveM", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await activePool.increaseVSTDebt(EMPTY_ADDRESS, 100, { from: alice })
+        const txAlice = await activePool.increaseDCHFDebt(EMPTY_ADDRESS, 100, { from: alice })
 
       } catch (err) {
         assert.include(err.message, "revert")
@@ -247,11 +247,11 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
       }
     })
 
-    // decreaseVST
-    it("decreaseVSTDebt(): reverts when called by an account that is not BO nor TroveM nor SP", async () => {
+    // decreaseDCHF
+    it("decreaseDCHFDebt(): reverts when called by an account that is not BO nor TroveM nor SP", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await activePool.decreaseVSTDebt(EMPTY_ADDRESS, 100, { from: alice })
+        const txAlice = await activePool.decreaseDCHFDebt(EMPTY_ADDRESS, 100, { from: alice })
 
       } catch (err) {
         assert.include(err.message, "revert")
@@ -285,11 +285,11 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
       }
     })
 
-    // increaseVST
-    it("increaseVSTDebt(): reverts when called by an account that is not TroveManager", async () => {
+    // increaseDCHF
+    it("increaseDCHFDebt(): reverts when called by an account that is not TroveManager", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await defaultPool.increaseVSTDebt(EMPTY_ADDRESS, 100, { from: alice })
+        const txAlice = await defaultPool.increaseDCHFDebt(EMPTY_ADDRESS, 100, { from: alice })
 
       } catch (err) {
         assert.include(err.message, "revert")
@@ -297,11 +297,11 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
       }
     })
 
-    // decreaseVST
-    it("decreaseVST(): reverts when called by an account that is not TroveManager", async () => {
+    // decreaseDCHF
+    it("decreaseDCHF(): reverts when called by an account that is not TroveManager", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await defaultPool.decreaseVSTDebt(EMPTY_ADDRESS, 100, { from: alice })
+        const txAlice = await defaultPool.decreaseDCHFDebt(EMPTY_ADDRESS, 100, { from: alice })
 
       } catch (err) {
         assert.include(err.message, "revert")
@@ -352,12 +352,12 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     })
   })
 
-  describe('VSTToken', async accounts => {
+  describe('DCHFToken', async accounts => {
 
     //    mint
     it("mint(): reverts when called by an account that is not BorrowerOperations", async () => {
       // Attempt call from alice
-      const txAlice = vstToken.mint(th.ZERO_ADDRESS, bob, 100, { from: alice })
+      const txAlice = dchfToken.mint(th.ZERO_ADDRESS, bob, 100, { from: alice })
       await th.assertRevert(txAlice, "Caller is not BorrowerOperations")
     })
 
@@ -365,7 +365,7 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     it("burn(): reverts when called by an account that is not BO nor TroveM nor SP", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await vstToken.burn(bob, 100, { from: alice })
+        const txAlice = await dchfToken.burn(bob, 100, { from: alice })
 
       } catch (err) {
         assert.include(err.message, "revert")
@@ -377,7 +377,7 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     it("sendToPool(): reverts when called by an account that is not StabilityPool", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await vstToken.sendToPool(bob, activePool.address, 100, { from: alice })
+        const txAlice = await dchfToken.sendToPool(bob, activePool.address, 100, { from: alice })
 
       } catch (err) {
         assert.include(err.message, "revert")
@@ -389,7 +389,7 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     it("returnFromPool(): reverts when called by an account that is not TroveManager nor StabilityPool", async () => {
       // Attempt call from alice
       try {
-        const txAlice = await vstToken.returnFromPool(activePool.address, bob, 100, { from: alice })
+        const txAlice = await dchfToken.returnFromPool(activePool.address, bob, 100, { from: alice })
 
       } catch (err) {
         assert.include(err.message, "revert")
@@ -439,10 +439,10 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     })
   })
 
-  describe('VSTAStaking', async accounts => {
-    it("increaseF_VST(): reverts when caller is not TroveManager", async () => {
+  describe('MONStaking', async accounts => {
+    it("increaseF_DCHF(): reverts when caller is not TroveManager", async () => {
       try {
-        const txAlice = await vstaStaking.increaseF_VST(dec(1, 18), { from: alice })
+        const txAlice = await monStaking.increaseF_DCHF(dec(1, 18), { from: alice })
 
       } catch (err) {
         assert.include(err.message, "revert")
@@ -451,18 +451,18 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
   })
 
   describe('CommunityIssuance', async accounts => {
-    it("sendVSTA(): reverts when caller is not the StabilityPool", async () => {
-      const tx1 = communityIssuance.sendVSTA(alice, dec(100, 18), { from: alice })
-      const tx2 = communityIssuance.sendVSTA(bob, dec(100, 18), { from: alice })
-      const tx3 = communityIssuance.sendVSTA(stabilityPool.address, dec(100, 18), { from: alice })
+    it("sendMON(): reverts when caller is not the StabilityPool", async () => {
+      const tx1 = communityIssuance.sendMON(alice, dec(100, 18), { from: alice })
+      const tx2 = communityIssuance.sendMON(bob, dec(100, 18), { from: alice })
+      const tx3 = communityIssuance.sendMON(stabilityPool.address, dec(100, 18), { from: alice })
 
       assertRevert(tx1)
       assertRevert(tx2)
       assertRevert(tx3)
     })
 
-    it("issueVSTA(): reverts when caller is not the StabilityPool", async () => {
-      const tx1 = communityIssuance.issueVSTA({ from: alice })
+    it("issueMON(): reverts when caller is not the StabilityPool", async () => {
+      const tx1 = communityIssuance.issueMON({ from: alice })
 
       assertRevert(tx1)
     })

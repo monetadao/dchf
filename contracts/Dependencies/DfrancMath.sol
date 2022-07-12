@@ -3,7 +3,7 @@
 pragma solidity ^0.8.14;
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
-library VestaMath {
+library DfrancMath {
 	using SafeMathUpgradeable for uint256;
 
 	uint256 internal constant DECIMAL_PRECISION = 1 ether;

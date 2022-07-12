@@ -7,16 +7,16 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/ITroveManagerHelpers.sol";
-import "./Interfaces/IVSTToken.sol";
+import "./Interfaces/IDCHFToken.sol";
 import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/ISortedTroves.sol";
-import "./Interfaces/IVSTAStaking.sol";
+import "./Interfaces/IMONStaking.sol";
 import "./Interfaces/IStabilityPoolManager.sol";
-import "./Dependencies/VestaBase.sol";
+import "./Dependencies/DfrancBase.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
-contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
+contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 	using SafeMathUpgradeable for uint256;
 	using SafeERC20Upgradeable for IERC20Upgradeable;
 
@@ -34,10 +34,10 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 
 	ICollSurplusPool collSurplusPool;
 
-	IVSTAStaking public VSTAStaking;
-	address public VSTAStakingAddress;
+	IMONStaking public MONStaking;
+	address public MONStakingAddress;
 
-	IVSTToken public VSTToken;
+	IDCHFToken public DCHFToken;
 
 	// A doubly linked list of Troves, sorted by their collateral ratios
 	ISortedTroves public sortedTroves;
@@ -60,7 +60,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		uint256 oldICR;
 		uint256 newICR;
 		uint256 newTCR;
-		uint256 VSTFee;
+		uint256 DCHFFee;
 		uint256 newDebt;
 		uint256 newColl;
 		uint256 stake;
@@ -69,7 +69,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 	struct LocalVariables_openTrove {
 		address asset;
 		uint256 price;
-		uint256 VSTFee;
+		uint256 DCHFFee;
 		uint256 netDebt;
 		uint256 compositeDebt;
 		uint256 ICR;
@@ -82,7 +82,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		ITroveManager troveManager;
 		ITroveManagerHelpers troveManagerHelpers;
 		IActivePool activePool;
-		IVSTToken VSTToken;
+		IDCHFToken DCHFToken;
 	}
 
 	enum BorrowerOperation {
@@ -109,8 +109,8 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		address _gasPoolAddress,
 		address _collSurplusPoolAddress,
 		address _sortedTrovesAddress,
-		address _vstTokenAddress,
-		address _VSTAStakingAddress,
+		address _dchfTokenAddress,
+		address _MONStakingAddress,
 		address _vestaParamsAddress
 	) external override initializer {
 		require(!isInitialized, "Already initialized");
@@ -120,8 +120,8 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		checkContract(_gasPoolAddress);
 		checkContract(_collSurplusPoolAddress);
 		checkContract(_sortedTrovesAddress);
-		checkContract(_vstTokenAddress);
-		checkContract(_VSTAStakingAddress);
+		checkContract(_dchfTokenAddress);
+		checkContract(_MONStakingAddress);
 		checkContract(_vestaParamsAddress);
 		isInitialized = true;
 
@@ -133,19 +133,19 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		gasPoolAddress = _gasPoolAddress;
 		collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
 		sortedTroves = ISortedTroves(_sortedTrovesAddress);
-		VSTToken = IVSTToken(_vstTokenAddress);
-		VSTAStakingAddress = _VSTAStakingAddress;
-		VSTAStaking = IVSTAStaking(_VSTAStakingAddress);
+		DCHFToken = IDCHFToken(_dchfTokenAddress);
+		MONStakingAddress = _MONStakingAddress;
+		MONStaking = IMONStaking(_MONStakingAddress);
 
-		setVestaParameters(_vestaParamsAddress);
+		setDfrancParameters(_vestaParamsAddress);
 
 		emit TroveManagerAddressChanged(_troveManagerAddress);
 		emit StabilityPoolAddressChanged(_stabilityPoolManagerAddress);
 		emit GasPoolAddressChanged(_gasPoolAddress);
 		emit CollSurplusPoolAddressChanged(_collSurplusPoolAddress);
 		emit SortedTrovesAddressChanged(_sortedTrovesAddress);
-		emit VSTTokenAddressChanged(_vstTokenAddress);
-		emit VSTAStakingAddressChanged(_VSTAStakingAddress);
+		emit DCHFTokenAddressChanged(_dchfTokenAddress);
+		emit MONStakingAddressChanged(_MONStakingAddress);
 	}
 
 	// --- Borrower Trove Operations ---
@@ -154,7 +154,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		address _asset,
 		uint256 _tokenAmount,
 		uint256 _maxFeePercentage,
-		uint256 _VSTAmount,
+		uint256 _MONmount,
 		address _upperHint,
 		address _lowerHint
 	) external payable override {
@@ -164,7 +164,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			troveManager,
 			troveManagerHelpers,
 			vestaParams.activePool(),
-			VSTToken
+			DCHFToken
 		);
 		LocalVariables_openTrove memory vars;
 		vars.asset = _asset;
@@ -182,28 +182,28 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			msg.sender
 		);
 
-		vars.VSTFee;
-		vars.netDebt = _VSTAmount;
+		vars.DCHFFee;
+		vars.netDebt = _MONmount;
 
 		if (!isRecoveryMode) {
-			vars.VSTFee = _triggerBorrowingFee(
+			vars.DCHFFee = _triggerBorrowingFee(
 				vars.asset,
 				contractsCache.troveManager,
 				contractsCache.troveManagerHelpers,
-				contractsCache.VSTToken,
-				_VSTAmount,
+				contractsCache.DCHFToken,
+				_MONmount,
 				_maxFeePercentage
 			);
-			vars.netDebt = vars.netDebt.add(vars.VSTFee);
+			vars.netDebt = vars.netDebt.add(vars.DCHFFee);
 		}
 		_requireAtLeastMinNetDebt(vars.asset, vars.netDebt);
 
-		// ICR is based on the composite debt, i.e. the requested VST amount + VST borrowing fee + VST gas comp.
+		// ICR is based on the composite debt, i.e. the requested DCHF amount + DCHF borrowing fee + DCHF gas comp.
 		vars.compositeDebt = _getCompositeDebt(vars.asset, vars.netDebt);
 		assert(vars.compositeDebt > 0);
 
-		vars.ICR = VestaMath._computeCR(_tokenAmount, vars.compositeDebt, vars.price);
-		vars.NICR = VestaMath._computeNominalCR(_tokenAmount, vars.compositeDebt);
+		vars.ICR = DfrancMath._computeCR(_tokenAmount, vars.compositeDebt, vars.price);
+		vars.NICR = DfrancMath._computeNominalCR(_tokenAmount, vars.compositeDebt);
 
 		if (isRecoveryMode) {
 			_requireICRisAboveCCR(vars.asset, vars.ICR);
@@ -242,24 +242,24 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		);
 		emit TroveCreated(vars.asset, msg.sender, vars.arrayIndex);
 
-		// Move the ether to the Active Pool, and mint the VSTAmount to the borrower
+		// Move the ether to the Active Pool, and mint the MONmount to the borrower
 		_activePoolAddColl(vars.asset, contractsCache.activePool, _tokenAmount);
-		_withdrawVST(
+		_withdrawDCHF(
 			vars.asset,
 			contractsCache.activePool,
-			contractsCache.VSTToken,
+			contractsCache.DCHFToken,
 			msg.sender,
-			_VSTAmount,
+			_MONmount,
 			vars.netDebt
 		);
-		// Move the VST gas compensation to the Gas Pool
-		_withdrawVST(
+		// Move the DCHF gas compensation to the Gas Pool
+		_withdrawDCHF(
 			vars.asset,
 			contractsCache.activePool,
-			contractsCache.VSTToken,
+			contractsCache.DCHFToken,
 			gasPoolAddress,
-			vestaParams.VST_GAS_COMPENSATION(vars.asset),
-			vestaParams.VST_GAS_COMPENSATION(vars.asset)
+			vestaParams.DCHF_GAS_COMPENSATION(vars.asset),
+			vestaParams.DCHF_GAS_COMPENSATION(vars.asset)
 		);
 
 		emit TroveUpdated(
@@ -270,7 +270,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			vars.stake,
 			BorrowerOperation.openTrove
 		);
-		emit VSTBorrowingFeePaid(vars.asset, msg.sender, vars.VSTFee);
+		emit DCHFBorrowingFeePaid(vars.asset, msg.sender, vars.DCHFFee);
 	}
 
 	// Send ETH as collateral to a trove
@@ -325,11 +325,11 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		_adjustTrove(_asset, 0, msg.sender, _collWithdrawal, 0, false, _upperHint, _lowerHint, 0);
 	}
 
-	// Withdraw VST tokens from a trove: mint new VST tokens to the owner, and increase the trove's debt accordingly
-	function withdrawVST(
+	// Withdraw DCHF tokens from a trove: mint new DCHF tokens to the owner, and increase the trove's debt accordingly
+	function withdrawDCHF(
 		address _asset,
 		uint256 _maxFeePercentage,
-		uint256 _VSTAmount,
+		uint256 _MONmount,
 		address _upperHint,
 		address _lowerHint
 	) external override {
@@ -338,7 +338,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			0,
 			msg.sender,
 			0,
-			_VSTAmount,
+			_MONmount,
 			true,
 			_upperHint,
 			_lowerHint,
@@ -346,14 +346,14 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		);
 	}
 
-	// Repay VST tokens to a Trove: Burn the repaid VST tokens, and reduce the trove's debt accordingly
-	function repayVST(
+	// Repay DCHF tokens to a Trove: Burn the repaid DCHF tokens, and reduce the trove's debt accordingly
+	function repayDCHF(
 		address _asset,
-		uint256 _VSTAmount,
+		uint256 _MONmount,
 		address _upperHint,
 		address _lowerHint
 	) external override {
-		_adjustTrove(_asset, 0, msg.sender, 0, _VSTAmount, false, _upperHint, _lowerHint, 0);
+		_adjustTrove(_asset, 0, msg.sender, 0, _MONmount, false, _upperHint, _lowerHint, 0);
 	}
 
 	function adjustTrove(
@@ -361,7 +361,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		uint256 _assetSent,
 		uint256 _maxFeePercentage,
 		uint256 _collWithdrawal,
-		uint256 _VSTChange,
+		uint256 _DCHFChange,
 		bool _isDebtIncrease,
 		address _upperHint,
 		address _lowerHint
@@ -371,7 +371,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			getMethodValue(_asset, _assetSent, true),
 			msg.sender,
 			_collWithdrawal,
-			_VSTChange,
+			_DCHFChange,
 			_isDebtIncrease,
 			_upperHint,
 			_lowerHint,
@@ -391,7 +391,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		uint256 _assetSent,
 		address _borrower,
 		uint256 _collWithdrawal,
-		uint256 _VSTChange,
+		uint256 _DCHFChange,
 		bool _isDebtIncrease,
 		address _upperHint,
 		address _lowerHint,
@@ -401,7 +401,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			troveManager,
 			troveManagerHelpers,
 			vestaParams.activePool(),
-			VSTToken
+			DCHFToken
 		);
 		LocalVariables_adjustTrove memory vars;
 		vars.asset = _asset;
@@ -416,16 +416,16 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 
 		if (_isDebtIncrease) {
 			_requireValidMaxFeePercentage(vars.asset, _maxFeePercentage, isRecoveryMode);
-			_requireNonZeroDebtChange(_VSTChange);
+			_requireNonZeroDebtChange(_DCHFChange);
 		}
 		_requireSingularCollChange(_collWithdrawal, _assetSent);
-		_requireNonZeroAdjustment(_collWithdrawal, _VSTChange, _assetSent);
+		_requireNonZeroAdjustment(_collWithdrawal, _DCHFChange, _assetSent);
 		_requireTroveisActive(vars.asset, contractsCache.troveManagerHelpers, _borrower);
 
 		// Confirm the operation is either a borrower adjusting their own trove, or a pure ETH transfer from the Stability Pool to a trove
 		assert(
 			msg.sender == _borrower ||
-				(stabilityPoolManager.isStabilityPool(msg.sender) && _assetSent > 0 && _VSTChange == 0)
+				(stabilityPoolManager.isStabilityPool(msg.sender) && _assetSent > 0 && _DCHFChange == 0)
 		);
 
 		contractsCache.troveManagerHelpers.applyPendingRewards(vars.asset, _borrower);
@@ -433,26 +433,26 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		// Get the collChange based on whether or not ETH was sent in the transaction
 		(vars.collChange, vars.isCollIncrease) = _getCollChange(_assetSent, _collWithdrawal);
 
-		vars.netDebtChange = _VSTChange;
+		vars.netDebtChange = _DCHFChange;
 
 		// If the adjustment incorporates a debt increase and system is in Normal Mode, then trigger a borrowing fee
 		if (_isDebtIncrease && !isRecoveryMode) {
-			vars.VSTFee = _triggerBorrowingFee(
+			vars.DCHFFee = _triggerBorrowingFee(
 				vars.asset,
 				contractsCache.troveManager,
 				contractsCache.troveManagerHelpers,
-				contractsCache.VSTToken,
-				_VSTChange,
+				contractsCache.DCHFToken,
+				_DCHFChange,
 				_maxFeePercentage
 			);
-			vars.netDebtChange = vars.netDebtChange.add(vars.VSTFee); // The raw debt change includes the fee
+			vars.netDebtChange = vars.netDebtChange.add(vars.DCHFFee); // The raw debt change includes the fee
 		}
 
 		vars.debt = contractsCache.troveManagerHelpers.getTroveDebt(vars.asset, _borrower);
 		vars.coll = contractsCache.troveManagerHelpers.getTroveColl(vars.asset, _borrower);
 
 		// Get the trove's old ICR before the adjustment, and what its new ICR will be after the adjustment
-		vars.oldICR = VestaMath._computeCR(vars.coll, vars.debt, vars.price);
+		vars.oldICR = DfrancMath._computeCR(vars.coll, vars.debt, vars.price);
 		vars.newICR = _getNewICRFromTroveChange(
 			vars.coll,
 			vars.debt,
@@ -476,14 +476,14 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			vars
 		);
 
-		// When the adjustment is a debt repayment, check it's a valid amount and that the caller has enough VST
-		if (!_isDebtIncrease && _VSTChange > 0) {
+		// When the adjustment is a debt repayment, check it's a valid amount and that the caller has enough DCHF
+		if (!_isDebtIncrease && _DCHFChange > 0) {
 			_requireAtLeastMinNetDebt(
 				vars.asset,
 				_getNetDebt(vars.asset, vars.debt).sub(vars.netDebtChange)
 			);
-			_requireValidVSTRepayment(vars.asset, vars.debt, vars.netDebtChange);
-			_requireSufficientVSTBalance(contractsCache.VSTToken, _borrower, vars.netDebtChange);
+			_requireValidDCHFRepayment(vars.asset, vars.debt, vars.netDebtChange);
+			_requireSufficientDCHFBalance(contractsCache.DCHFToken, _borrower, vars.netDebtChange);
 		}
 
 		(vars.newColl, vars.newDebt) = _updateTroveFromAdjustment(
@@ -520,17 +520,17 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			vars.stake,
 			BorrowerOperation.adjustTrove
 		);
-		emit VSTBorrowingFeePaid(vars.asset, msg.sender, vars.VSTFee);
+		emit DCHFBorrowingFeePaid(vars.asset, msg.sender, vars.DCHFFee);
 
-		// Use the unmodified _VSTChange here, as we don't send the fee to the user
+		// Use the unmodified _DCHFChange here, as we don't send the fee to the user
 		_moveTokensAndETHfromAdjustment(
 			vars.asset,
 			contractsCache.activePool,
-			contractsCache.VSTToken,
+			contractsCache.DCHFToken,
 			msg.sender,
 			vars.collChange,
 			vars.isCollIncrease,
-			_VSTChange,
+			_DCHFChange,
 			_isDebtIncrease,
 			vars.netDebtChange
 		);
@@ -539,7 +539,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 	function closeTrove(address _asset) external override {
 		ITroveManagerHelpers troveManagerHelpersCached = troveManagerHelpers;
 		IActivePool activePoolCached = vestaParams.activePool();
-		IVSTToken VSTTokenCached = VSTToken;
+		IDCHFToken DCHFTokenCached = DCHFToken;
 
 		_requireTroveisActive(_asset, troveManagerHelpersCached, msg.sender);
 		uint256 price = vestaParams.priceFeed().fetchPrice(_asset);
@@ -550,10 +550,10 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		uint256 coll = troveManagerHelpersCached.getTroveColl(_asset, msg.sender);
 		uint256 debt = troveManagerHelpersCached.getTroveDebt(_asset, msg.sender);
 
-		_requireSufficientVSTBalance(
-			VSTTokenCached,
+		_requireSufficientDCHFBalance(
+			DCHFTokenCached,
 			msg.sender,
-			debt.sub(vestaParams.VST_GAS_COMPENSATION(_asset))
+			debt.sub(vestaParams.DCHF_GAS_COMPENSATION(_asset))
 		);
 
 		uint256 newTCR = _getNewTCRFromTroveChange(_asset, coll, false, debt, false, price);
@@ -564,21 +564,21 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 
 		emit TroveUpdated(_asset, msg.sender, 0, 0, 0, BorrowerOperation.closeTrove);
 
-		// Burn the repaid VST from the user's balance and the gas compensation from the Gas Pool
-		_repayVST(
+		// Burn the repaid DCHF from the user's balance and the gas compensation from the Gas Pool
+		_repayDCHF(
 			_asset,
 			activePoolCached,
-			VSTTokenCached,
+			DCHFTokenCached,
 			msg.sender,
-			debt.sub(vestaParams.VST_GAS_COMPENSATION(_asset))
+			debt.sub(vestaParams.DCHF_GAS_COMPENSATION(_asset))
 		);
 
-		_repayVST(
+		_repayDCHF(
 			_asset,
 			activePoolCached,
-			VSTTokenCached,
+			DCHFTokenCached,
 			gasPoolAddress,
-			vestaParams.VST_GAS_COMPENSATION(_asset)
+			vestaParams.DCHF_GAS_COMPENSATION(_asset)
 		);
 
 		// Send the collateral back to the user
@@ -599,20 +599,20 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		address _asset,
 		ITroveManager _troveManager,
 		ITroveManagerHelpers _troveManagerHelpers,
-		IVSTToken _VSTToken,
-		uint256 _VSTAmount,
+		IDCHFToken _DCHFToken,
+		uint256 _MONmount,
 		uint256 _maxFeePercentage
 	) internal returns (uint256) {
 		_troveManagerHelpers.decayBaseRateFromBorrowing(_asset); // decay the baseRate state variable
-		uint256 VSTFee = _troveManagerHelpers.getBorrowingFee(_asset, _VSTAmount);
+		uint256 DCHFFee = _troveManagerHelpers.getBorrowingFee(_asset, _MONmount);
 
-		_requireUserAcceptsFee(VSTFee, _VSTAmount, _maxFeePercentage);
+		_requireUserAcceptsFee(DCHFFee, _MONmount, _maxFeePercentage);
 
-		// Send fee to VSTA staking contract
-		_VSTToken.mint(_asset, VSTAStakingAddress, VSTFee);
-		VSTAStaking.increaseF_VST(VSTFee);
+		// Send fee to MON staking contract
+		_DCHFToken.mint(_asset, MONStakingAddress, DCHFFee);
+		MONStaking.increaseF_DCHF(DCHFFee);
 
-		return VSTFee;
+		return DCHFFee;
 	}
 
 	function _getUSDValue(uint256 _coll, uint256 _price) internal pure returns (uint256) {
@@ -658,18 +658,18 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 	function _moveTokensAndETHfromAdjustment(
 		address _asset,
 		IActivePool _activePool,
-		IVSTToken _VSTToken,
+		IDCHFToken _DCHFToken,
 		address _borrower,
 		uint256 _collChange,
 		bool _isCollIncrease,
-		uint256 _VSTChange,
+		uint256 _DCHFChange,
 		bool _isDebtIncrease,
 		uint256 _netDebtChange
 	) internal {
 		if (_isDebtIncrease) {
-			_withdrawVST(_asset, _activePool, _VSTToken, _borrower, _VSTChange, _netDebtChange);
+			_withdrawDCHF(_asset, _activePool, _DCHFToken, _borrower, _DCHFChange, _netDebtChange);
 		} else {
-			_repayVST(_asset, _activePool, _VSTToken, _borrower, _VSTChange);
+			_repayDCHF(_asset, _activePool, _DCHFToken, _borrower, _DCHFChange);
 		}
 
 		if (_isCollIncrease) {
@@ -699,29 +699,29 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		}
 	}
 
-	// Issue the specified amount of VST to _account and increases the total active debt (_netDebtIncrease potentially includes a VSTFee)
-	function _withdrawVST(
+	// Issue the specified amount of DCHF to _account and increases the total active debt (_netDebtIncrease potentially includes a DCHFFee)
+	function _withdrawDCHF(
 		address _asset,
 		IActivePool _activePool,
-		IVSTToken _VSTToken,
+		IDCHFToken _DCHFToken,
 		address _account,
-		uint256 _VSTAmount,
+		uint256 _MONmount,
 		uint256 _netDebtIncrease
 	) internal {
-		_activePool.increaseVSTDebt(_asset, _netDebtIncrease);
-		_VSTToken.mint(_asset, _account, _VSTAmount);
+		_activePool.increaseDCHFDebt(_asset, _netDebtIncrease);
+		_DCHFToken.mint(_asset, _account, _MONmount);
 	}
 
-	// Burn the specified amount of VST from _account and decreases the total active debt
-	function _repayVST(
+	// Burn the specified amount of DCHF from _account and decreases the total active debt
+	function _repayDCHF(
 		address _asset,
 		IActivePool _activePool,
-		IVSTToken _VSTToken,
+		IDCHFToken _DCHFToken,
 		address _account,
-		uint256 _VST
+		uint256 _DCHF
 	) internal {
-		_activePool.decreaseVSTDebt(_asset, _VST);
-		_VSTToken.burn(_account, _VST);
+		_activePool.decreaseDCHFDebt(_asset, _DCHF);
+		_DCHFToken.burn(_account, _DCHF);
 	}
 
 	// --- 'Require' wrapper functions ---
@@ -745,11 +745,11 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 
 	function _requireNonZeroAdjustment(
 		uint256 _collWithdrawal,
-		uint256 _VSTChange,
+		uint256 _DCHFChange,
 		uint256 _assetSent
 	) internal view {
 		require(
-			msg.value != 0 || _collWithdrawal != 0 || _VSTChange != 0 || _assetSent != 0,
+			msg.value != 0 || _collWithdrawal != 0 || _DCHFChange != 0 || _assetSent != 0,
 			"BorrowerOps: There must be either a collateral change or a debt change"
 		);
 	}
@@ -773,8 +773,8 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		require(status != 1, "BorrowerOps: Trove is active");
 	}
 
-	function _requireNonZeroDebtChange(uint256 _VSTChange) internal pure {
-		require(_VSTChange > 0, "BorrowerOps: Debt increase requires non-zero debtChange");
+	function _requireNonZeroDebtChange(uint256 _DCHFChange) internal pure {
+		require(_DCHFChange > 0, "BorrowerOps: Debt increase requires non-zero debtChange");
 	}
 
 	function _requireNotInRecoveryMode(address _asset, uint256 _price) internal view {
@@ -867,13 +867,13 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		);
 	}
 
-	function _requireValidVSTRepayment(
+	function _requireValidDCHFRepayment(
 		address _asset,
 		uint256 _currentDebt,
 		uint256 _debtRepayment
 	) internal view {
 		require(
-			_debtRepayment <= _currentDebt.sub(vestaParams.VST_GAS_COMPENSATION(_asset)),
+			_debtRepayment <= _currentDebt.sub(vestaParams.DCHF_GAS_COMPENSATION(_asset)),
 			"BorrowerOps: Amount repaid must not be larger than the Trove's debt"
 		);
 	}
@@ -885,14 +885,14 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		);
 	}
 
-	function _requireSufficientVSTBalance(
-		IVSTToken _VSTToken,
+	function _requireSufficientDCHFBalance(
+		IDCHFToken _DCHFToken,
 		address _borrower,
 		uint256 _debtRepayment
 	) internal view {
 		require(
-			_VSTToken.balanceOf(_borrower) >= _debtRepayment,
-			"BorrowerOps: Caller doesnt have enough VST to make repayment"
+			_DCHFToken.balanceOf(_borrower) >= _debtRepayment,
+			"BorrowerOps: Caller doesnt have enough DCHF to make repayment"
 		);
 	}
 
@@ -935,7 +935,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			_isDebtIncrease
 		);
 
-		uint256 newNICR = VestaMath._computeNominalCR(newColl, newDebt);
+		uint256 newNICR = DfrancMath._computeNominalCR(newColl, newDebt);
 		return newNICR;
 	}
 
@@ -958,7 +958,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 			_isDebtIncrease
 		);
 
-		uint256 newICR = VestaMath._computeCR(newColl, newDebt, _price);
+		uint256 newICR = DfrancMath._computeCR(newColl, newDebt, _price);
 		return newICR;
 	}
 
@@ -993,7 +993,7 @@ contract BorrowerOperations is VestaBase, CheckContract, IBorrowerOperations {
 		totalColl = _isCollIncrease ? totalColl.add(_collChange) : totalColl.sub(_collChange);
 		totalDebt = _isDebtIncrease ? totalDebt.add(_debtChange) : totalDebt.sub(_debtChange);
 
-		uint256 newTCR = VestaMath._computeCR(totalColl, totalDebt, _price);
+		uint256 newTCR = DfrancMath._computeCR(totalColl, totalDebt, _price);
 		return newTCR;
 	}
 

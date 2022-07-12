@@ -4,7 +4,7 @@ pragma solidity ^0.8.14;
 import "../Dependencies/ERC20Permit.sol";
 import "../Interfaces/IStabilityPoolManager.sol";
 
-abstract contract IVSTToken is ERC20Permit {
+abstract contract IDCHFToken is ERC20Permit {
 	// --- Events ---
 
 	event TroveManagerAddressChanged(address _troveManagerAddress);
@@ -12,7 +12,7 @@ abstract contract IVSTToken is ERC20Permit {
 	event StabilityPoolAddressChanged(address _newStabilityPoolAddress);
 	event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
 
-	event VSTTokenBalanceUpdated(address _user, uint256 _amount);
+	event DCHFTokenBalanceUpdated(address _user, uint256 _amount);
 
 	function emergencyStopMinting(address _asset, bool status) external virtual;
 

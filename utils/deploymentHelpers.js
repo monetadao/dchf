@@ -1,7 +1,7 @@
 const SortedTroves = artifacts.require("./SortedTroves.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
-const VSTToken = artifacts.require("./VSTToken.sol")
+const DCHFToken = artifacts.require("./DCHFToken.sol")
 const ActivePool = artifacts.require("./ActivePool.sol");
 const DefaultPool = artifacts.require("./DefaultPool.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol")
@@ -12,21 +12,21 @@ const CollSurplusPool = artifacts.require("./CollSurplusPool.sol")
 const FunctionCaller = artifacts.require("./TestContracts/FunctionCaller.sol")
 const BorrowerOperations = artifacts.require("./BorrowerOperations.sol")
 const HintHelpers = artifacts.require("./HintHelpers.sol")
-const VestaParameters = artifacts.require("./VestaParameters.sol")
-const LockedVSTA = artifacts.require("./LockedVSTA.sol")
+const DfrancParameters = artifacts.require("./DfrancParameters.sol")
+const LockedMON = artifacts.require("./LockedMON.sol")
 
-const VSTAStaking = artifacts.require("./VSTAStaking.sol")
+const MONStaking = artifacts.require("./MONStaking.sol")
 const CommunityIssuance = artifacts.require("./CommunityIssuance.sol")
 
-const VSTATokenTester = artifacts.require("./VSTATokenTester.sol")
+const MONTokenTester = artifacts.require("./MONTokenTester.sol")
 const CommunityIssuanceTester = artifacts.require("./CommunityIssuanceTester.sol")
 const StabilityPoolTester = artifacts.require("./StabilityPoolTester.sol")
 const ActivePoolTester = artifacts.require("./ActivePoolTester.sol")
 const DefaultPoolTester = artifacts.require("./DefaultPoolTester.sol")
-const VestaMathTester = artifacts.require("./VestaMathTester.sol")
+const DfrancMathTester = artifacts.require("./DfrancMathTester.sol")
 const BorrowerOperationsTester = artifacts.require("./BorrowerOperationsTester.sol")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
-const VSTTokenTester = artifacts.require("./VSTTokenTester.sol")
+const DCHFTokenTester = artifacts.require("./DCHFTokenTester.sol")
 const ERC20Test = artifacts.require("./ERC20Test.sol")
 
 // Proxy scripts
@@ -35,7 +35,7 @@ const BorrowerWrappersScript = artifacts.require('BorrowerWrappersScript')
 const TroveManagerScript = artifacts.require('TroveManagerScript')
 const StabilityPoolScript = artifacts.require('StabilityPoolScript')
 const TokenScript = artifacts.require('TokenScript')
-const VSTAStakingScript = artifacts.require('VSTAStakingScript')
+const MONStakingScript = artifacts.require('MONStakingScript')
 const { messagePrefix } = require('@ethersproject/hash');
 const {
   buildUserProxies,
@@ -45,16 +45,16 @@ const {
   StabilityPoolProxy,
   SortedTrovesProxy,
   TokenProxy,
-  VSTAStakingProxy
+  MONStakingProxy
 } = require('../utils/proxyHelpers.js')
 
 /* "Liquity core" consists of all contracts in the core Liquity system.
 
-VSTA contracts consist of only those contracts related to the VSTA Token:
+MON contracts consist of only those contracts related to the MON Token:
 
--the VSTA token
+-the MON token
 -the Lockup factory and lockup contracts
--the VSTAStaking contract
+-the MONStaking contract
 -the CommunityIssuance contract 
 */
 
@@ -80,14 +80,14 @@ class DeploymentHelper {
     const stabilityPoolTemplate = await StabilityPool.new()
     const stabilityPoolTemplateV2 = await StabilityPool.new()
     const stabilityPoolManager = await StabilityPoolManager.new()
-    const vestaParameters = await VestaParameters.new()
+    const vestaParameters = await DfrancParameters.new()
     const gasPool = await GasPool.new()
     const defaultPool = await DefaultPool.new()
     const collSurplusPool = await CollSurplusPool.new()
     const functionCaller = await FunctionCaller.new()
     const borrowerOperations = await BorrowerOperations.new()
     const hintHelpers = await HintHelpers.new()
-    const vstToken = await VSTToken.new(
+    const dchfToken = await DCHFToken.new(
       troveManager.address,
       stabilityPoolManager.address,
       borrowerOperations.address,
@@ -96,7 +96,7 @@ class DeploymentHelper {
     const adminContract = await AdminContract.new();
 
 
-    VSTToken.setAsDeployed(vstToken)
+    DCHFToken.setAsDeployed(dchfToken)
     DefaultPool.setAsDeployed(defaultPool)
     PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
     SortedTroves.setAsDeployed(sortedTroves)
@@ -109,7 +109,7 @@ class DeploymentHelper {
     FunctionCaller.setAsDeployed(functionCaller)
     BorrowerOperations.setAsDeployed(borrowerOperations)
     HintHelpers.setAsDeployed(hintHelpers)
-    VestaParameters.setAsDeployed(vestaParameters);
+    DfrancParameters.setAsDeployed(vestaParameters);
     ERC20Test.setAsDeployed(erc20);
     AdminContract.setAsDeployed(adminContract);
 
@@ -117,7 +117,7 @@ class DeploymentHelper {
 
     const coreContracts = {
       priceFeedTestnet,
-      vstToken,
+      dchfToken,
       sortedTroves,
       troveManager,
       activePool,
@@ -150,15 +150,15 @@ class DeploymentHelper {
     testerContracts.defaultPool = await DefaultPoolTester.new()
     testerContracts.stabilityPoolTemplate = await StabilityPoolTester.new()
     testerContracts.stabilityPoolManager = await StabilityPoolManager.new()
-    testerContracts.vestaParameters = await VestaParameters.new()
+    testerContracts.vestaParameters = await DfrancParameters.new()
     testerContracts.gasPool = await GasPool.new()
     testerContracts.collSurplusPool = await CollSurplusPool.new()
-    testerContracts.math = await VestaMathTester.new()
+    testerContracts.math = await DfrancMathTester.new()
     testerContracts.borrowerOperations = await BorrowerOperationsTester.new()
     testerContracts.troveManager = await TroveManagerTester.new()
     testerContracts.functionCaller = await FunctionCaller.new()
     testerContracts.hintHelpers = await HintHelpers.new()
-    testerContracts.vstToken = await VSTTokenTester.new(
+    testerContracts.dchfToken = await DCHFTokenTester.new(
       testerContracts.troveManager.address,
       testerContracts.stabilityPoolManager.address,
       testerContracts.borrowerOperations.address
@@ -168,30 +168,30 @@ class DeploymentHelper {
     return testerContracts
   }
 
-  static async deployVSTAContractsHardhat(treasury) {
-    const vstaStaking = await VSTAStaking.new()
+  static async deployMONContractsHardhat(treasury) {
+    const monStaking = await MONStaking.new()
     const communityIssuance = await CommunityIssuanceTester.new()
-    const lockedVSTA = await LockedVSTA.new();
+    const lockedMON = await LockedMON.new();
 
-    VSTAStaking.setAsDeployed(vstaStaking)
+    MONStaking.setAsDeployed(monStaking)
     CommunityIssuanceTester.setAsDeployed(communityIssuance)
-    LockedVSTA.setAsDeployed(lockedVSTA)
+    LockedMON.setAsDeployed(lockedMON)
 
-    // Deploy VSTA Token, passing Community Issuance and Factory addresses to the constructor 
-    const vstaToken = await VSTATokenTester.new(treasury)
-    VSTATokenTester.setAsDeployed(vstaToken)
+    // Deploy MON Token, passing Community Issuance and Factory addresses to the constructor 
+    const monToken = await MONTokenTester.new(treasury)
+    MONTokenTester.setAsDeployed(monToken)
 
-    const VSTAContracts = {
-      vstaStaking,
+    const MONContracts = {
+      monStaking,
       communityIssuance,
-      vstaToken,
-      lockedVSTA
+      monToken,
+      lockedMON
     }
-    return VSTAContracts
+    return MONContracts
   }
 
-  static async deployVSTToken(contracts) {
-    contracts.vstToken = await VSTTokenTester.new(
+  static async deployDCHFToken(contracts) {
+    contracts.dchfToken = await DCHFTokenTester.new(
       contracts.troveManager.address,
       contracts.stabilityPoolManager.address,
       contracts.borrowerOperations.address,
@@ -199,13 +199,13 @@ class DeploymentHelper {
     return contracts
   }
 
-  static async deployProxyScripts(contracts, VSTAContracts, owner, users) {
+  static async deployProxyScripts(contracts, MONContracts, owner, users) {
     const proxies = await buildUserProxies(users)
 
     const borrowerWrappersScript = await BorrowerWrappersScript.new(
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
-      VSTAContracts.vstaStaking.address
+      MONContracts.monStaking.address
     )
     contracts.borrowerWrappers = new BorrowerWrappersProxy(owner, proxies, borrowerWrappersScript.address)
 
@@ -220,18 +220,18 @@ class DeploymentHelper {
 
     contracts.sortedTroves = new SortedTrovesProxy(owner, proxies, contracts.sortedTroves)
 
-    const vstTokenScript = await TokenScript.new(contracts.vstToken.address)
-    contracts.vstToken = new TokenProxy(owner, proxies, vstTokenScript.address, contracts.vstToken)
+    const dchfTokenScript = await TokenScript.new(contracts.dchfToken.address)
+    contracts.dchfToken = new TokenProxy(owner, proxies, dchfTokenScript.address, contracts.dchfToken)
 
-    const vstaTokenScript = await TokenScript.new(VSTAContracts.vstaToken.address)
-    VSTAContracts.vstaToken = new TokenProxy(owner, proxies, vstaTokenScript.address, VSTAContracts.vstaToken)
+    const monTokenScript = await TokenScript.new(MONContracts.monToken.address)
+    MONContracts.monToken = new TokenProxy(owner, proxies, monTokenScript.address, MONContracts.monToken)
 
-    const vstaStakingScript = await VSTAStakingScript.new(VSTAContracts.vstaStaking.address)
-    VSTAContracts.vstaStaking = new VSTAStakingProxy(owner, proxies, vstaStakingScript.address, VSTAContracts.vstaStaking)
+    const monStakingScript = await MONStakingScript.new(MONContracts.monStaking.address)
+    MONContracts.monStaking = new MONStakingProxy(owner, proxies, monStakingScript.address, MONContracts.monStaking)
   }
 
   // Connect contracts to their dependencies
-  static async connectCoreContracts(contracts, VSTAContracts) {
+  static async connectCoreContracts(contracts, MONContracts) {
 
     // set TroveManager addr in SortedTroves
     await contracts.sortedTroves.setParams(
@@ -256,9 +256,9 @@ class DeploymentHelper {
       contracts.stabilityPoolManager.address,
       contracts.gasPool.address,
       contracts.collSurplusPool.address,
-      contracts.vstToken.address,
+      contracts.dchfToken.address,
       contracts.sortedTroves.address,
-      VSTAContracts.vstaStaking.address,
+      MONContracts.monStaking.address,
       contracts.vestaParameters.address
     )
 
@@ -269,8 +269,8 @@ class DeploymentHelper {
       contracts.gasPool.address,
       contracts.collSurplusPool.address,
       contracts.sortedTroves.address,
-      contracts.vstToken.address,
-      VSTAContracts.vstaStaking.address,
+      contracts.dchfToken.address,
+      MONContracts.monStaking.address,
       contracts.vestaParameters.address
     )
 
@@ -280,9 +280,9 @@ class DeploymentHelper {
       contracts.stabilityPoolManager.address,
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
-      contracts.vstToken.address,
+      contracts.dchfToken.address,
       contracts.sortedTroves.address,
-      VSTAContracts.communityIssuance.address
+      MONContracts.communityIssuance.address
     )
 
     await contracts.activePool.setAddresses(
@@ -313,28 +313,28 @@ class DeploymentHelper {
 
   }
 
-  static async connectVSTAContractsToCore(VSTAContracts, coreContracts, skipPool = false, liquitySettings = true) {
-    const treasurySig = await VSTAContracts.vstaToken.treasury();
+  static async connectMONContractsToCore(MONContracts, coreContracts, skipPool = false, liquitySettings = true) {
+    const treasurySig = await MONContracts.monToken.treasury();
 
-    await VSTAContracts.vstaStaking.setAddresses(
-      VSTAContracts.vstaToken.address,
-      coreContracts.vstToken.address,
+    await MONContracts.monStaking.setAddresses(
+      MONContracts.monToken.address,
+      coreContracts.dchfToken.address,
       coreContracts.troveManager.address,
       coreContracts.borrowerOperations.address,
       coreContracts.activePool.address,
       treasurySig
     )
 
-    await VSTAContracts.vstaStaking.unpause();
+    await MONContracts.monStaking.unpause();
 
-    await VSTAContracts.communityIssuance.setAddresses(
-      VSTAContracts.vstaToken.address,
+    await MONContracts.communityIssuance.setAddresses(
+      MONContracts.monToken.address,
       coreContracts.stabilityPoolManager.address,
       coreContracts.adminContract.address
     )
 
-    await VSTAContracts.lockedVSTA.setAddresses(
-      VSTAContracts.vstaToken.address)
+    await MONContracts.lockedMON.setAddresses(
+      MONContracts.monToken.address)
 
     if (skipPool) {
       return;
@@ -343,13 +343,13 @@ class DeploymentHelper {
     if (await coreContracts.adminContract.owner() != treasurySig)
       await coreContracts.adminContract.transferOwnership(treasurySig);
 
-    await VSTAContracts.vstaToken.approve(VSTAContracts.communityIssuance.address, ethers.constants.MaxUint256, { from: treasurySig });
+    await MONContracts.monToken.approve(MONContracts.communityIssuance.address, ethers.constants.MaxUint256, { from: treasurySig });
 
     const supply = dec(32000000, 18);
     const weeklyReward = dec(32000000 / 4, 18);
 
     await coreContracts.adminContract.addNewCollateral(ZERO_ADDRESS, coreContracts.stabilityPoolTemplate.address, ZERO_ADDRESS, ZERO_ADDRESS, supply, weeklyReward, 0, { from: treasurySig });
-    await VSTAContracts.vstaToken.unprotectedMint(treasurySig, supply)
+    await MONContracts.monToken.unprotectedMint(treasurySig, supply)
     await coreContracts.adminContract.addNewCollateral(coreContracts.erc20.address, coreContracts.stabilityPoolTemplate.address, ZERO_ADDRESS, ZERO_ADDRESS, supply, weeklyReward, 0, { from: treasurySig });
 
     if (!liquitySettings)

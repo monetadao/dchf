@@ -104,12 +104,12 @@ class BorrowerOperationsProxy extends Proxy {
     return this.forwardFunction(params, 'withdrawColl(uint256,address,address)')
   }
 
-  async withdrawVST(...params) {
-    return this.forwardFunction(params, 'withdrawVST(uint256,uint256,address,address)')
+  async withdrawDCHF(...params) {
+    return this.forwardFunction(params, 'withdrawDCHF(uint256,uint256,address,address)')
   }
 
-  async repayVST(...params) {
-    return this.forwardFunction(params, 'repayVST(uint256,address,address)')
+  async repayDCHF(...params) {
+    return this.forwardFunction(params, 'repayDCHF(uint256,address,address)')
   }
 
   async closeTrove(...params) {
@@ -136,8 +136,8 @@ class BorrowerOperationsProxy extends Proxy {
     return this.proxyFunction('getCompositeDebt', params)
   }
 
-  async VST_GAS_COMPENSATION(...params) {
-    return this.proxyFunction('VST_GAS_COMPENSATION', params)
+  async DCHF_GAS_COMPENSATION(...params) {
+    return this.proxyFunction('DCHF_GAS_COMPENSATION', params)
   }
 
   async MIN_NET_DEBT(...params) {
@@ -200,8 +200,8 @@ class TroveManagerProxy extends Proxy {
     return this.proxyFunction('getPendingETHReward', params)
   }
 
-  async getPendingVSTDebtReward(...params) {
-    return this.proxyFunction('getPendingVSTDebtReward', params)
+  async getPendingDCHFDebtReward(...params) {
+    return this.proxyFunction('getPendingDCHFDebtReward', params)
   }
 
   async liquidate(user) {
@@ -232,8 +232,8 @@ class TroveManagerProxy extends Proxy {
     return this.proxyFunction('L_ASSETS', [ZERO_ADDRESS])
   }
 
-  async L_VSTDebt() {
-    return this.proxyFunction('L_VSTDebts', [ZERO_ADDRESS])
+  async L_DCHFDebt() {
+    return this.proxyFunction('L_DCHFDebts', [ZERO_ADDRESS])
   }
 
   async rewardSnapshots(user) {
@@ -286,8 +286,8 @@ class StabilityPoolProxy extends Proxy {
     return this.forwardFunction(params, 'provideToSP(uint256,address)')
   }
 
-  async getCompoundedVSTDeposit(user) {
-    return this.proxyFunctionWithUser('getCompoundedVSTDeposit', user)
+  async getCompoundedDCHFDeposit(user) {
+    return this.proxyFunctionWithUser('getCompoundedDCHFDeposit', user)
   }
 
   async deposits(user) {
@@ -382,7 +382,7 @@ class TokenProxy extends Proxy {
   }
 }
 
-class VSTAStakingProxy extends Proxy {
+class MONStakingProxy extends Proxy {
   constructor(owner, proxies, tokenScriptAddress, token) {
     super(owner, proxies, tokenScriptAddress, token)
   }
@@ -395,8 +395,8 @@ class VSTAStakingProxy extends Proxy {
     return this.proxyFunctionWithUser('stakes', user)
   }
 
-  async F_VST(user) {
-    return this.proxyFunctionWithUser('F_VST', user)
+  async F_DCHF(user) {
+    return this.proxyFunctionWithUser('F_DCHF', user)
   }
 }
 
@@ -408,5 +408,5 @@ module.exports = {
   StabilityPoolProxy,
   SortedTrovesProxy,
   TokenProxy,
-  VSTAStakingProxy
+  MONStakingProxy
 }

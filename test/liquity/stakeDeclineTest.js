@@ -1,7 +1,7 @@
 const deploymentHelper = require("../../utils/deploymentHelpers.js")
 const testHelpers = require("../../utils/testHelpers.js")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
-const VSTTokenTester = artifacts.require("./VSTTokenTester.sol")
+const DCHFTokenTester = artifacts.require("./DCHFTokenTester.sol")
 
 const th = testHelpers.TestHelper
 const dec = th.dec
@@ -26,7 +26,7 @@ contract('TroveManager', async accounts => {
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
 
   let priceFeed
-  let VSTToken
+  let DCHFToken
   let sortedTroves
   let troveManager
   let activePool
@@ -37,7 +37,7 @@ contract('TroveManager', async accounts => {
 
   let contracts
 
-  const getOpenTroveVSTAmount = async (totalDebt, asset) => th.getOpenTroveVSTAmount(contracts, totalDebt, asset)
+  const getOpenTroveMONmount = async (totalDebt, asset) => th.getOpenTroveMONmount(contracts, totalDebt, asset)
 
   const getSnapshotsRatio = async (asset) => {
     const ratio = (await troveManager.totalStakesSnapshot(asset))
@@ -50,15 +50,15 @@ contract('TroveManager', async accounts => {
   beforeEach(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
     contracts.troveManager = await TroveManagerTester.new()
-    contracts.vstToken = await VSTTokenTester.new(
+    contracts.dchfToken = await DCHFTokenTester.new(
       contracts.troveManager.address,
       contracts.stabilityPoolManager.address,
       contracts.borrowerOperations.address
     )
-    const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+    const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
     priceFeed = contracts.priceFeedTestnet
-    VSTToken = contracts.vstToken
+    DCHFToken = contracts.dchfToken
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
     activePool = contracts.activePool
@@ -67,31 +67,31 @@ contract('TroveManager', async accounts => {
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
 
-    VSTAStaking = VSTAContracts.VSTAStaking
-    VSTAToken = VSTAContracts.VSTAToken
-    communityIssuance = VSTAContracts.communityIssuance
+    MONStaking = MONContracts.MONStaking
+    MONToken = MONContracts.MONToken
+    communityIssuance = MONContracts.communityIssuance
 
-    await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-    await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+    await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
   })
 
   it("A given trove's stake decline is negligible with adjustments and tiny liquidations", async () => {
     await priceFeed.setPrice(dec(100, 18))
 
     // Make 1 mega troves A at ~50% total collateral
-    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveVSTAmount(dec(1, 31), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: A, value: dec(2, 29) })
+    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(1, 31), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: A, value: dec(2, 29) })
 
     // Make 5 large troves B, C, D, E, F at ~10% total collateral
-    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveVSTAmount(dec(2, 30), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: B, value: dec(4, 28) })
-    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveVSTAmount(dec(2, 30), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: C, value: dec(4, 28) })
-    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveVSTAmount(dec(2, 30), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: D, value: dec(4, 28) })
-    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveVSTAmount(dec(2, 30), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: E, value: dec(4, 28) })
-    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveVSTAmount(dec(2, 30), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: F, value: dec(4, 28) })
+    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(2, 30), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: B, value: dec(4, 28) })
+    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(2, 30), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: C, value: dec(4, 28) })
+    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(2, 30), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: D, value: dec(4, 28) })
+    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(2, 30), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: E, value: dec(4, 28) })
+    await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(2, 30), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: F, value: dec(4, 28) })
 
     // Make 10 tiny troves at relatively negligible collateral (~1e-9 of total)
     const tinyTroves = accounts.slice(10, 20)
     for (account of tinyTroves) {
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveVSTAmount(dec(1, 22), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: account, value: dec(2, 20) })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(1, 22), ZERO_ADDRESS), ZERO_ADDRESS, ZERO_ADDRESS, { from: account, value: dec(2, 20) })
     }
 
     // liquidate 1 trove at ~50% total system collateral

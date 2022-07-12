@@ -11,8 +11,8 @@ interface IBorrowerOperations {
 	event GasPoolAddressChanged(address _gasPoolAddress);
 	event CollSurplusPoolAddressChanged(address _collSurplusPoolAddress);
 	event SortedTrovesAddressChanged(address _sortedTrovesAddress);
-	event VSTTokenAddressChanged(address _vstTokenAddress);
-	event VSTAStakingAddressChanged(address _VSTAStakingAddress);
+	event DCHFTokenAddressChanged(address _dchfTokenAddress);
+	event MONStakingAddressChanged(address _MONStakingAddress);
 
 	event TroveCreated(address indexed _asset, address indexed _borrower, uint256 arrayIndex);
 	event TroveUpdated(
@@ -23,10 +23,10 @@ interface IBorrowerOperations {
 		uint256 stake,
 		uint8 operation
 	);
-	event VSTBorrowingFeePaid(
+	event DCHFBorrowingFeePaid(
 		address indexed _asset,
 		address indexed _borrower,
-		uint256 _VSTFee
+		uint256 _DCHFFee
 	);
 
 	// --- Functions ---
@@ -38,8 +38,8 @@ interface IBorrowerOperations {
 		address _gasPoolAddress,
 		address _collSurplusPoolAddress,
 		address _sortedTrovesAddress,
-		address _vstTokenAddress,
-		address _VSTAStakingAddress,
+		address _dchfTokenAddress,
+		address _MONStakingAddress,
 		address _vestaParamsAddress
 	) external;
 
@@ -47,7 +47,7 @@ interface IBorrowerOperations {
 		address _asset,
 		uint256 _tokenAmount,
 		uint256 _maxFee,
-		uint256 _VSTAmount,
+		uint256 _MONmount,
 		address _upperHint,
 		address _lowerHint
 	) external payable;
@@ -74,7 +74,7 @@ interface IBorrowerOperations {
 		address _lowerHint
 	) external;
 
-	function withdrawVST(
+	function withdrawDCHF(
 		address _asset,
 		uint256 _maxFee,
 		uint256 _amount,
@@ -82,7 +82,7 @@ interface IBorrowerOperations {
 		address _lowerHint
 	) external;
 
-	function repayVST(
+	function repayDCHF(
 		address _asset,
 		uint256 _amount,
 		address _upperHint,

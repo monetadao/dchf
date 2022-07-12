@@ -33,7 +33,7 @@ import "./Dependencies/CheckContract.sol";
  * https://github.com/livepeer/protocol/blob/master/contracts/libraries/SortedDoublyLL.sol
  *
  *
- * Changes made in the Vesta implementation:
+ * Changes made in the Dfranc implementation:
  *
  * - Keys have been removed from nodes
  *

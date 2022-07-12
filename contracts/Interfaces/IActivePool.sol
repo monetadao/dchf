@@ -7,7 +7,7 @@ interface IActivePool is IPool {
 	// --- Events ---
 	event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
 	event TroveManagerAddressChanged(address _newTroveManagerAddress);
-	event ActivePoolVSTDebtUpdated(address _asset, uint256 _VSTDebt);
+	event ActivePoolDCHFDebtUpdated(address _asset, uint256 _DCHFDebt);
 	event ActivePoolAssetBalanceUpdated(address _asset, uint256 _balance);
 
 	// --- Functions ---

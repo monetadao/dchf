@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.14;
-import "../VSTA/VSTAStaking.sol";
+import "../MON/MONStaking.sol";
 
-contract VSTAStakingTester is VSTAStaking {
+contract MONStakingTester is MONStaking {
 	function requireCallerIsTroveManager() external view callerIsTroveManager {}
 }

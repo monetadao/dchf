@@ -3,7 +3,7 @@ const deploymentHelper = require("../../utils/deploymentHelpers.js")
 const { BNConverter } = require("../../utils/BNConverter.js")
 const testHelpers = require("../../utils/testHelpers.js")
 const TroveManagerTester = artifacts.require("./TroveManagerTester.sol")
-const VestaMathTester = artifacts.require("./VestaMathTester.sol")
+const DfrancMathTester = artifacts.require("./DfrancMathTester.sol")
 
 const th = testHelpers.TestHelper
 const timeValues = testHelpers.TimeValues
@@ -335,16 +335,16 @@ contract('Fee arithmetic tests', async accounts => {
     troveManagerTester = await TroveManagerTester.new()
     TroveManagerTester.setAsDeployed(troveManagerTester)
 
-    mathTester = await VestaMathTester.new()
-    VestaMathTester.setAsDeployed(mathTester)
+    mathTester = await DfrancMathTester.new()
+    DfrancMathTester.setAsDeployed(mathTester)
   })
 
   beforeEach(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
-    const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+    const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
-    await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-    await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+    await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
   })
 
   it("minutesPassedSinceLastFeeOp(): returns minutes passed for no time increase", async () => {

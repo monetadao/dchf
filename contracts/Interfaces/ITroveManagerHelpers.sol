@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.14;
-import "./IVestaBase.sol";
+import "./IDfrancBase.sol";
 import "./IStabilityPool.sol";
-import "./IVSTToken.sol";
-import "./IVSTAStaking.sol";
+import "./IDCHFToken.sol";
+import "./IMONStaking.sol";
 import "./ICollSurplusPool.sol";
 import "./ISortedTroves.sol";
 import "./IActivePool.sol";
@@ -12,7 +12,7 @@ import "./IDefaultPool.sol";
 import "./IStabilityPoolManager.sol";
 
 // Common interface for the Trove Manager.
-interface ITroveManagerHelpers is IVestaBase {
+interface ITroveManagerHelpers is IDfrancBase {
 	enum Status {
 		nonExistent,
 		active,
@@ -40,7 +40,7 @@ interface ITroveManagerHelpers is IVestaBase {
 
 	struct LocalVariables_OuterLiquidationFunction {
 		uint256 price;
-		uint256 VSTInStabPool;
+		uint256 DCHFInStabPool;
 		bool recoveryModeAtStart;
 		uint256 liquidatedDebt;
 		uint256 liquidatedColl;
@@ -53,7 +53,7 @@ interface ITroveManagerHelpers is IVestaBase {
 	}
 
 	struct LocalVariables_LiquidationSequence {
-		uint256 remainingVSTInStabPool;
+		uint256 remainingDCHFInStabPool;
 		uint256 i;
 		uint256 ICR;
 		address user;
@@ -72,7 +72,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 entireTroveDebt;
 		uint256 entireTroveColl;
 		uint256 collGasCompensation;
-		uint256 VSTGasCompensation;
+		uint256 DCHFGasCompensation;
 		uint256 debtToOffset;
 		uint256 collToSendToSP;
 		uint256 debtToRedistribute;
@@ -84,7 +84,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 totalCollInSequence;
 		uint256 totalDebtInSequence;
 		uint256 totalCollGasCompensation;
-		uint256 totalVSTGasCompensation;
+		uint256 totalDCHFGasCompensation;
 		uint256 totalDebtToOffset;
 		uint256 totalCollToSendToSP;
 		uint256 totalDebtToRedistribute;
@@ -95,8 +95,8 @@ interface ITroveManagerHelpers is IVestaBase {
 	struct ContractsCache {
 		IActivePool activePool;
 		IDefaultPool defaultPool;
-		IVSTToken vstToken;
-		IVSTAStaking vstaStaking;
+		IDCHFToken dchfToken;
+		IMONStaking monStaking;
 		ISortedTroves sortedTroves;
 		ICollSurplusPool collSurplusPool;
 		address gasPoolAddress;
@@ -104,26 +104,26 @@ interface ITroveManagerHelpers is IVestaBase {
 	// --- Variable container structs for redemptions ---
 
 	struct RedemptionTotals {
-		uint256 remainingVST;
-		uint256 totalVSTToRedeem;
+		uint256 remainingDCHF;
+		uint256 totalDCHFToRedeem;
 		uint256 totalAssetDrawn;
 		uint256 ETHFee;
 		uint256 ETHToSendToRedeemer;
 		uint256 decayedBaseRate;
 		uint256 price;
-		uint256 totalVSTSupplyAtStart;
+		uint256 totalDCHFSupplyAtStart;
 	}
 
 	struct SingleRedemptionValues {
-		uint256 VSTLot;
+		uint256 DCHFLot;
 		uint256 ETHLot;
 		bool cancelledPartial;
 	}
 
-	// Object containing the ETH and VST snapshots for a given active trove
+	// Object containing the ETH and DCHF snapshots for a given active trove
 	struct RewardSnapshot {
 		uint256 asset;
-		uint256 VSTDebt;
+		uint256 DCHFDebt;
 	}
 
 	// --- Events ---
@@ -133,12 +133,12 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 _liquidatedDebt,
 		uint256 _liquidatedColl,
 		uint256 _collGasCompensation,
-		uint256 _VSTGasCompensation
+		uint256 _DCHFGasCompensation
 	);
 	event Redemption(
 		address indexed _asset,
-		uint256 _attemptedVSTAmount,
-		uint256 _actualVSTAmount,
+		uint256 _attemptedMONmount,
+		uint256 _actualMONmount,
 		uint256 _AssetSent,
 		uint256 _AssetFee
 	);
@@ -165,8 +165,8 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 _totalStakesSnapshot,
 		uint256 _totalCollateralSnapshot
 	);
-	event LTermsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_VSTDebt);
-	event TroveSnapshotsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_VSTDebt);
+	event LTermsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_DCHFDebt);
+	event TroveSnapshotsUpdated(address indexed _asset, uint256 _L_ETH, uint256 _L_DCHFDebt);
 	event TroveIndexUpdated(address indexed _asset, address _borrower, uint256 _newIndex);
 
 	event TroveUpdated(
@@ -218,7 +218,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		uint256 _collDecrease
 	) external returns (uint256);
 
-	function getBorrowingFee(address _asset, uint256 VSTDebt) external view returns (uint256);
+	function getBorrowingFee(address _asset, uint256 DCHFDebt) external view returns (uint256);
 
 	function getBorrowingRateWithDecay(address _asset) external view returns (uint256);
 
@@ -236,7 +236,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		returns (
 			uint256 debt,
 			uint256 coll,
-			uint256 pendingVSTDebtReward,
+			uint256 pendingDCHFDebtReward,
 			uint256 pendingAssetReward
 		);
 
@@ -247,7 +247,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		view
 		returns (uint256);
 
-	function getPendingVSTDebtReward(address _asset, address _borrower)
+	function getPendingDCHFDebtReward(address _asset, address _borrower)
 		external
 		view
 		returns (uint256);
@@ -299,7 +299,7 @@ interface ITroveManagerHelpers is IVestaBase {
 
 	function updateTroveRewardSnapshots(address _asset, address _borrower) external;
 
-	function getBorrowingFeeWithDecay(address _asset, uint256 _VSTDebt)
+	function getBorrowingFeeWithDecay(address _asset, uint256 _DCHFDebt)
 		external
 		view
 		returns (uint256);
@@ -324,7 +324,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		address _asset,
 		IActivePool _activePool,
 		IDefaultPool _defaultPool,
-		uint256 _VST,
+		uint256 _DCHF,
 		uint256 _amount
 	) external;
 
@@ -364,7 +364,7 @@ interface ITroveManagerHelpers is IVestaBase {
 		address _asset,
 		uint256 _ETHDrawn,
 		uint256 _price,
-		uint256 _totalVSTSupply
+		uint256 _totalDCHFSupply
 	) external returns (uint256);
 
 	function updateStakeAndTotalStakes(address _asset, address _borrower)
@@ -379,8 +379,8 @@ interface ITroveManagerHelpers is IVestaBase {
 
 	function _requireAmountGreaterThanZero(uint256 _amount) external pure;
 
-	function _requireVSTBalanceCoversRedemption(
-		IVSTToken _vstToken,
+	function _requireDCHFBalanceCoversRedemption(
+		IDCHFToken _dchfToken,
 		address _redeemer,
 		uint256 _amount
 	) external view;
@@ -412,5 +412,5 @@ interface ITroveManagerHelpers is IVestaBase {
 	function getRewardSnapshots(address _asset, address _troveOwner)
 		external
 		view
-		returns (uint256 asset, uint256 VSTDebt);
+		returns (uint256 asset, uint256 DCHFDebt);
 }

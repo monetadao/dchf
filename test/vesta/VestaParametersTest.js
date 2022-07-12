@@ -5,7 +5,7 @@ const th = testHelpers.TestHelper
 const dec = th.dec
 const toBN = th.toBN
 
-contract('VestaParameters', async accounts => {
+contract('DfrancParameters', async accounts => {
   const ZERO_ADDRESS = th.ZERO_ADDRESS
   const assertRevert = th.assertRevert
   const DECIMAL_PRECISION = toBN(dec(1, 18))
@@ -41,8 +41,8 @@ contract('VestaParameters', async accounts => {
   const MAX_BORROWING_FEE_SAFETY_MAX = toBN(1000) //10%
   const MAX_BORROWING_FEE_SAFETY_MIN = toBN(0);
 
-  const VSTA_GAS_COMPENSATION_SAFETY_MAX = toBN(dec(400, 18));
-  const VSTA_GAS_COMPENSATION_SAFETY_MIN = toBN(dec(1, 18));
+  const MON_GAS_COMPENSATION_SAFETY_MAX = toBN(dec(400, 18));
+  const MON_GAS_COMPENSATION_SAFETY_MIN = toBN(dec(1, 18));
 
   const MIN_NET_DEBT_SAFETY_MAX = toBN(dec(1800, 18));
   const MIN_NET_DEBT_SAFETY_MIN = toBN(0);
@@ -58,11 +58,11 @@ contract('VestaParameters', async accounts => {
   }
 
 
-  describe("Vesta Parameters", async () => {
+  describe("Dfranc Parameters", async () => {
     beforeEach(async () => {
       contracts = await deploymentHelper.deployLiquityCore()
       contracts.troveManager = await TroveManagerTester.new()
-      const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+      const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
       priceFeed = contracts.priceFeedTestnet
       troveManager = contracts.troveManager
@@ -74,7 +74,7 @@ contract('VestaParameters', async accounts => {
 
       MCR = await vestaParameters.MCR_DEFAULT()
       CCR = await vestaParameters.CCR_DEFAULT()
-      GAS_COMPENSATION = await vestaParameters.VST_GAS_COMPENSATION_DEFAULT()
+      GAS_COMPENSATION = await vestaParameters.DCHF_GAS_COMPENSATION_DEFAULT()
       MIN_NET_DEBT = await vestaParameters.MIN_NET_DEBT_DEFAULT()
       PERCENT_DIVISOR = await vestaParameters.PERCENT_DIVISOR_DEFAULT()
       BORROWING_FEE_FLOOR = await vestaParameters.BORROWING_FEE_FLOOR_DEFAULT()
@@ -90,8 +90,8 @@ contract('VestaParameters', async accounts => {
           break;
       }
 
-      await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-      await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts, false, false)
+      await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+      await deploymentHelper.connectMONContractsToCore(MONContracts, contracts, false, false)
     })
 
     it("Formula Checks: Call every function with default value, Should match default values", async () => {
@@ -100,7 +100,7 @@ contract('VestaParameters', async accounts => {
       await vestaParameters.setPercentDivisor(ZERO_ADDRESS, 100)
       await vestaParameters.setBorrowingFeeFloor(ZERO_ADDRESS, 50)
       await vestaParameters.setMaxBorrowingFee(ZERO_ADDRESS, 500)
-      await vestaParameters.setVSTGasCompensation(ZERO_ADDRESS, dec(30, 18))
+      await vestaParameters.setDCHFGasCompensation(ZERO_ADDRESS, dec(30, 18))
       await vestaParameters.setMinNetDebt(ZERO_ADDRESS, dec(300, 18))
       await vestaParameters.setRedemptionFeeFloor(ZERO_ADDRESS, 50)
 
@@ -109,7 +109,7 @@ contract('VestaParameters', async accounts => {
       assert.equal((await vestaParameters.PERCENT_DIVISOR(ZERO_ADDRESS)).toString(), PERCENT_DIVISOR);
       assert.equal((await vestaParameters.BORROWING_FEE_FLOOR(ZERO_ADDRESS)).toString(), BORROWING_FEE_FLOOR);
       assert.equal((await vestaParameters.MAX_BORROWING_FEE(ZERO_ADDRESS)).toString(), MAX_BORROWING_FEE);
-      assert.equal((await vestaParameters.VST_GAS_COMPENSATION(ZERO_ADDRESS)).toString(), GAS_COMPENSATION);
+      assert.equal((await vestaParameters.DCHF_GAS_COMPENSATION(ZERO_ADDRESS)).toString(), GAS_COMPENSATION);
       assert.equal((await vestaParameters.MIN_NET_DEBT(ZERO_ADDRESS)).toString(), MIN_NET_DEBT);
       assert.equal((await vestaParameters.REDEMPTION_FEE_FLOOR(ZERO_ADDRESS)).toString(), REDEMPTION_FEE_FLOOR);
     })
@@ -132,7 +132,7 @@ contract('VestaParameters', async accounts => {
 
       await assertRevert(vestaParameters.setMCR(ZERO_ADDRESS, MCR, { from: user }))
       await assertRevert(vestaParameters.setCCR(ZERO_ADDRESS, CCR, { from: user }))
-      await assertRevert(vestaParameters.setVSTGasCompensation(ZERO_ADDRESS, GAS_COMPENSATION, { from: user }))
+      await assertRevert(vestaParameters.setDCHFGasCompensation(ZERO_ADDRESS, GAS_COMPENSATION, { from: user }))
       await assertRevert(vestaParameters.setMinNetDebt(ZERO_ADDRESS, MIN_NET_DEBT, { from: user }))
       await assertRevert(vestaParameters.setPercentDivisor(ZERO_ADDRESS, PERCENT_DIVISOR, { from: user }))
       await assertRevert(vestaParameters.setBorrowingFeeFloor(ZERO_ADDRESS, BORROWING_FEE_FLOOR, { from: user }))
@@ -145,7 +145,7 @@ contract('VestaParameters', async accounts => {
 
       assert.equal(MCR.toString(), (await vestaParameters.MCR(ZERO_ADDRESS)))
       assert.equal(CCR.toString(), (await vestaParameters.CCR(ZERO_ADDRESS)))
-      assert.equal(GAS_COMPENSATION.toString(), (await vestaParameters.VST_GAS_COMPENSATION(ZERO_ADDRESS)))
+      assert.equal(GAS_COMPENSATION.toString(), (await vestaParameters.DCHF_GAS_COMPENSATION(ZERO_ADDRESS)))
       assert.equal(MIN_NET_DEBT.toString(), (await vestaParameters.MIN_NET_DEBT(ZERO_ADDRESS)))
       assert.equal(PERCENT_DIVISOR.toString(), (await vestaParameters.PERCENT_DIVISOR(ZERO_ADDRESS)))
       assert.equal(BORROWING_FEE_FLOOR.toString(), (await vestaParameters.BORROWING_FEE_FLOOR(ZERO_ADDRESS)))
@@ -156,7 +156,7 @@ contract('VestaParameters', async accounts => {
     it("sanitizeParameters: User call sanitizeParamaters on Configured Collateral - Ignore it", async () => {
       const newMCR = MCR_SAFETY_MAX
       const newCCR = CCR_SAFETY_MIN
-      const newGasComp = VSTA_GAS_COMPENSATION_SAFETY_MAX
+      const newGasComp = MON_GAS_COMPENSATION_SAFETY_MAX
       const newMinNetDebt = MIN_NET_DEBT_SAFETY_MIN
       const newPercentDivisor = PERCENT_DIVISOR_SAFETY_MAX
       const newBorrowingFeeFloor = BORROWING_FEE_FLOOR_SAFETY_MAX
@@ -184,7 +184,7 @@ contract('VestaParameters', async accounts => {
 
       assert.equal(newMCR.toString(), (await vestaParameters.MCR(ZERO_ADDRESS)));
       assert.equal(newCCR.toString(), (await vestaParameters.CCR(ZERO_ADDRESS)));
-      assert.equal(newGasComp.toString(), (await vestaParameters.VST_GAS_COMPENSATION(ZERO_ADDRESS)));
+      assert.equal(newGasComp.toString(), (await vestaParameters.DCHF_GAS_COMPENSATION(ZERO_ADDRESS)));
       assert.equal(newMinNetDebt.toString(), (await vestaParameters.MIN_NET_DEBT(ZERO_ADDRESS)));
       assert.equal(newPercentDivisor.toString(), (await vestaParameters.PERCENT_DIVISOR(ZERO_ADDRESS)));
       assert.equal(expectedBorrowingFeeFloor.toString(), (await vestaParameters.BORROWING_FEE_FLOOR(ZERO_ADDRESS)));
@@ -234,21 +234,21 @@ contract('VestaParameters', async accounts => {
       assert.equal(CCR_SAFETY_MAX.toString(), (await vestaParameters.CCR(ZERO_ADDRESS)));
     })
 
-    it("setVSTGasCompensation: Owner change parameter - Failing SafeCheck", async () => {
+    it("setDCHFGasCompensation: Owner change parameter - Failing SafeCheck", async () => {
       await vestaParameters.sanitizeParameters(ZERO_ADDRESS)
 
-      await assertRevert(vestaParameters.setVSTGasCompensation(ZERO_ADDRESS, VSTA_GAS_COMPENSATION_SAFETY_MIN.sub(toBN(1))))
-      await assertRevert(vestaParameters.setVSTGasCompensation(ZERO_ADDRESS, VSTA_GAS_COMPENSATION_SAFETY_MAX.add(toBN(1))))
+      await assertRevert(vestaParameters.setDCHFGasCompensation(ZERO_ADDRESS, MON_GAS_COMPENSATION_SAFETY_MIN.sub(toBN(1))))
+      await assertRevert(vestaParameters.setDCHFGasCompensation(ZERO_ADDRESS, MON_GAS_COMPENSATION_SAFETY_MAX.add(toBN(1))))
     })
 
-    it("setVSTGasCompensation: Owner change parameter - Valid SafeCheck", async () => {
+    it("setDCHFGasCompensation: Owner change parameter - Valid SafeCheck", async () => {
       await vestaParameters.sanitizeParameters(ZERO_ADDRESS)
 
-      await vestaParameters.setVSTGasCompensation(ZERO_ADDRESS, VSTA_GAS_COMPENSATION_SAFETY_MIN);
-      assert.equal(VSTA_GAS_COMPENSATION_SAFETY_MIN.toString(), (await vestaParameters.VST_GAS_COMPENSATION(ZERO_ADDRESS)));
+      await vestaParameters.setDCHFGasCompensation(ZERO_ADDRESS, MON_GAS_COMPENSATION_SAFETY_MIN);
+      assert.equal(MON_GAS_COMPENSATION_SAFETY_MIN.toString(), (await vestaParameters.DCHF_GAS_COMPENSATION(ZERO_ADDRESS)));
 
-      await vestaParameters.setVSTGasCompensation(ZERO_ADDRESS, VSTA_GAS_COMPENSATION_SAFETY_MAX);
-      assert.equal(VSTA_GAS_COMPENSATION_SAFETY_MAX.toString(), (await vestaParameters.VST_GAS_COMPENSATION(ZERO_ADDRESS)));
+      await vestaParameters.setDCHFGasCompensation(ZERO_ADDRESS, MON_GAS_COMPENSATION_SAFETY_MAX);
+      assert.equal(MON_GAS_COMPENSATION_SAFETY_MAX.toString(), (await vestaParameters.DCHF_GAS_COMPENSATION(ZERO_ADDRESS)));
     })
 
     it("setMinNetDebt: Owner change parameter - Failing SafeCheck", async () => {
@@ -374,7 +374,7 @@ contract('VestaParameters', async accounts => {
           ZERO_ADDRESS,
           MCR,
           CCR,
-          VSTA_GAS_COMPENSATION_SAFETY_MAX.add(toBN(1)),
+          MON_GAS_COMPENSATION_SAFETY_MAX.add(toBN(1)),
           MIN_NET_DEBT,
           PERCENT_DIVISOR,
           BORROWING_FEE_FLOOR,
@@ -457,7 +457,7 @@ contract('VestaParameters', async accounts => {
     it("setCollateralParameters: Owner change parameter - Valid SafeCheck Then Reset", async () => {
       const newMCR = MCR_SAFETY_MAX
       const newCCR = CCR_SAFETY_MIN
-      const newGasComp = VSTA_GAS_COMPENSATION_SAFETY_MAX
+      const newGasComp = MON_GAS_COMPENSATION_SAFETY_MAX
       const newMinNetDebt = MIN_NET_DEBT_SAFETY_MAX
       const newPercentDivisor = PERCENT_DIVISOR_SAFETY_MIN
       const newBorrowingFeeFloor = BORROWING_FEE_FLOOR_SAFETY_MAX
@@ -483,7 +483,7 @@ contract('VestaParameters', async accounts => {
 
       assert.equal(newMCR.toString(), (await vestaParameters.MCR(ZERO_ADDRESS)));
       assert.equal(newCCR.toString(), (await vestaParameters.CCR(ZERO_ADDRESS)));
-      assert.equal(newGasComp.toString(), (await vestaParameters.VST_GAS_COMPENSATION(ZERO_ADDRESS)));
+      assert.equal(newGasComp.toString(), (await vestaParameters.DCHF_GAS_COMPENSATION(ZERO_ADDRESS)));
       assert.equal(newMinNetDebt.toString(), (await vestaParameters.MIN_NET_DEBT(ZERO_ADDRESS)));
       assert.equal(newPercentDivisor.toString(), (await vestaParameters.PERCENT_DIVISOR(ZERO_ADDRESS)));
       assert.equal(expectedBorrowingFeeFloor.toString(), (await vestaParameters.BORROWING_FEE_FLOOR(ZERO_ADDRESS)));
@@ -494,7 +494,7 @@ contract('VestaParameters', async accounts => {
 
       assert.equal(MCR.toString(), (await vestaParameters.MCR(ZERO_ADDRESS)));
       assert.equal(CCR.toString(), (await vestaParameters.CCR(ZERO_ADDRESS)));
-      assert.equal(GAS_COMPENSATION.toString(), (await vestaParameters.VST_GAS_COMPENSATION(ZERO_ADDRESS)));
+      assert.equal(GAS_COMPENSATION.toString(), (await vestaParameters.DCHF_GAS_COMPENSATION(ZERO_ADDRESS)));
       assert.equal(MIN_NET_DEBT.toString(), (await vestaParameters.MIN_NET_DEBT(ZERO_ADDRESS)));
       assert.equal(PERCENT_DIVISOR.toString(), (await vestaParameters.PERCENT_DIVISOR(ZERO_ADDRESS)));
       assert.equal(BORROWING_FEE_FLOOR.toString(), (await vestaParameters.BORROWING_FEE_FLOOR(ZERO_ADDRESS)));
@@ -513,21 +513,21 @@ contract('VestaParameters', async accounts => {
       assert.equal(applyDecimalPrecision(BORROWING_FEE_FLOOR_SAFETY_MIN).toString(), (await vestaParameters.BORROWING_FEE_FLOOR(ZERO_ADDRESS)));
       assert.equal(applyDecimalPrecision(BORROWING_FEE_FLOOR_SAFETY_MAX).toString(), (await vestaParameters.BORROWING_FEE_FLOOR(erc20.address)));
 
-      await openTrove({ extraVSTAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraVSTAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraVSTAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
       const USDVRequest = toBN(dec(10000, 18))
       const txC = await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, USDVRequest, ZERO_ADDRESS, ZERO_ADDRESS, { value: dec(100, 'ether'), from: C })
       const txC_Asset = await borrowerOperations.openTrove(erc20.address, dec(100, 'ether'), th._100pct, USDVRequest, ZERO_ADDRESS, ZERO_ADDRESS, { from: C })
-      const _VSTFee = toBN(th.getEventArgByName(txC, "VSTBorrowingFeePaid", "_VSTFee"))
-      const _USDVFee_Asset = toBN(th.getEventArgByName(txC_Asset, "VSTBorrowingFeePaid", "_VSTFee"))
+      const _DCHFFee = toBN(th.getEventArgByName(txC, "DCHFBorrowingFeePaid", "_DCHFFee"))
+      const _USDVFee_Asset = toBN(th.getEventArgByName(txC_Asset, "DCHFBorrowingFeePaid", "_DCHFFee"))
 
       const expectedFee = (await vestaParameters.BORROWING_FEE_FLOOR(ZERO_ADDRESS)).mul(toBN(USDVRequest)).div(toBN(dec(1, 18)))
       const expectedFee_Asset = (await vestaParameters.BORROWING_FEE_FLOOR(erc20.address)).mul(toBN(USDVRequest)).div(toBN(dec(1, 18)))
-      assert.isTrue(_VSTFee.eq(expectedFee))
+      assert.isTrue(_DCHFFee.eq(expectedFee))
       assert.isTrue(_USDVFee_Asset.eq(expectedFee_Asset))
     })
   })

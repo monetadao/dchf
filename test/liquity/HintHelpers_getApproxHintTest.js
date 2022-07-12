@@ -8,7 +8,7 @@ const moneyVals = testHelpers.MoneyValues
 let latestRandomSeed = 31337
 
 const TroveManagerTester = artifacts.require("TroveManagerTester")
-const VSTTokenTester = artifacts.require("VSTTokenTester")
+const DCHFTokenTester = artifacts.require("DCHFTokenTester")
 
 
 contract('HintHelpers', async accounts => {
@@ -30,19 +30,19 @@ contract('HintHelpers', async accounts => {
 
   const getNetBorrowingAmount = async (debtWithFee, asset) => th.getNetBorrowingAmount(contracts, debtWithFee, asset)
 
-  /* Open a Trove for each account. VST debt is 200 VST each, with collateral beginning at
+  /* Open a Trove for each account. DCHF debt is 200 DCHF each, with collateral beginning at
   1.5 ether, and rising by 0.01 ether per Trove.  Hence, the ICR of account (i + 1) is always 1% greater than the ICR of account i. 
  */
 
-  // Open Troves in parallel, then withdraw VST in parallel
+  // Open Troves in parallel, then withdraw DCHF in parallel
   const makeTrovesInParallel = async (accounts, n) => {
     activeAccounts = accounts.slice(0, n)
     // console.log(`number of accounts used is: ${activeAccounts.length}`)
     // console.time("makeTrovesInParallel")
     const openTrovepromises = activeAccounts.map((account, index) => openTrove(account, index))
     await Promise.all(openTrovepromises)
-    const withdrawVSTpromises = activeAccounts.map(account => withdrawVSTfromTrove(account))
-    await Promise.all(withdrawVSTpromises)
+    const withdrawDCHFpromises = activeAccounts.map(account => withdrawDCHFfromTrove(account))
+    await Promise.all(withdrawDCHFpromises)
     // console.timeEnd("makeTrovesInParallel")
   }
 
@@ -52,11 +52,11 @@ contract('HintHelpers', async accounts => {
     await borrowerOperations.openTrove(th._100pct, 0, account, account, { from: account, value: coll })
   }
 
-  const withdrawVSTfromTrove = async (account) => {
-    await borrowerOperations.withdrawVST(th._100pct, '100000000000000000000', account, account, { from: account })
+  const withdrawDCHFfromTrove = async (account) => {
+    await borrowerOperations.withdrawDCHF(th._100pct, '100000000000000000000', account, account, { from: account })
   }
 
-  // Sequentially add coll and withdraw VST, 1 account at a time
+  // Sequentially add coll and withdraw DCHF, 1 account at a time
   const makeTrovesInSequence = async (accounts, n) => {
     activeAccounts = accounts.slice(0, n)
     // console.log(`number of accounts used is: ${activeAccounts.length}`)
@@ -66,7 +66,7 @@ contract('HintHelpers', async accounts => {
     // console.time('makeTrovesInSequence')
     for (const account of activeAccounts) {
       const ICR_BN = toBN(ICR.toString().concat('0'.repeat(16)))
-      await th.openTrove(contracts, { extraVSTAmount: toBN(dec(10000, 18)), ICR: ICR_BN, extraParams: { from: account } })
+      await th.openTrove(contracts, { extraMONmount: toBN(dec(10000, 18)), ICR: ICR_BN, extraParams: { from: account } })
 
       ICR += 1
     }
@@ -76,12 +76,12 @@ contract('HintHelpers', async accounts => {
   before(async () => {
     contracts = await deploymentHelper.deployLiquityCore()
     contracts.troveManager = await TroveManagerTester.new()
-    contracts.vstToken = await VSTTokenTester.new(
+    contracts.dchfToken = await DCHFTokenTester.new(
       contracts.troveManager.address,
       contracts.stabilityPoolManager.address,
       contracts.borrowerOperations.address,
     )
-    const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+    const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
     sortedTroves = contracts.sortedTroves
     troveManager = contracts.troveManager
@@ -89,8 +89,8 @@ contract('HintHelpers', async accounts => {
     hintHelpers = contracts.hintHelpers
     priceFeed = contracts.priceFeedTestnet
 
-    await deploymentHelper.connectCoreContracts(contracts, VSTAContracts)
-    await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, contracts)
+    await deploymentHelper.connectCoreContracts(contracts, MONContracts)
+    await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
 
     numAccounts = 10
 

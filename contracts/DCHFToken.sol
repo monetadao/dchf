@@ -5,9 +5,9 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./Dependencies/CheckContract.sol";
-import "./Interfaces/IVSTToken.sol";
+import "./Interfaces/IDCHFToken.sol";
 
-contract VSTToken is CheckContract, IVSTToken, Ownable {
+contract DCHFToken is CheckContract, IDCHFToken, Ownable {
 	using SafeMath for uint256;
 
 	address public immutable troveManagerAddress;
@@ -43,7 +43,7 @@ contract VSTToken is CheckContract, IVSTToken, Ownable {
 		emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
 	}
 
-	// --- Functions for intra-Vesta calls ---
+	// --- Functions for intra-Dfranc calls ---
 
 	//
 	function emergencyStopMinting(address _asset, bool status) external override onlyOwner {
@@ -106,20 +106,20 @@ contract VSTToken is CheckContract, IVSTToken, Ownable {
 	function _requireValidRecipient(address _recipient) internal view {
 		require(
 			_recipient != address(0) && _recipient != address(this),
-			"VST: Cannot transfer tokens directly to the VST token contract or the zero address"
+			"DCHF: Cannot transfer tokens directly to the DCHF token contract or the zero address"
 		);
 		require(
 			!stabilityPoolManager.isStabilityPool(_recipient) &&
 				_recipient != troveManagerAddress &&
 				_recipient != borrowerOperationsAddress,
-			"VST: Cannot transfer tokens directly to the StabilityPool, TroveManager or BorrowerOps"
+			"DCHF: Cannot transfer tokens directly to the StabilityPool, TroveManager or BorrowerOps"
 		);
 	}
 
 	function _requireCallerIsBorrowerOperations() internal view {
 		require(
 			msg.sender == borrowerOperationsAddress,
-			"VSTToken: Caller is not BorrowerOperations"
+			"DCHFToken: Caller is not BorrowerOperations"
 		);
 	}
 
@@ -128,21 +128,21 @@ contract VSTToken is CheckContract, IVSTToken, Ownable {
 			msg.sender == borrowerOperationsAddress ||
 				msg.sender == troveManagerAddress ||
 				stabilityPoolManager.isStabilityPool(msg.sender),
-			"VST: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool"
+			"DCHF: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool"
 		);
 	}
 
 	function _requireCallerIsStabilityPool() internal view {
 		require(
 			stabilityPoolManager.isStabilityPool(msg.sender),
-			"VST: Caller is not the StabilityPool"
+			"DCHF: Caller is not the StabilityPool"
 		);
 	}
 
 	function _requireCallerIsTroveMorSP() internal view {
 		require(
 			msg.sender == troveManagerAddress || stabilityPoolManager.isStabilityPool(msg.sender),
-			"VST: Caller is neither TroveManager nor StabilityPool"
+			"DCHF: Caller is neither TroveManager nor StabilityPool"
 		);
 	}
 }

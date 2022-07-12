@@ -5,21 +5,21 @@ pragma solidity ^0.8.14;
 interface ICommunityIssuance {
 	// --- Events ---
 
-	event VSTATokenAddressSet(address _VSTATokenAddress);
+	event MONTokenAddressSet(address _MONTokenAddress);
 	event StabilityPoolAddressSet(address _stabilityPoolAddress);
-	event TotalVSTAIssuedUpdated(address indexed stabilityPool, uint256 _totalVSTAIssued);
+	event TotalMONIssuedUpdated(address indexed stabilityPool, uint256 _totalMONIssued);
 
 	// --- Functions ---
 
 	function setAddresses(
-		address _VSTATokenAddress,
+		address _MONTokenAddress,
 		address _stabilityPoolAddress,
 		address _adminContract
 	) external;
 
-	function issueVSTA() external returns (uint256);
+	function issueMON() external returns (uint256);
 
-	function sendVSTA(address _account, uint256 _VSTAamount) external;
+	function sendMON(address _account, uint256 _MONamount) external;
 
 	function addFundToStabilityPool(address _pool, uint256 _assignedSupply) external;
 

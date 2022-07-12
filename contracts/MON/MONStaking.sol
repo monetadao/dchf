@@ -9,13 +9,13 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/CheckContract.sol";
-import "../Dependencies/VestaMath.sol";
-import "../Interfaces/IVSTAStaking.sol";
+import "../Dependencies/DfrancMath.sol";
+import "../Interfaces/IMONStaking.sol";
 import "../Interfaces/IDeposit.sol";
 import "../Dependencies/SafetyTransfer.sol";
 
-contract VSTAStaking is
-	IVSTAStaking,
+contract MONStaking is
+	IMONStaking,
 	PausableUpgradeable,
 	OwnableUpgradeable,
 	CheckContract,
@@ -28,29 +28,29 @@ contract VSTAStaking is
 	bool public isInitialized;
 
 	// --- Data ---
-	string public constant NAME = "VSTAStaking";
+	string public constant NAME = "MONStaking";
 	address constant ETH_REF_ADDRESS = address(0);
 
 	mapping(address => uint256) public stakes;
-	uint256 public totalVSTAStaked;
+	uint256 public totalMONStaked;
 
-	mapping(address => uint256) public F_ASSETS; // Running sum of ETH fees per-VSTA-staked
-	uint256 public F_VST; // Running sum of VSTA fees per-VSTA-staked
+	mapping(address => uint256) public F_ASSETS; // Running sum of ETH fees per-MON-staked
+	uint256 public F_DCHF; // Running sum of MON fees per-MON-staked
 
-	// User snapshots of F_ETH and F_VST, taken at the point at which their latest deposit was made
+	// User snapshots of F_ETH and F_DCHF, taken at the point at which their latest deposit was made
 	mapping(address => Snapshot) public snapshots;
 
 	struct Snapshot {
 		mapping(address => uint256) F_ASSET_Snapshot;
-		uint256 F_VST_Snapshot;
+		uint256 F_DCHF_Snapshot;
 	}
 
 	address[] ASSET_TYPE;
 	mapping(address => bool) isAssetTracked;
 	mapping(address => uint256) public sentToTreasuryTracker;
 
-	IERC20Upgradeable public override vstaToken;
-	IERC20Upgradeable public vstToken;
+	IERC20Upgradeable public override monToken;
+	IERC20Upgradeable public dchfToken;
 
 	address public troveManagerAddress;
 	address public borrowerOperationsAddress;
@@ -59,8 +59,8 @@ contract VSTAStaking is
 
 	// --- Functions ---
 	function setAddresses(
-		address _vstaTokenAddress,
-		address _vstTokenAddress,
+		address _monTokenAddress,
+		address _dchfTokenAddress,
 		address _troveManagerAddress,
 		address _borrowerOperationsAddress,
 		address _activePoolAddress,
@@ -68,8 +68,8 @@ contract VSTAStaking is
 	) external override initializer {
 		require(!isInitialized, "Already Initialized");
 		require(_treasury != address(0), "Invalid Treausry Address");
-		checkContract(_vstaTokenAddress);
-		checkContract(_vstTokenAddress);
+		checkContract(_monTokenAddress);
+		checkContract(_dchfTokenAddress);
 		checkContract(_troveManagerAddress);
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_activePoolAddress);
@@ -80,8 +80,8 @@ contract VSTAStaking is
 		__Ownable_init();
 		_pause();
 
-		vstaToken = IERC20Upgradeable(_vstaTokenAddress);
-		vstToken = IERC20Upgradeable(_vstTokenAddress);
+		monToken = IERC20Upgradeable(_monTokenAddress);
+		dchfToken = IERC20Upgradeable(_dchfTokenAddress);
 		troveManagerAddress = _troveManagerAddress;
 		borrowerOperationsAddress = _borrowerOperationsAddress;
 		activePoolAddress = _activePoolAddress;
@@ -90,16 +90,16 @@ contract VSTAStaking is
 		isAssetTracked[ETH_REF_ADDRESS] = true;
 		ASSET_TYPE.push(ETH_REF_ADDRESS);
 
-		emit VSTATokenAddressSet(_vstaTokenAddress);
-		emit VSTATokenAddressSet(_vstTokenAddress);
+		emit MONTokenAddressSet(_monTokenAddress);
+		emit MONTokenAddressSet(_dchfTokenAddress);
 		emit TroveManagerAddressSet(_troveManagerAddress);
 		emit BorrowerOperationsAddressSet(_borrowerOperationsAddress);
 		emit ActivePoolAddressSet(_activePoolAddress);
 	}
 
-	// If caller has a pre-existing stake, send any accumulated ETH and VST gains to them.
-	function stake(uint256 _VSTAamount) external override nonReentrant whenNotPaused {
-		require(_VSTAamount > 0);
+	// If caller has a pre-existing stake, send any accumulated ETH and DCHF gains to them.
+	function stake(uint256 _MONamount) external override nonReentrant whenNotPaused {
+		require(_MONamount > 0);
 
 		uint256 currentStake = stakes[msg.sender];
 
@@ -114,10 +114,10 @@ contract VSTAStaking is
 				AssetGain = _getPendingAssetGain(asset, msg.sender);
 
 				if (i == 0) {
-					uint256 VSTGain = _getPendingVSTGain(msg.sender);
-					vstToken.transfer(msg.sender, VSTGain);
+					uint256 DCHFGain = _getPendingDCHFGain(msg.sender);
+					dchfToken.transfer(msg.sender, DCHFGain);
 
-					emit StakingGainsVSTWithdrawn(msg.sender, VSTGain);
+					emit StakingGainsDCHFWithdrawn(msg.sender, DCHFGain);
 				}
 
 				_sendAssetGainToUser(asset, AssetGain);
@@ -127,22 +127,22 @@ contract VSTAStaking is
 			_updateUserSnapshots(asset, msg.sender);
 		}
 
-		uint256 newStake = currentStake.add(_VSTAamount);
+		uint256 newStake = currentStake.add(_MONamount);
 
-		// Increase user’s stake and total VSTA staked
+		// Increase user’s stake and total MON staked
 		stakes[msg.sender] = newStake;
-		totalVSTAStaked = totalVSTAStaked.add(_VSTAamount);
-		emit TotalVSTAStakedUpdated(totalVSTAStaked);
+		totalMONStaked = totalMONStaked.add(_MONamount);
+		emit TotalMONStakedUpdated(totalMONStaked);
 
-		// Transfer VSTA from caller to this contract
-		vstaToken.transferFrom(msg.sender, address(this), _VSTAamount);
+		// Transfer MON from caller to this contract
+		monToken.transferFrom(msg.sender, address(this), _MONamount);
 
 		emit StakeChanged(msg.sender, newStake);
 	}
 
-	// Unstake the VSTA and send the it back to the caller, along with their accumulated VST & ETH gains.
+	// Unstake the MON and send the it back to the caller, along with their accumulated DCHF & ETH gains.
 	// If requested amount > stake, send their entire stake.
-	function unstake(uint256 _VSTAamount) external override nonReentrant {
+	function unstake(uint256 _MONamount) external override nonReentrant {
 		uint256 currentStake = stakes[msg.sender];
 		_requireUserHasStake(currentStake);
 
@@ -153,13 +153,13 @@ contract VSTAStaking is
 		for (uint256 i = 0; i < assetLength; i++) {
 			asset = ASSET_TYPE[i];
 
-			// Grab any accumulated ETH and VST gains from the current stake
+			// Grab any accumulated ETH and DCHF gains from the current stake
 			AssetGain = _getPendingAssetGain(asset, msg.sender);
 
 			if (i == 0) {
-				uint256 VSTGain = _getPendingVSTGain(msg.sender);
-				vstToken.transfer(msg.sender, VSTGain);
-				emit StakingGainsVSTWithdrawn(msg.sender, VSTGain);
+				uint256 DCHFGain = _getPendingDCHFGain(msg.sender);
+				dchfToken.transfer(msg.sender, DCHFGain);
+				emit StakingGainsDCHFWithdrawn(msg.sender, DCHFGain);
 			}
 
 			_updateUserSnapshots(asset, msg.sender);
@@ -168,18 +168,18 @@ contract VSTAStaking is
 			_sendAssetGainToUser(asset, AssetGain);
 		}
 
-		if (_VSTAamount > 0) {
-			uint256 VSTAToWithdraw = VestaMath._min(_VSTAamount, currentStake);
+		if (_MONamount > 0) {
+			uint256 MONToWithdraw = DfrancMath._min(_MONamount, currentStake);
 
-			uint256 newStake = currentStake.sub(VSTAToWithdraw);
+			uint256 newStake = currentStake.sub(MONToWithdraw);
 
-			// Decrease user's stake and total VSTA staked
+			// Decrease user's stake and total MON staked
 			stakes[msg.sender] = newStake;
-			totalVSTAStaked = totalVSTAStaked.sub(VSTAToWithdraw);
-			emit TotalVSTAStakedUpdated(totalVSTAStaked);
+			totalMONStaked = totalMONStaked.sub(MONToWithdraw);
+			emit TotalMONStakedUpdated(totalMONStaked);
 
-			// Transfer unstaked VSTA to user
-			vstaToken.transfer(msg.sender, VSTAToWithdraw);
+			// Transfer unstaked MON to user
+			monToken.transfer(msg.sender, MONToWithdraw);
 
 			emit StakeChanged(msg.sender, newStake);
 		}
@@ -198,7 +198,7 @@ contract VSTAStaking is
 		emit TreasuryAddressChanged(_treasury);
 	}
 
-	// --- Reward-per-unit-staked increase functions. Called by Vesta core contracts ---
+	// --- Reward-per-unit-staked increase functions. Called by Dfranc core contracts ---
 
 	function increaseF_Asset(address _asset, uint256 _AssetFee)
 		external
@@ -215,30 +215,30 @@ contract VSTAStaking is
 			ASSET_TYPE.push(_asset);
 		}
 
-		uint256 AssetFeePerVSTAStaked;
+		uint256 AssetFeePerMONStaked;
 
-		if (totalVSTAStaked > 0) {
-			AssetFeePerVSTAStaked = _AssetFee.mul(DECIMAL_PRECISION).div(totalVSTAStaked);
+		if (totalMONStaked > 0) {
+			AssetFeePerMONStaked = _AssetFee.mul(DECIMAL_PRECISION).div(totalMONStaked);
 		}
 
-		F_ASSETS[_asset] = F_ASSETS[_asset].add(AssetFeePerVSTAStaked);
+		F_ASSETS[_asset] = F_ASSETS[_asset].add(AssetFeePerMONStaked);
 		emit F_AssetUpdated(_asset, F_ASSETS[_asset]);
 	}
 
-	function increaseF_VST(uint256 _VSTFee) external override callerIsBorrowerOperations {
+	function increaseF_DCHF(uint256 _DCHFFee) external override callerIsBorrowerOperations {
 		if (paused()) {
-			sendToTreasury(address(vstToken), _VSTFee);
+			sendToTreasury(address(dchfToken), _DCHFFee);
 			return;
 		}
 
-		uint256 VSTFeePerVSTAStaked;
+		uint256 DCHFFeePerMONStaked;
 
-		if (totalVSTAStaked > 0) {
-			VSTFeePerVSTAStaked = _VSTFee.mul(DECIMAL_PRECISION).div(totalVSTAStaked);
+		if (totalMONStaked > 0) {
+			DCHFFeePerMONStaked = _DCHFFee.mul(DECIMAL_PRECISION).div(totalMONStaked);
 		}
 
-		F_VST = F_VST.add(VSTFeePerVSTAStaked);
-		emit F_VSTUpdated(F_VST);
+		F_DCHF = F_DCHF.add(DCHFFeePerMONStaked);
+		emit F_DCHFUpdated(F_DCHF);
 	}
 
 	function sendToTreasury(address _asset, uint256 _amount) internal {
@@ -271,22 +271,22 @@ contract VSTAStaking is
 		return AssetGain;
 	}
 
-	function getPendingVSTGain(address _user) external view override returns (uint256) {
-		return _getPendingVSTGain(_user);
+	function getPendingDCHFGain(address _user) external view override returns (uint256) {
+		return _getPendingDCHFGain(_user);
 	}
 
-	function _getPendingVSTGain(address _user) internal view returns (uint256) {
-		uint256 F_VST_Snapshot = snapshots[_user].F_VST_Snapshot;
-		uint256 VSTGain = stakes[_user].mul(F_VST.sub(F_VST_Snapshot)).div(DECIMAL_PRECISION);
-		return VSTGain;
+	function _getPendingDCHFGain(address _user) internal view returns (uint256) {
+		uint256 F_DCHF_Snapshot = snapshots[_user].F_DCHF_Snapshot;
+		uint256 DCHFGain = stakes[_user].mul(F_DCHF.sub(F_DCHF_Snapshot)).div(DECIMAL_PRECISION);
+		return DCHFGain;
 	}
 
 	// --- Internal helper functions ---
 
 	function _updateUserSnapshots(address _asset, address _user) internal {
 		snapshots[_user].F_ASSET_Snapshot[_asset] = F_ASSETS[_asset];
-		snapshots[_user].F_VST_Snapshot = F_VST;
-		emit StakerSnapshotsUpdated(_user, F_ASSETS[_asset], F_VST);
+		snapshots[_user].F_DCHF_Snapshot = F_DCHF;
+		emit StakerSnapshotsUpdated(_user, F_ASSETS[_asset], F_DCHF);
 	}
 
 	function _sendAssetGainToUser(address _asset, uint256 _assetGain) internal {
@@ -302,7 +302,7 @@ contract VSTAStaking is
 	) internal {
 		if (_asset == ETH_REF_ADDRESS) {
 			(bool success, ) = _sendTo.call{ value: _amount }("");
-			require(success, "VSTAStaking: Failed to send accumulated AssetGain");
+			require(success, "MONStaking: Failed to send accumulated AssetGain");
 		} else {
 			IERC20Upgradeable(_asset).safeTransfer(_sendTo, _amount);
 		}
@@ -311,22 +311,22 @@ contract VSTAStaking is
 	// --- 'require' functions ---
 
 	modifier callerIsTroveManager() {
-		require(msg.sender == troveManagerAddress, "VSTAStaking: caller is not TroveM");
+		require(msg.sender == troveManagerAddress, "MONStaking: caller is not TroveM");
 		_;
 	}
 
 	modifier callerIsBorrowerOperations() {
-		require(msg.sender == borrowerOperationsAddress, "VSTAStaking: caller is not BorrowerOps");
+		require(msg.sender == borrowerOperationsAddress, "MONStaking: caller is not BorrowerOps");
 		_;
 	}
 
 	modifier callerIsActivePool() {
-		require(msg.sender == activePoolAddress, "VSTAStaking: caller is not ActivePool");
+		require(msg.sender == activePoolAddress, "MONStaking: caller is not ActivePool");
 		_;
 	}
 
 	function _requireUserHasStake(uint256 currentStake) internal pure {
-		require(currentStake > 0, "VSTAStaking: User must have a non-zero stake");
+		require(currentStake > 0, "MONStaking: User must have a non-zero stake");
 	}
 
 	receive() external payable callerIsActivePool {}

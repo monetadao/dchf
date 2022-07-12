@@ -1,9 +1,9 @@
-const VestaMathTester = artifacts.require("./VestaMathTester.sol")
+const DfrancMathTester = artifacts.require("./DfrancMathTester.sol")
 
 contract('LiquityMath', async accounts => {
   let vestaMathTester
   beforeEach('deploy tester', async () => {
-    vestaMathTester = await VestaMathTester.new()
+    vestaMathTester = await DfrancMathTester.new()
   })
 
   const checkFunction = async (func, cond, params) => {

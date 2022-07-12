@@ -23,7 +23,7 @@ const gOHMParameters = {
 
 const vestaAddresses = {
   ADMIN_MULTI: "0x4F74e01855E79e4ec65ee67C51540144A698D972",
-  VSTA_SAFE: "0x4F74e01855E79e4ec65ee67C51540144A698D972", // TODO
+  MON_SAFE: "0x4F74e01855E79e4ec65ee67C51540144A698D972", // TODO
   DEPLOYER: "0x4F74e01855E79e4ec65ee67C51540144A698D972",
 }
 
@@ -84,7 +84,7 @@ const beneficiaries = {
 }
 
 const REDEMPTION_SAFETY = 0;
-const VSTA_TOKEN_ONLY = false;
+const MON_TOKEN_ONLY = false;
 
 const OUTPUT_FILE = './mainnetDeployment/rinkebyDeploymentOutput.json'
 
@@ -109,6 +109,6 @@ module.exports = {
   ETHERSCAN_BASE_URL,
   IsMainnet,
   REDEMPTION_SAFETY,
-  VSTA_TOKEN_ONLY,
+  MON_TOKEN_ONLY,
   gOHMParameters
 };

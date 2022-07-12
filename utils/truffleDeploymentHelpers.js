@@ -2,7 +2,7 @@
 const SortedTroves = artifacts.require("./SortedTroves.sol")
 const TroveManager = artifacts.require("./TroveManager.sol")
 const PriceFeedTestnet = artifacts.require("./PriceFeedTestnet.sol")
-const VSTToken = artifacts.require("./VSTToken.sol")
+const DCHFToken = artifacts.require("./DCHFToken.sol")
 const ActivePool = artifacts.require("./ActivePool.sol");
 const DefaultPool = artifacts.require("./DefaultPool.sol");
 const StabilityPool = artifacts.require("./StabilityPool.sol")
@@ -18,14 +18,14 @@ const deployLiquity = async () => {
   const defaultPool = await DefaultPool.new()
   const functionCaller = await FunctionCaller.new()
   const borrowerOperations = await BorrowerOperations.new()
-  const VSTToken = await VSTToken.new(
+  const DCHFToken = await DCHFToken.new(
     troveManager.address,
     stabilityPool.address,
     borrowerOperations.address
   )
   DefaultPool.setAsDeployed(defaultPool)
   PriceFeedTestnet.setAsDeployed(priceFeedTestnet)
-  VSTToken.setAsDeployed(VSTToken)
+  DCHFToken.setAsDeployed(DCHFToken)
   SortedTroves.setAsDeployed(sortedTroves)
   TroveManager.setAsDeployed(troveManager)
   ActivePool.setAsDeployed(activePool)
@@ -35,7 +35,7 @@ const deployLiquity = async () => {
 
   const contracts = {
     priceFeedTestnet,
-    VSTToken,
+    DCHFToken,
     sortedTroves,
     troveManager,
     activePool,
@@ -51,7 +51,7 @@ const getAddresses = (contracts) => {
   return {
     BorrowerOperations: contracts.borrowerOperations.address,
     PriceFeedTestnet: contracts.priceFeedTestnet.address,
-    VSTToken: contracts.vstToken.address,
+    DCHFToken: contracts.dchfToken.address,
     SortedTroves: contracts.sortedTroves.address,
     TroveManager: contracts.troveManager.address,
     StabilityPool: contracts.stabilityPool.address,
@@ -74,7 +74,7 @@ const connectContracts = async (contracts, addresses) => {
   await contracts.priceFeedTestnet.setTroveManagerAddress(addresses.TroveManager)
 
   // set contracts in the Trove Manager
-  await contracts.troveManager.setUSDVToken(addresses.VSTToken)
+  await contracts.troveManager.setUSDVToken(addresses.DCHFToken)
   await contracts.troveManager.setSortedTroves(addresses.SortedTroves)
   await contracts.troveManager.setPriceFeed(addresses.PriceFeedTestnet)
   await contracts.troveManager.setActivePool(addresses.ActivePool)

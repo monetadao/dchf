@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
 import "./Dependencies/CheckContract.sol";
 
 import "./Interfaces/IStabilityPoolManager.sol";
-import "./Interfaces/IVestaParameters.sol";
+import "./Interfaces/IDfrancParameters.sol";
 import "./Interfaces/IStabilityPool.sol";
 import "./Interfaces/ICommunityIssuance.sol";
 
@@ -18,14 +18,14 @@ contract AdminContract is ProxyAdmin {
 		0xf704b47f65a99b2219b7213612db4be4a436cdf50624f4baca1373ef0de0aac7;
 	bool public isInitialized;
 
-	IVestaParameters private vestaParameters;
+	IDfrancParameters private vestaParameters;
 	IStabilityPoolManager private stabilityPoolManager;
 	ICommunityIssuance private communityIssuance;
 
 	address borrowerOperationsAddress;
 	address troveManagerAddress;
 	address troveManagerHelpersAddress;
-	address vstTokenAddress;
+	address dchfTokenAddress;
 	address sortedTrovesAddress;
 
 	function setAddresses(
@@ -34,7 +34,7 @@ contract AdminContract is ProxyAdmin {
 		address _borrowerOperationsAddress,
 		address _troveManagerAddress,
 		address _troveManagerHelpersAddress,
-		address _vstTokenAddress,
+		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress
 	) external onlyOwner {
@@ -44,7 +44,7 @@ contract AdminContract is ProxyAdmin {
 		CheckContract(_borrowerOperationsAddress);
 		CheckContract(_troveManagerAddress);
 		CheckContract(_troveManagerHelpersAddress);
-		CheckContract(_vstTokenAddress);
+		CheckContract(_dchfTokenAddress);
 		CheckContract(_sortedTrovesAddress);
 		CheckContract(_communityIssuanceAddress);
 		isInitialized = true;
@@ -52,11 +52,11 @@ contract AdminContract is ProxyAdmin {
 		borrowerOperationsAddress = _borrowerOperationsAddress;
 		troveManagerAddress = _troveManagerAddress;
 		troveManagerHelpersAddress = _troveManagerHelpersAddress;
-		vstTokenAddress = _vstTokenAddress;
+		dchfTokenAddress = _dchfTokenAddress;
 		sortedTrovesAddress = _sortedTrovesAddress;
 		communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
 
-		vestaParameters = IVestaParameters(_paramaters);
+		vestaParameters = IDfrancParameters(_paramaters);
 		stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManager);
 	}
 

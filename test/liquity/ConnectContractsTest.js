@@ -10,7 +10,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   const [bountyAddress, lpRewardsAddress, multisig] = accounts.slice(997, 1000)
 
   let priceFeed
-  let vstToken
+  let dchfToken
   let sortedTroves
   let troveManager
   let activePool
@@ -19,17 +19,17 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   let defaultPool
   let functionCaller
   let borrowerOperations
-  let vstaStaking
-  let vstaToken
+  let monStaking
+  let monToken
   let communityIssuance
   let vestaParameters
 
   before(async () => {
     const coreContracts = await deploymentHelper.deployLiquityCore()
-    const VSTAContracts = await deploymentHelper.deployVSTAContractsHardhat(accounts[0])
+    const MONContracts = await deploymentHelper.deployMONContractsHardhat(accounts[0])
 
     priceFeed = coreContracts.priceFeedTestnet
-    vstToken = coreContracts.vstToken
+    dchfToken = coreContracts.dchfToken
     sortedTroves = coreContracts.sortedTroves
     troveManager = coreContracts.troveManager
     activePool = coreContracts.activePool
@@ -39,12 +39,12 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     borrowerOperations = coreContracts.borrowerOperations
     vestaParameters = coreContracts.vestaParameters
 
-    vstaStaking = VSTAContracts.vstaStaking
-    vstaToken = VSTAContracts.vstaToken
-    communityIssuance = VSTAContracts.communityIssuance
+    monStaking = MONContracts.monStaking
+    monToken = MONContracts.monToken
+    communityIssuance = MONContracts.communityIssuance
 
-    await deploymentHelper.connectCoreContracts(coreContracts, VSTAContracts)
-    await deploymentHelper.connectVSTAContractsToCore(VSTAContracts, coreContracts)
+    await deploymentHelper.connectCoreContracts(coreContracts, MONContracts)
+    await deploymentHelper.connectMONContractsToCore(MONContracts, coreContracts)
     stabilityPool = await StabilityPool.at(await coreContracts.stabilityPoolManager.getAssetStabilityPool(ZERO_ADDRESS))
   })
 
@@ -58,12 +58,12 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(vestaParameters.address, await troveManager.vestaParams());
   })
 
-  it('Sets the correct VSTToken address in TroveManager', async () => {
-    const VSTTokenAddress = vstToken.address
+  it('Sets the correct DCHFToken address in TroveManager', async () => {
+    const DCHFTokenAddress = dchfToken.address
 
-    const recordedClvTokenAddress = await troveManager.vstToken()
+    const recordedClvTokenAddress = await troveManager.dchfToken()
 
-    assert.equal(VSTTokenAddress, recordedClvTokenAddress)
+    assert.equal(DCHFTokenAddress, recordedClvTokenAddress)
   })
 
   it('Sets the correct SortedTroves address in TroveManager', async () => {
@@ -86,11 +86,11 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(stabilityPoolManager.address, await troveManager.stabilityPoolManager())
   })
 
-  it('Sets the correct VSTAStaking address in TroveManager', async () => {
-    const VSTAStakingAddress = vstaStaking.address
+  it('Sets the correct MONStaking address in TroveManager', async () => {
+    const MONStakingAddress = monStaking.address
 
-    const recordedVSTAStakingAddress = await troveManager.vstaStaking()
-    assert.equal(VSTAStakingAddress, recordedVSTAStakingAddress)
+    const recordedMONStakingAddress = await troveManager.monStaking()
+    assert.equal(MONStakingAddress, recordedMONStakingAddress)
   })
 
   // Active Pool
@@ -130,12 +130,12 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(borrowerOperationsAddress, recordedBorrowerOperationsAddress)
   })
 
-  it('Sets the correct VSTToken address in StabilityPool', async () => {
-    const VSTTokenAddress = vstToken.address
+  it('Sets the correct DCHFToken address in StabilityPool', async () => {
+    const DCHFTokenAddress = dchfToken.address
 
-    const recordedClvTokenAddress = await stabilityPool.vstToken()
+    const recordedClvTokenAddress = await stabilityPool.dchfToken()
 
-    assert.equal(VSTTokenAddress, recordedClvTokenAddress)
+    assert.equal(DCHFTokenAddress, recordedClvTokenAddress)
   })
 
   it('Sets the correct TroveManager address in StabilityPool', async () => {
@@ -177,7 +177,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
 
   //--- BorrowerOperations ---
 
-  it('Sets the correct VestaParameters address in BorrowerOperations', async () => {
+  it('Sets the correct DfrancParameters address in BorrowerOperations', async () => {
     assert.equal(vestaParameters.address, await borrowerOperations.vestaParams())
   })
 
@@ -197,66 +197,66 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     assert.equal(sortedTrovesAddress, recordedSortedTrovesAddress)
   })
 
-  // VSTA Staking in BO
-  it('Sets the correct VSTAStaking address in BorrowerOperations', async () => {
-    const VSTAStakingAddress = vstaStaking.address
+  // MON Staking in BO
+  it('Sets the correct MONStaking address in BorrowerOperations', async () => {
+    const MONStakingAddress = monStaking.address
 
-    const recordedVSTAStakingAddress = await borrowerOperations.VSTAStakingAddress()
-    assert.equal(VSTAStakingAddress, recordedVSTAStakingAddress)
+    const recordedMONStakingAddress = await borrowerOperations.MONStakingAddress()
+    assert.equal(MONStakingAddress, recordedMONStakingAddress)
   })
 
 
-  // --- VSTA Staking ---
+  // --- MON Staking ---
 
-  // Sets VSTAToken in VSTAStaking
-  it('Sets the correct VSTAToken address in VSTAStaking', async () => {
-    const VSTATokenAddress = vstaToken.address
+  // Sets MONToken in MONStaking
+  it('Sets the correct MONToken address in MONStaking', async () => {
+    const MONTokenAddress = monToken.address
 
-    const recordedVSTATokenAddress = await vstaStaking.vstaToken()
-    assert.equal(VSTATokenAddress, recordedVSTATokenAddress)
+    const recordedMONTokenAddress = await monStaking.monToken()
+    assert.equal(MONTokenAddress, recordedMONTokenAddress)
   })
 
-  // Sets ActivePool in VSTAStaking
-  it('Sets the correct ActivePool address in VSTAStaking', async () => {
+  // Sets ActivePool in MONStaking
+  it('Sets the correct ActivePool address in MONStaking', async () => {
     const activePoolAddress = activePool.address
 
-    const recordedActivePoolAddress = await vstaStaking.activePoolAddress()
+    const recordedActivePoolAddress = await monStaking.activePoolAddress()
     assert.equal(activePoolAddress, recordedActivePoolAddress)
   })
 
-  // Sets VSTToken in VSTAStaking
-  it('Sets the correct ActivePool address in VSTAStaking', async () => {
-    const VSTTokenAddress = vstToken.address
+  // Sets DCHFToken in MONStaking
+  it('Sets the correct ActivePool address in MONStaking', async () => {
+    const DCHFTokenAddress = dchfToken.address
 
-    const recordedVSTTokenAddress = await vstaStaking.vstToken()
-    assert.equal(VSTTokenAddress, recordedVSTTokenAddress)
+    const recordedDCHFTokenAddress = await monStaking.dchfToken()
+    assert.equal(DCHFTokenAddress, recordedDCHFTokenAddress)
   })
 
-  // Sets TroveManager in VSTAStaking
-  it('Sets the correct ActivePool address in VSTAStaking', async () => {
+  // Sets TroveManager in MONStaking
+  it('Sets the correct ActivePool address in MONStaking', async () => {
     const troveManagerAddress = troveManager.address
 
-    const recordedTroveManagerAddress = await vstaStaking.troveManagerAddress()
+    const recordedTroveManagerAddress = await monStaking.troveManagerAddress()
     assert.equal(troveManagerAddress, recordedTroveManagerAddress)
   })
 
-  // Sets BorrowerOperations in VSTAStaking
-  it('Sets the correct BorrowerOperations address in VSTAStaking', async () => {
+  // Sets BorrowerOperations in MONStaking
+  it('Sets the correct BorrowerOperations address in MONStaking', async () => {
     const borrowerOperationsAddress = borrowerOperations.address
 
-    const recordedBorrowerOperationsAddress = await vstaStaking.borrowerOperationsAddress()
+    const recordedBorrowerOperationsAddress = await monStaking.borrowerOperationsAddress()
     assert.equal(borrowerOperationsAddress, recordedBorrowerOperationsAddress)
   })
 
-  // ---  VSTAToken ---
+  // ---  MONToken ---
 
   // --- CI ---
-  // Sets VSTAToken in CommunityIssuance
-  it('Sets the correct VSTAToken address in CommunityIssuance', async () => {
-    const VSTATokenAddress = vstaToken.address
+  // Sets MONToken in CommunityIssuance
+  it('Sets the correct MONToken address in CommunityIssuance', async () => {
+    const MONTokenAddress = monToken.address
 
-    const recordedVSTATokenAddress = await communityIssuance.vstaToken()
-    assert.equal(VSTATokenAddress, recordedVSTATokenAddress)
+    const recordedMONTokenAddress = await communityIssuance.monToken()
+    assert.equal(MONTokenAddress, recordedMONTokenAddress)
   })
 
   it('Sets the correct StabilityPool address in CommunityIssuance', async () => {

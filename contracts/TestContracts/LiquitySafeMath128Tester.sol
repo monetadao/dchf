@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.14;
-import "../Dependencies/VestaSafeMath128.sol";
+import "../Dependencies/DfrancSafeMath128.sol";
 
-/* Tester contract for math functions in VestaSafeMath128.sol library. */
+/* Tester contract for math functions in DfrancSafeMath128.sol library. */
 
-contract VestaSafeMath128Tester {
-	using VestaSafeMath128 for uint128;
+contract DfrancSafeMath128Tester {
+	using DfrancSafeMath128 for uint128;
 
 	function add(uint128 a, uint128 b) external pure returns (uint128) {
 		return a.add(b);

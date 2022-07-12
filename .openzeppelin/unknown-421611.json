@@ -822,10 +822,10 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "VestaBase",
+            "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(BaseVestaParameters)10300",
-            "src": "contracts\\Dependencies\\VestaBase.sol:22"
+            "type": "t_contract(BaseDfrancParameters)10300",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:22"
           },
           {
             "contract": "TroveManager",
@@ -853,14 +853,14 @@
           },
           {
             "contract": "TroveManager",
-            "label": "vstToken",
-            "type": "t_contract(IVSTToken)12152",
+            "label": "dchfToken",
+            "type": "t_contract(IDCHFToken)12152",
             "src": "contracts\\TroveManager.sol:23"
           },
           {
             "contract": "TroveManager",
-            "label": "vstaStaking",
-            "type": "t_contract(IVSTAStaking)12086",
+            "label": "monStaking",
+            "type": "t_contract(IMONStaking)12086",
             "src": "contracts\\TroveManager.sol:25"
           },
           {
@@ -919,7 +919,7 @@
           },
           {
             "contract": "TroveManager",
-            "label": "L_VSTDebts",
+            "label": "L_DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\TroveManager.sol:70"
           },
@@ -943,7 +943,7 @@
           },
           {
             "contract": "TroveManager",
-            "label": "lastVSTDebtError_Redistribution",
+            "label": "lastDCHFDebtError_Redistribution",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\TroveManager.sol:87"
           },
@@ -964,11 +964,11 @@
           "t_contract(ICollSurplusPool)10598": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IVSTToken)12152": {
-            "label": "contract IVSTToken"
+          "t_contract(IDCHFToken)12152": {
+            "label": "contract IDCHFToken"
           },
-          "t_contract(IVSTAStaking)12086": {
-            "label": "contract IVSTAStaking"
+          "t_contract(IMONStaking)12086": {
+            "label": "contract IMONStaking"
           },
           "t_contract(ISortedTroves)11001": {
             "label": "contract ISortedTroves"
@@ -1047,7 +1047,7 @@
                 "type": "t_uint256"
               },
               {
-                "label": "VSTDebt",
+                "label": "DCHFDebt",
                 "type": "t_uint256"
               }
             ]
@@ -1058,8 +1058,8 @@
           "t_array(t_address)dyn_storage": {
             "label": "address[]"
           },
-          "t_contract(BaseVestaParameters)10300": {
-            "label": "contract BaseVestaParameters"
+          "t_contract(BaseDfrancParameters)10300": {
+            "label": "contract BaseDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]"
@@ -1149,7 +1149,7 @@
           },
           {
             "contract": "ActivePool",
-            "label": "VSTDebts",
+            "label": "DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\ActivePool.sol:40"
           }
@@ -1331,7 +1331,7 @@
           },
           {
             "contract": "DefaultPool",
-            "label": "VSTDebts",
+            "label": "DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\DefaultPool.sol:32"
           }
@@ -1491,10 +1491,10 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "VestaBase",
+            "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(BaseVestaParameters)10300",
-            "src": "contracts\\Dependencies\\VestaBase.sol:22"
+            "type": "t_contract(BaseDfrancParameters)10300",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:22"
           },
           {
             "contract": "BorrowerOperations",
@@ -1522,20 +1522,20 @@
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTAStaking",
-            "type": "t_contract(IVSTAStaking)12086",
+            "label": "MONStaking",
+            "type": "t_contract(IMONStaking)12086",
             "src": "contracts\\BorrowerOperations.sol:37"
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTAStakingAddress",
+            "label": "MONStakingAddress",
             "type": "t_address",
             "src": "contracts\\BorrowerOperations.sol:38"
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTToken",
-            "type": "t_contract(IVSTToken)12152",
+            "label": "DCHFToken",
+            "type": "t_contract(IDCHFToken)12152",
             "src": "contracts\\BorrowerOperations.sol:40"
           },
           {
@@ -1564,11 +1564,11 @@
           "t_contract(ICollSurplusPool)10598": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IVSTAStaking)12086": {
-            "label": "contract IVSTAStaking"
+          "t_contract(IMONStaking)12086": {
+            "label": "contract IMONStaking"
           },
-          "t_contract(IVSTToken)12152": {
-            "label": "contract IVSTToken"
+          "t_contract(IDCHFToken)12152": {
+            "label": "contract IDCHFToken"
           },
           "t_contract(ISortedTroves)11001": {
             "label": "contract ISortedTroves"
@@ -1576,8 +1576,8 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(BaseVestaParameters)10300": {
-            "label": "contract BaseVestaParameters"
+          "t_contract(BaseDfrancParameters)10300": {
+            "label": "contract BaseDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]"
@@ -1627,10 +1627,10 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "VestaBase",
+            "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(BaseVestaParameters)10300",
-            "src": "contracts\\Dependencies\\VestaBase.sol:22"
+            "type": "t_contract(BaseDfrancParameters)10300",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:22"
           },
           {
             "contract": "HintHelpers",
@@ -1661,8 +1661,8 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(BaseVestaParameters)10300": {
-            "label": "contract BaseVestaParameters"
+          "t_contract(BaseDfrancParameters)10300": {
+            "label": "contract BaseDfrancParameters"
           },
           "t_address": {
             "label": "address"
@@ -1715,94 +1715,94 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "MCR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:24"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:24"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "CCR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:28"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:28"
           },
           {
-            "contract": "BaseVestaParameters",
-            "label": "VST_GAS_COMPENSATION",
+            "contract": "BaseDfrancParameters",
+            "label": "DCHF_GAS_COMPENSATION",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:32"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:32"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "MIN_NET_DEBT",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:36"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:36"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "PERCENT_DIVISOR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:39"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:39"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "BORROWING_FEE_FLOOR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:43"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:43"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "REDEMPTION_FEE_FLOOR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:48"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:48"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "MAX_BORROWING_FEE",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:52"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:52"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "hasCollateralConfigured",
             "type": "t_mapping(t_address,t_bool)",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:54"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:54"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "redemptionBlock",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:56"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:56"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "activePool",
             "type": "t_contract(IActivePool)10335",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:58"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:58"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "defaultPool",
             "type": "t_contract(IDefaultPool)10690",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:59"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:59"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "priceFeed",
             "type": "t_contract(IPriceFeed)10839",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:60"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:60"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "adminContract",
             "type": "t_address",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:61"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:61"
           },
           {
-            "contract": "BaseVestaParameters",
+            "contract": "BaseDfrancParameters",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\Interfaces\\BaseVestaParameters.sol:63"
+            "src": "contracts\\Interfaces\\BaseDfrancParameters.sol:63"
           }
         ],
         "types": {
@@ -1899,94 +1899,94 @@
             "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:68"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:27"
+            "src": "contracts\\MON\\MONStaking.sol:27"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "stakes",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:33"
+            "src": "contracts\\MON\\MONStaking.sol:33"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "totalVSTAStaked",
+            "contract": "MONStaking",
+            "label": "totalMONStaked",
             "type": "t_uint256",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:34"
+            "src": "contracts\\MON\\MONStaking.sol:34"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "F_ASSETS",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:36"
+            "src": "contracts\\MON\\MONStaking.sol:36"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "F_VST",
+            "contract": "MONStaking",
+            "label": "F_DCHF",
             "type": "t_uint256",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:37"
+            "src": "contracts\\MON\\MONStaking.sol:37"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "snapshots",
             "type": "t_mapping(t_address,t_struct(Snapshot)26701_storage)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:40"
+            "src": "contracts\\MON\\MONStaking.sol:40"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "ASSET_TYPE",
             "type": "t_array(t_address)dyn_storage",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:47"
+            "src": "contracts\\MON\\MONStaking.sol:47"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "isAssetTracked",
             "type": "t_mapping(t_address,t_bool)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:48"
+            "src": "contracts\\MON\\MONStaking.sol:48"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "sentToTreasuryTracker",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:49"
+            "src": "contracts\\MON\\MONStaking.sol:49"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "vstaToken",
+            "contract": "MONStaking",
+            "label": "monToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:51"
+            "src": "contracts\\MON\\MONStaking.sol:51"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "vstToken",
+            "contract": "MONStaking",
+            "label": "dchfToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:52"
+            "src": "contracts\\MON\\MONStaking.sol:52"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "troveManagerAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:54"
+            "src": "contracts\\MON\\MONStaking.sol:54"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "borrowerOperationsAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:55"
+            "src": "contracts\\MON\\MONStaking.sol:55"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "activePoolAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:56"
+            "src": "contracts\\MON\\MONStaking.sol:56"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "treasury",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:57"
+            "src": "contracts\\MON\\MONStaking.sol:57"
           }
         ],
         "types": {
@@ -2003,17 +2003,17 @@
             "label": "uint256"
           },
           "t_mapping(t_address,t_struct(Snapshot)26701_storage)": {
-            "label": "mapping(address => struct VSTAStaking.Snapshot)"
+            "label": "mapping(address => struct MONStaking.Snapshot)"
           },
           "t_struct(Snapshot)26701_storage": {
-            "label": "struct VSTAStaking.Snapshot",
+            "label": "struct MONStaking.Snapshot",
             "members": [
               {
                 "label": "F_ASSET_Snapshot",
                 "type": "t_mapping(t_address,t_uint256)"
               },
               {
-                "label": "F_VST_Snapshot",
+                "label": "F_DCHF_Snapshot",
                 "type": "t_uint256"
               }
             ]
@@ -2073,45 +2073,45 @@
           },
           {
             "contract": "CommunityIssuance",
-            "label": "vstaToken",
+            "label": "monToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:43"
+            "src": "contracts\\MON\\CommunityIssuance.sol:43"
           },
           {
             "contract": "CommunityIssuance",
             "label": "stabilityPoolManager",
             "type": "t_contract(IStabilityPoolManager)11248",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:44"
+            "src": "contracts\\MON\\CommunityIssuance.sol:44"
           },
           {
             "contract": "CommunityIssuance",
-            "label": "totalVSTAIssued",
+            "label": "totalMONIssued",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:46"
+            "src": "contracts\\MON\\CommunityIssuance.sol:46"
           },
           {
             "contract": "CommunityIssuance",
             "label": "deploymentTime",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:47"
+            "src": "contracts\\MON\\CommunityIssuance.sol:47"
           },
           {
             "contract": "CommunityIssuance",
-            "label": "VSTASupplyCaps",
+            "label": "MONSupplyCaps",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:48"
+            "src": "contracts\\MON\\CommunityIssuance.sol:48"
           },
           {
             "contract": "CommunityIssuance",
             "label": "adminContract",
             "type": "t_address",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:50"
+            "src": "contracts\\MON\\CommunityIssuance.sol:50"
           },
           {
             "contract": "CommunityIssuance",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:52"
+            "src": "contracts\\MON\\CommunityIssuance.sol:52"
           }
         ],
         "types": {
@@ -2178,10 +2178,10 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "VestaBase",
+            "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(BaseVestaParameters)10252",
-            "src": "contracts\\Dependencies\\VestaBase.sol:22"
+            "type": "t_contract(BaseDfrancParameters)10252",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:22"
           },
           {
             "contract": "TroveManager",
@@ -2209,14 +2209,14 @@
           },
           {
             "contract": "TroveManager",
-            "label": "vstToken",
-            "type": "t_contract(IVSTToken)12097",
+            "label": "dchfToken",
+            "type": "t_contract(IDCHFToken)12097",
             "src": "contracts\\TroveManager.sol:23"
           },
           {
             "contract": "TroveManager",
-            "label": "vstaStaking",
-            "type": "t_contract(IVSTAStaking)12031",
+            "label": "monStaking",
+            "type": "t_contract(IMONStaking)12031",
             "src": "contracts\\TroveManager.sol:25"
           },
           {
@@ -2269,7 +2269,7 @@
           },
           {
             "contract": "TroveManager",
-            "label": "L_VSTDebts",
+            "label": "L_DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\TroveManager.sol:69"
           },
@@ -2293,7 +2293,7 @@
           },
           {
             "contract": "TroveManager",
-            "label": "lastVSTDebtError_Redistribution",
+            "label": "lastDCHFDebtError_Redistribution",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\TroveManager.sol:86"
           },
@@ -2314,11 +2314,11 @@
           "t_contract(ICollSurplusPool)10550": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IVSTToken)12097": {
-            "label": "contract IVSTToken"
+          "t_contract(IDCHFToken)12097": {
+            "label": "contract IDCHFToken"
           },
-          "t_contract(IVSTAStaking)12031": {
-            "label": "contract IVSTAStaking"
+          "t_contract(IMONStaking)12031": {
+            "label": "contract IMONStaking"
           },
           "t_contract(ISortedTroves)10953": {
             "label": "contract ISortedTroves"
@@ -2391,7 +2391,7 @@
                 "type": "t_uint256"
               },
               {
-                "label": "VSTDebt",
+                "label": "DCHFDebt",
                 "type": "t_uint256"
               }
             ]
@@ -2405,8 +2405,8 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(BaseVestaParameters)10252": {
-            "label": "contract BaseVestaParameters"
+          "t_contract(BaseDfrancParameters)10252": {
+            "label": "contract BaseDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]"
@@ -2508,7 +2508,7 @@
           },
           {
             "contract": "ActivePool",
-            "label": "VSTDebts",
+            "label": "DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\ActivePool.sol:46"
           }
@@ -2690,7 +2690,7 @@
           },
           {
             "contract": "DefaultPool",
-            "label": "VSTDebts",
+            "label": "DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\DefaultPool.sol:32"
           }
@@ -2850,10 +2850,10 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "VestaBase",
+            "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(BaseVestaParameters)10252",
-            "src": "contracts\\Dependencies\\VestaBase.sol:22"
+            "type": "t_contract(BaseDfrancParameters)10252",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:22"
           },
           {
             "contract": "BorrowerOperations",
@@ -2881,20 +2881,20 @@
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTAStaking",
-            "type": "t_contract(IVSTAStaking)12026",
+            "label": "MONStaking",
+            "type": "t_contract(IMONStaking)12026",
             "src": "contracts\\BorrowerOperations.sol:33"
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTAStakingAddress",
+            "label": "MONStakingAddress",
             "type": "t_address",
             "src": "contracts\\BorrowerOperations.sol:34"
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTToken",
-            "type": "t_contract(IVSTToken)12092",
+            "label": "DCHFToken",
+            "type": "t_contract(IDCHFToken)12092",
             "src": "contracts\\BorrowerOperations.sol:36"
           },
           {
@@ -2923,11 +2923,11 @@
           "t_contract(ICollSurplusPool)10550": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IVSTAStaking)12026": {
-            "label": "contract IVSTAStaking"
+          "t_contract(IMONStaking)12026": {
+            "label": "contract IMONStaking"
           },
-          "t_contract(IVSTToken)12092": {
-            "label": "contract IVSTToken"
+          "t_contract(IDCHFToken)12092": {
+            "label": "contract IDCHFToken"
           },
           "t_contract(ISortedTroves)10948": {
             "label": "contract ISortedTroves"
@@ -2935,8 +2935,8 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(BaseVestaParameters)10252": {
-            "label": "contract BaseVestaParameters"
+          "t_contract(BaseDfrancParameters)10252": {
+            "label": "contract BaseDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]"
@@ -2987,45 +2987,45 @@
           },
           {
             "contract": "CommunityIssuance",
-            "label": "vstaToken",
+            "label": "monToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:43"
+            "src": "contracts\\MON\\CommunityIssuance.sol:43"
           },
           {
             "contract": "CommunityIssuance",
             "label": "stabilityPoolManager",
             "type": "t_contract(IStabilityPoolManager)11187",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:44"
+            "src": "contracts\\MON\\CommunityIssuance.sol:44"
           },
           {
             "contract": "CommunityIssuance",
-            "label": "totalVSTAIssued",
+            "label": "totalMONIssued",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:46"
+            "src": "contracts\\MON\\CommunityIssuance.sol:46"
           },
           {
             "contract": "CommunityIssuance",
             "label": "deploymentTime",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:47"
+            "src": "contracts\\MON\\CommunityIssuance.sol:47"
           },
           {
             "contract": "CommunityIssuance",
-            "label": "VSTASupplyCaps",
+            "label": "MONSupplyCaps",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:48"
+            "src": "contracts\\MON\\CommunityIssuance.sol:48"
           },
           {
             "contract": "CommunityIssuance",
             "label": "adminContract",
             "type": "t_address",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:50"
+            "src": "contracts\\MON\\CommunityIssuance.sol:50"
           },
           {
             "contract": "CommunityIssuance",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:52"
+            "src": "contracts\\MON\\CommunityIssuance.sol:52"
           }
         ],
         "types": {
@@ -3225,94 +3225,94 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "MCR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:26"
+            "src": "contracts\\DfrancParameters.sol:26"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "CCR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:28"
+            "src": "contracts\\DfrancParameters.sol:28"
           },
           {
-            "contract": "VestaParameters",
-            "label": "VST_GAS_COMPENSATION",
+            "contract": "DfrancParameters",
+            "label": "DCHF_GAS_COMPENSATION",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:30"
+            "src": "contracts\\DfrancParameters.sol:30"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "MIN_NET_DEBT",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:31"
+            "src": "contracts\\DfrancParameters.sol:31"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "PERCENT_DIVISOR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:32"
+            "src": "contracts\\DfrancParameters.sol:32"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "BORROWING_FEE_FLOOR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:33"
+            "src": "contracts\\DfrancParameters.sol:33"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "REDEMPTION_FEE_FLOOR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:34"
+            "src": "contracts\\DfrancParameters.sol:34"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "MAX_BORROWING_FEE",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:35"
+            "src": "contracts\\DfrancParameters.sol:35"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "redemptionBlock",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:36"
+            "src": "contracts\\DfrancParameters.sol:36"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "hasCollateralConfigured",
             "type": "t_mapping(t_address,t_bool)",
-            "src": "contracts\\VestaParameters.sol:38"
+            "src": "contracts\\DfrancParameters.sol:38"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "activePool",
             "type": "t_contract(IActivePool)9767",
-            "src": "contracts\\VestaParameters.sol:40"
+            "src": "contracts\\DfrancParameters.sol:40"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "defaultPool",
             "type": "t_contract(IDefaultPool)10129",
-            "src": "contracts\\VestaParameters.sol:41"
+            "src": "contracts\\DfrancParameters.sol:41"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "priceFeed",
             "type": "t_contract(IPriceFeed)10273",
-            "src": "contracts\\VestaParameters.sol:42"
+            "src": "contracts\\DfrancParameters.sol:42"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "adminContract",
             "type": "t_address",
-            "src": "contracts\\VestaParameters.sol:43"
+            "src": "contracts\\DfrancParameters.sol:43"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VestaParameters.sol:45"
+            "src": "contracts\\DfrancParameters.sol:45"
           }
         ],
         "types": {
@@ -3409,94 +3409,94 @@
             "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:68"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:27"
+            "src": "contracts\\MON\\MONStaking.sol:27"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "stakes",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:33"
+            "src": "contracts\\MON\\MONStaking.sol:33"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "totalVSTAStaked",
+            "contract": "MONStaking",
+            "label": "totalMONStaked",
             "type": "t_uint256",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:34"
+            "src": "contracts\\MON\\MONStaking.sol:34"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "F_ASSETS",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:36"
+            "src": "contracts\\MON\\MONStaking.sol:36"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "F_VST",
+            "contract": "MONStaking",
+            "label": "F_DCHF",
             "type": "t_uint256",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:37"
+            "src": "contracts\\MON\\MONStaking.sol:37"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "snapshots",
             "type": "t_mapping(t_address,t_struct(Snapshot)27954_storage)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:40"
+            "src": "contracts\\MON\\MONStaking.sol:40"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "ASSET_TYPE",
             "type": "t_array(t_address)dyn_storage",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:47"
+            "src": "contracts\\MON\\MONStaking.sol:47"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "isAssetTracked",
             "type": "t_mapping(t_address,t_bool)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:48"
+            "src": "contracts\\MON\\MONStaking.sol:48"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "sentToTreasuryTracker",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:49"
+            "src": "contracts\\MON\\MONStaking.sol:49"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "vstaToken",
+            "contract": "MONStaking",
+            "label": "monToken",
             "type": "t_contract(IERC20Upgradeable)1188",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:51"
+            "src": "contracts\\MON\\MONStaking.sol:51"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "vstToken",
+            "contract": "MONStaking",
+            "label": "dchfToken",
             "type": "t_contract(IERC20Upgradeable)1188",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:52"
+            "src": "contracts\\MON\\MONStaking.sol:52"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "troveManagerAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:54"
+            "src": "contracts\\MON\\MONStaking.sol:54"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "borrowerOperationsAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:55"
+            "src": "contracts\\MON\\MONStaking.sol:55"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "activePoolAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:56"
+            "src": "contracts\\MON\\MONStaking.sol:56"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "treasury",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:57"
+            "src": "contracts\\MON\\MONStaking.sol:57"
           }
         ],
         "types": {
@@ -3513,17 +3513,17 @@
             "label": "uint256"
           },
           "t_mapping(t_address,t_struct(Snapshot)27954_storage)": {
-            "label": "mapping(address => struct VSTAStaking.Snapshot)"
+            "label": "mapping(address => struct MONStaking.Snapshot)"
           },
           "t_struct(Snapshot)27954_storage": {
-            "label": "struct VSTAStaking.Snapshot",
+            "label": "struct MONStaking.Snapshot",
             "members": [
               {
                 "label": "F_ASSET_Snapshot",
                 "type": "t_mapping(t_address,t_uint256)"
               },
               {
-                "label": "F_VST_Snapshot",
+                "label": "F_DCHF_Snapshot",
                 "type": "t_uint256"
               }
             ]
@@ -3583,51 +3583,51 @@
           },
           {
             "contract": "CommunityIssuance",
-            "label": "vstaToken",
+            "label": "monToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:22"
+            "src": "contracts\\MON\\CommunityIssuance.sol:22"
           },
           {
             "contract": "CommunityIssuance",
             "label": "stabilityPoolManager",
             "type": "t_contract(IStabilityPoolManager)10669",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:23"
+            "src": "contracts\\MON\\CommunityIssuance.sol:23"
           },
           {
             "contract": "CommunityIssuance",
-            "label": "totalVSTAIssued",
+            "label": "totalMONIssued",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:25"
+            "src": "contracts\\MON\\CommunityIssuance.sol:25"
           },
           {
             "contract": "CommunityIssuance",
             "label": "deploymentTime",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:26"
+            "src": "contracts\\MON\\CommunityIssuance.sol:26"
           },
           {
             "contract": "CommunityIssuance",
-            "label": "VSTASupplyCaps",
+            "label": "MONSupplyCaps",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:27"
+            "src": "contracts\\MON\\CommunityIssuance.sol:27"
           },
           {
             "contract": "CommunityIssuance",
-            "label": "vstaDistributionsByPool",
+            "label": "monDistributionsByPool",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:28"
+            "src": "contracts\\MON\\CommunityIssuance.sol:28"
           },
           {
             "contract": "CommunityIssuance",
             "label": "adminContract",
             "type": "t_address",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:30"
+            "src": "contracts\\MON\\CommunityIssuance.sol:30"
           },
           {
             "contract": "CommunityIssuance",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:32"
+            "src": "contracts\\MON\\CommunityIssuance.sol:32"
           }
         ],
         "types": {
@@ -3882,7 +3882,7 @@
           },
           {
             "contract": "ActivePool",
-            "label": "VSTDebts",
+            "label": "DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\ActivePool.sol:47"
           }
@@ -4064,7 +4064,7 @@
           },
           {
             "contract": "DefaultPool",
-            "label": "VSTDebts",
+            "label": "DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\DefaultPool.sol:33"
           }
@@ -4224,10 +4224,10 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "VestaBase",
+            "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(IVestaParameters)11964",
-            "src": "contracts\\Dependencies\\VestaBase.sol:21"
+            "type": "t_contract(IDfrancParameters)11964",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
           },
           {
             "contract": "BorrowerOperations",
@@ -4255,20 +4255,20 @@
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTAStaking",
-            "type": "t_contract(IVSTAStaking)11626",
+            "label": "MONStaking",
+            "type": "t_contract(IMONStaking)11626",
             "src": "contracts\\BorrowerOperations.sol:34"
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTAStakingAddress",
+            "label": "MONStakingAddress",
             "type": "t_address",
             "src": "contracts\\BorrowerOperations.sol:35"
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTToken",
-            "type": "t_contract(IVSTToken)11692",
+            "label": "DCHFToken",
+            "type": "t_contract(IDCHFToken)11692",
             "src": "contracts\\BorrowerOperations.sol:37"
           },
           {
@@ -4297,11 +4297,11 @@
           "t_contract(ICollSurplusPool)10143": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IVSTAStaking)11626": {
-            "label": "contract IVSTAStaking"
+          "t_contract(IMONStaking)11626": {
+            "label": "contract IMONStaking"
           },
-          "t_contract(IVSTToken)11692": {
-            "label": "contract IVSTToken"
+          "t_contract(IDCHFToken)11692": {
+            "label": "contract IDCHFToken"
           },
           "t_contract(ISortedTroves)10548": {
             "label": "contract ISortedTroves"
@@ -4309,8 +4309,8 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IVestaParameters)11964": {
-            "label": "contract IVestaParameters"
+          "t_contract(IDfrancParameters)11964": {
+            "label": "contract IDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]"
@@ -4360,94 +4360,94 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "MCR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:28"
+            "src": "contracts\\DfrancParameters.sol:28"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "CCR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:30"
+            "src": "contracts\\DfrancParameters.sol:30"
           },
           {
-            "contract": "VestaParameters",
-            "label": "VST_GAS_COMPENSATION",
+            "contract": "DfrancParameters",
+            "label": "DCHF_GAS_COMPENSATION",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:32"
+            "src": "contracts\\DfrancParameters.sol:32"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "MIN_NET_DEBT",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:33"
+            "src": "contracts\\DfrancParameters.sol:33"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "PERCENT_DIVISOR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:34"
+            "src": "contracts\\DfrancParameters.sol:34"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "BORROWING_FEE_FLOOR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:35"
+            "src": "contracts\\DfrancParameters.sol:35"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "REDEMPTION_FEE_FLOOR",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:36"
+            "src": "contracts\\DfrancParameters.sol:36"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "MAX_BORROWING_FEE",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:37"
+            "src": "contracts\\DfrancParameters.sol:37"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "redemptionBlock",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VestaParameters.sol:38"
+            "src": "contracts\\DfrancParameters.sol:38"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "hasCollateralConfigured",
             "type": "t_mapping(t_address,t_bool)",
-            "src": "contracts\\VestaParameters.sol:40"
+            "src": "contracts\\DfrancParameters.sol:40"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "activePool",
             "type": "t_contract(IActivePool)9880",
-            "src": "contracts\\VestaParameters.sol:42"
+            "src": "contracts\\DfrancParameters.sol:42"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "defaultPool",
             "type": "t_contract(IDefaultPool)10242",
-            "src": "contracts\\VestaParameters.sol:43"
+            "src": "contracts\\DfrancParameters.sol:43"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "priceFeed",
             "type": "t_contract(IPriceFeed)10386",
-            "src": "contracts\\VestaParameters.sol:44"
+            "src": "contracts\\DfrancParameters.sol:44"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "adminContract",
             "type": "t_address",
-            "src": "contracts\\VestaParameters.sol:45"
+            "src": "contracts\\DfrancParameters.sol:45"
           },
           {
-            "contract": "VestaParameters",
+            "contract": "DfrancParameters",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VestaParameters.sol:47"
+            "src": "contracts\\DfrancParameters.sol:47"
           }
         ],
         "types": {
@@ -4544,94 +4544,94 @@
             "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:68"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:28"
+            "src": "contracts\\MON\\MONStaking.sol:28"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "stakes",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:34"
+            "src": "contracts\\MON\\MONStaking.sol:34"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "totalVSTAStaked",
+            "contract": "MONStaking",
+            "label": "totalMONStaked",
             "type": "t_uint256",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:35"
+            "src": "contracts\\MON\\MONStaking.sol:35"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "F_ASSETS",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:37"
+            "src": "contracts\\MON\\MONStaking.sol:37"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "F_VST",
+            "contract": "MONStaking",
+            "label": "F_DCHF",
             "type": "t_uint256",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:38"
+            "src": "contracts\\MON\\MONStaking.sol:38"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "snapshots",
             "type": "t_mapping(t_address,t_struct(Snapshot)27427_storage)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:41"
+            "src": "contracts\\MON\\MONStaking.sol:41"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "ASSET_TYPE",
             "type": "t_array(t_address)dyn_storage",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:48"
+            "src": "contracts\\MON\\MONStaking.sol:48"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "isAssetTracked",
             "type": "t_mapping(t_address,t_bool)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:49"
+            "src": "contracts\\MON\\MONStaking.sol:49"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "sentToTreasuryTracker",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:50"
+            "src": "contracts\\MON\\MONStaking.sol:50"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "vstaToken",
+            "contract": "MONStaking",
+            "label": "monToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:52"
+            "src": "contracts\\MON\\MONStaking.sol:52"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "vstToken",
+            "contract": "MONStaking",
+            "label": "dchfToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:53"
+            "src": "contracts\\MON\\MONStaking.sol:53"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "troveManagerAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:55"
+            "src": "contracts\\MON\\MONStaking.sol:55"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "borrowerOperationsAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:56"
+            "src": "contracts\\MON\\MONStaking.sol:56"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "activePoolAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:57"
+            "src": "contracts\\MON\\MONStaking.sol:57"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "treasury",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:58"
+            "src": "contracts\\MON\\MONStaking.sol:58"
           }
         ],
         "types": {
@@ -4648,17 +4648,17 @@
             "label": "uint256"
           },
           "t_mapping(t_address,t_struct(Snapshot)27427_storage)": {
-            "label": "mapping(address => struct VSTAStaking.Snapshot)"
+            "label": "mapping(address => struct MONStaking.Snapshot)"
           },
           "t_struct(Snapshot)27427_storage": {
-            "label": "struct VSTAStaking.Snapshot",
+            "label": "struct MONStaking.Snapshot",
             "members": [
               {
                 "label": "F_ASSET_Snapshot",
                 "type": "t_mapping(t_address,t_uint256)"
               },
               {
-                "label": "F_VST_Snapshot",
+                "label": "F_DCHF_Snapshot",
                 "type": "t_uint256"
               }
             ]
@@ -4718,51 +4718,51 @@
           },
           {
             "contract": "CommunityIssuance",
-            "label": "vstaToken",
+            "label": "monToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:23"
+            "src": "contracts\\MON\\CommunityIssuance.sol:23"
           },
           {
             "contract": "CommunityIssuance",
             "label": "stabilityPoolManager",
             "type": "t_contract(IStabilityPoolManager)10782",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:24"
+            "src": "contracts\\MON\\CommunityIssuance.sol:24"
           },
           {
             "contract": "CommunityIssuance",
-            "label": "totalVSTAIssued",
+            "label": "totalMONIssued",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:26"
+            "src": "contracts\\MON\\CommunityIssuance.sol:26"
           },
           {
             "contract": "CommunityIssuance",
             "label": "lastUpdateTime",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:27"
+            "src": "contracts\\MON\\CommunityIssuance.sol:27"
           },
           {
             "contract": "CommunityIssuance",
-            "label": "VSTASupplyCaps",
+            "label": "MONSupplyCaps",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:28"
+            "src": "contracts\\MON\\CommunityIssuance.sol:28"
           },
           {
             "contract": "CommunityIssuance",
-            "label": "vstaDistributionsByPool",
+            "label": "monDistributionsByPool",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:29"
+            "src": "contracts\\MON\\CommunityIssuance.sol:29"
           },
           {
             "contract": "CommunityIssuance",
             "label": "adminContract",
             "type": "t_address",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:31"
+            "src": "contracts\\MON\\CommunityIssuance.sol:31"
           },
           {
             "contract": "CommunityIssuance",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VSTA\\CommunityIssuance.sol:33"
+            "src": "contracts\\MON\\CommunityIssuance.sol:33"
           }
         ],
         "types": {
@@ -4884,7 +4884,7 @@
           },
           {
             "contract": "ActivePool",
-            "label": "VSTDebts",
+            "label": "DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\ActivePool.sol:47"
           }
@@ -4981,7 +4981,7 @@
           },
           {
             "contract": "DefaultPool",
-            "label": "VSTDebts",
+            "label": "DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\DefaultPool.sol:33"
           }
@@ -5044,10 +5044,10 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "VestaBase",
+            "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(IVestaParameters)11981",
-            "src": "contracts\\Dependencies\\VestaBase.sol:21"
+            "type": "t_contract(IDfrancParameters)11981",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
           },
           {
             "contract": "BorrowerOperations",
@@ -5075,20 +5075,20 @@
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTAStaking",
-            "type": "t_contract(IVSTAStaking)11643",
+            "label": "MONStaking",
+            "type": "t_contract(IMONStaking)11643",
             "src": "contracts\\BorrowerOperations.sol:34"
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTAStakingAddress",
+            "label": "MONStakingAddress",
             "type": "t_address",
             "src": "contracts\\BorrowerOperations.sol:35"
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTToken",
-            "type": "t_contract(IVSTToken)11709",
+            "label": "DCHFToken",
+            "type": "t_contract(IDCHFToken)11709",
             "src": "contracts\\BorrowerOperations.sol:37"
           },
           {
@@ -5117,11 +5117,11 @@
           "t_contract(ICollSurplusPool)10160": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IVSTAStaking)11643": {
-            "label": "contract IVSTAStaking"
+          "t_contract(IMONStaking)11643": {
+            "label": "contract IMONStaking"
           },
-          "t_contract(IVSTToken)11709": {
-            "label": "contract IVSTToken"
+          "t_contract(IDCHFToken)11709": {
+            "label": "contract IDCHFToken"
           },
           "t_contract(ISortedTroves)10565": {
             "label": "contract ISortedTroves"
@@ -5129,8 +5129,8 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IVestaParameters)11981": {
-            "label": "contract IVestaParameters"
+          "t_contract(IDfrancParameters)11981": {
+            "label": "contract IDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]"
@@ -5301,94 +5301,94 @@
             "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:68"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:28"
+            "src": "contracts\\MON\\MONStaking.sol:28"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "stakes",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:34"
+            "src": "contracts\\MON\\MONStaking.sol:34"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "totalVSTAStaked",
+            "contract": "MONStaking",
+            "label": "totalMONStaked",
             "type": "t_uint256",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:35"
+            "src": "contracts\\MON\\MONStaking.sol:35"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "F_ASSETS",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:37"
+            "src": "contracts\\MON\\MONStaking.sol:37"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "F_VST",
+            "contract": "MONStaking",
+            "label": "F_DCHF",
             "type": "t_uint256",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:38"
+            "src": "contracts\\MON\\MONStaking.sol:38"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "snapshots",
             "type": "t_mapping(t_address,t_struct(Snapshot)27431_storage)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:41"
+            "src": "contracts\\MON\\MONStaking.sol:41"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "ASSET_TYPE",
             "type": "t_array(t_address)dyn_storage",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:48"
+            "src": "contracts\\MON\\MONStaking.sol:48"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "isAssetTracked",
             "type": "t_mapping(t_address,t_bool)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:49"
+            "src": "contracts\\MON\\MONStaking.sol:49"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "sentToTreasuryTracker",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:50"
+            "src": "contracts\\MON\\MONStaking.sol:50"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "vstaToken",
+            "contract": "MONStaking",
+            "label": "monToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:52"
+            "src": "contracts\\MON\\MONStaking.sol:52"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "vstToken",
+            "contract": "MONStaking",
+            "label": "dchfToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:53"
+            "src": "contracts\\MON\\MONStaking.sol:53"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "troveManagerAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:55"
+            "src": "contracts\\MON\\MONStaking.sol:55"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "borrowerOperationsAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:56"
+            "src": "contracts\\MON\\MONStaking.sol:56"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "activePoolAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:57"
+            "src": "contracts\\MON\\MONStaking.sol:57"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "treasury",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:58"
+            "src": "contracts\\MON\\MONStaking.sol:58"
           }
         ],
         "types": {
@@ -5405,17 +5405,17 @@
             "label": "uint256"
           },
           "t_mapping(t_address,t_struct(Snapshot)27431_storage)": {
-            "label": "mapping(address => struct VSTAStaking.Snapshot)"
+            "label": "mapping(address => struct MONStaking.Snapshot)"
           },
           "t_struct(Snapshot)27431_storage": {
-            "label": "struct VSTAStaking.Snapshot",
+            "label": "struct MONStaking.Snapshot",
             "members": [
               {
                 "label": "F_ASSET_Snapshot",
                 "type": "t_mapping(t_address,t_uint256)"
               },
               {
-                "label": "F_VST_Snapshot",
+                "label": "F_DCHF_Snapshot",
                 "type": "t_uint256"
               }
             ]
@@ -5529,7 +5529,7 @@
           },
           {
             "contract": "ActivePool",
-            "label": "VSTDebts",
+            "label": "DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\ActivePool.sol:47"
           }
@@ -5626,7 +5626,7 @@
           },
           {
             "contract": "DefaultPool",
-            "label": "VSTDebts",
+            "label": "DCHFDebts",
             "type": "t_mapping(t_address,t_uint256)",
             "src": "contracts\\DefaultPool.sol:33"
           }
@@ -5786,10 +5786,10 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "VestaBase",
+            "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(IVestaParameters)11962",
-            "src": "contracts\\Dependencies\\VestaBase.sol:21"
+            "type": "t_contract(IDfrancParameters)11962",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
           },
           {
             "contract": "BorrowerOperations",
@@ -5817,20 +5817,20 @@
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTAStaking",
-            "type": "t_contract(IVSTAStaking)11624",
+            "label": "MONStaking",
+            "type": "t_contract(IMONStaking)11624",
             "src": "contracts\\BorrowerOperations.sol:34"
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTAStakingAddress",
+            "label": "MONStakingAddress",
             "type": "t_address",
             "src": "contracts\\BorrowerOperations.sol:35"
           },
           {
             "contract": "BorrowerOperations",
-            "label": "VSTToken",
-            "type": "t_contract(IVSTToken)11690",
+            "label": "DCHFToken",
+            "type": "t_contract(IDCHFToken)11690",
             "src": "contracts\\BorrowerOperations.sol:37"
           },
           {
@@ -5859,11 +5859,11 @@
           "t_contract(ICollSurplusPool)10141": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IVSTAStaking)11624": {
-            "label": "contract IVSTAStaking"
+          "t_contract(IMONStaking)11624": {
+            "label": "contract IMONStaking"
           },
-          "t_contract(IVSTToken)11690": {
-            "label": "contract IVSTToken"
+          "t_contract(IDCHFToken)11690": {
+            "label": "contract IDCHFToken"
           },
           "t_contract(ISortedTroves)10546": {
             "label": "contract ISortedTroves"
@@ -5871,8 +5871,8 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IVestaParameters)11962": {
-            "label": "contract IVestaParameters"
+          "t_contract(IDfrancParameters)11962": {
+            "label": "contract IDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]"
@@ -5946,94 +5946,94 @@
             "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:68"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:28"
+            "src": "contracts\\MON\\MONStaking.sol:28"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "stakes",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:34"
+            "src": "contracts\\MON\\MONStaking.sol:34"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "totalVSTAStaked",
+            "contract": "MONStaking",
+            "label": "totalMONStaked",
             "type": "t_uint256",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:35"
+            "src": "contracts\\MON\\MONStaking.sol:35"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "F_ASSETS",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:37"
+            "src": "contracts\\MON\\MONStaking.sol:37"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "F_VST",
+            "contract": "MONStaking",
+            "label": "F_DCHF",
             "type": "t_uint256",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:38"
+            "src": "contracts\\MON\\MONStaking.sol:38"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "snapshots",
             "type": "t_mapping(t_address,t_struct(Snapshot)27440_storage)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:41"
+            "src": "contracts\\MON\\MONStaking.sol:41"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "ASSET_TYPE",
             "type": "t_array(t_address)dyn_storage",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:48"
+            "src": "contracts\\MON\\MONStaking.sol:48"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "isAssetTracked",
             "type": "t_mapping(t_address,t_bool)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:49"
+            "src": "contracts\\MON\\MONStaking.sol:49"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "sentToTreasuryTracker",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:50"
+            "src": "contracts\\MON\\MONStaking.sol:50"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "vstaToken",
+            "contract": "MONStaking",
+            "label": "monToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:52"
+            "src": "contracts\\MON\\MONStaking.sol:52"
           },
           {
-            "contract": "VSTAStaking",
-            "label": "vstToken",
+            "contract": "MONStaking",
+            "label": "dchfToken",
             "type": "t_contract(IERC20Upgradeable)615",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:53"
+            "src": "contracts\\MON\\MONStaking.sol:53"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "troveManagerAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:55"
+            "src": "contracts\\MON\\MONStaking.sol:55"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "borrowerOperationsAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:56"
+            "src": "contracts\\MON\\MONStaking.sol:56"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "activePoolAddress",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:57"
+            "src": "contracts\\MON\\MONStaking.sol:57"
           },
           {
-            "contract": "VSTAStaking",
+            "contract": "MONStaking",
             "label": "treasury",
             "type": "t_address",
-            "src": "contracts\\VSTA\\VSTAStaking.sol:58"
+            "src": "contracts\\MON\\MONStaking.sol:58"
           }
         ],
         "types": {
@@ -6050,17 +6050,17 @@
             "label": "uint256"
           },
           "t_mapping(t_address,t_struct(Snapshot)27440_storage)": {
-            "label": "mapping(address => struct VSTAStaking.Snapshot)"
+            "label": "mapping(address => struct MONStaking.Snapshot)"
           },
           "t_struct(Snapshot)27440_storage": {
-            "label": "struct VSTAStaking.Snapshot",
+            "label": "struct MONStaking.Snapshot",
             "members": [
               {
                 "label": "F_ASSET_Snapshot",
                 "type": "t_mapping(t_address,t_uint256)"
               },
               {
-                "label": "F_VST_Snapshot",
+                "label": "F_DCHF_Snapshot",
                 "type": "t_uint256"
               }
             ]

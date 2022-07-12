@@ -55,11 +55,11 @@ const ABDKOperations = async () => {
     const res12 = await functionCaller.abdkMath_toUInt_view(res11)
     console.log(`result of 0.5 * 6, performed in 64.64, converted back to uint64: ${res12}`)
 
-    // Example computaton: VST -> Ether price conversion
+    // Example computaton: DCHF -> Ether price conversion
 
     // price = 200.12345678, stored as uint
-    // convert 6123456700909.123456789123456789 VST to Ether
-    // amount = 6123456700909.123456789123456789 VST / 200.12345678 
+    // convert 6123456700909.123456789123456789 DCHF to Ether
+    // amount = 6123456700909.123456789123456789 DCHF / 200.12345678 
 
     // expect amount 30598395607.571232843807983401100033706903271291774255... Ether
 
