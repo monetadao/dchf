@@ -11,6 +11,10 @@ let deploymentState;
 
 let ADMIN_WALLET
 let TREASURY_WALLET
+let borrowerOperations
+let troveManagerHelpers
+let dchf
+let ethStabilityPool
 
 async function main() {
     console.log(new Date().toUTCString())
@@ -26,7 +30,32 @@ async function main() {
 
     deploymentState = mdh.loadPreviousDeployment()
 
-    await openTrove();
+    borrowerOperations = await ethers.getContractAt("BorrowerOperations", deploymentState.borrowerOperations.address);
+    troveManagerHelpers = await ethers.getContractAt("TroveManagerHelpers", deploymentState.troveManagerHelpers.address);
+    dchf = await ethers.getContractAt("DCHFToken", deploymentState.DCHFToken.address);
+    ethStabilityPool = await ethers.getContractAt("StabilityPool", deploymentState.ProxyStabilityPoolETH.address);
+
+    // await openTrove();
+    // await investStabilityPool();
+
+
+    console.log(await borrowerOperations.getEntireSystemColl(config.externalAddrs.WETH_ERC20))
+    console.log(await borrowerOperations.getEntireSystemDebt(config.externalAddrs.WETH_ERC20))
+    console.log(await troveManagerHelpers.getTroveStatus(config.externalAddrs.WETH_ERC20, deployerWallet.address));
+    console.log(await troveManagerHelpers.hasPendingRewards(config.externalAddrs.WETH_ERC20, deployerWallet.address));
+    console.log(await dchf.balanceOf(deployerWallet.address));
+}
+
+async function investStabilityPool() {
+    console.log("invest stability pool");
+
+    const depositAmountDchf = ethers.utils.parseEther("500");
+
+    await dchf.approve(ethStabilityPool.address, depositAmountDchf);
+
+    await ethStabilityPool.provideToSP(depositAmountDchf);
+
+    console.log("provided");
 
 }
 
@@ -40,7 +69,6 @@ async function openTrove() {
 
     console.log("execute open trove")
 
-    const borrowerOperations = await ethers.getContractAt("BorrowerOperations", deploymentState.borrowerOperations.address);
     await erc20.approve(borrowerOperations.address, depositAmount);
 
     await borrowerOperations.openTrove(

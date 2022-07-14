@@ -119,26 +119,23 @@ async function mainnetDeploy(configParams) {
 
   await giveContractsOwnerships();
 
-  /*const erc20 = await ethers.getContractAt("IERC20Deposit", config.externalAddrs.WETH_ERC20);
-  await erc20.deposit({ value: ethers.utils.parseEther("1") });
-  await erc20.approve(vestaCore.borrowerOperations.address, "1000000000000000000");
-
-  await vestaCore.borrowerOperations.openTrove(
-    config.externalAddrs.WETH_ERC20,
-    "1000000000000000000",
-    "5000000000000000",
-    "700000000000000000000",
-    ethers.constants.AddressZero,
-    ethers.constants.AddressZero);*/
-
 }
 
 async function addETHCollaterals() {
-  if ((await vestaCore.stabilityPoolManager.unsafeGetAssetStabilityPool(config.externalAddrs.WETH_ERC20)) == ZERO_ADDRESS) {
+
+  const ETHAddress = !config.IsMainnet
+    ? await mdh.deployMockERC20Contract(deploymentState, "mockETH", 18)
+    : config.externalAddrs.WETH_ERC20
+
+  if (!ETHAddress || ETHAddress == "")
+    throw ("CANNOT FIND THE ETH Address")
+
+  if ((await vestaCore.stabilityPoolManager.unsafeGetAssetStabilityPool(ETHAddress)) == ZERO_ADDRESS) {
+
     console.log("Creating Collateral - ETH")
 
     const stabilityPoolETHProxy = await upgrades.deployProxy(await mdh.getFactory("StabilityPool"), [
-      config.externalAddrs.WETH_ERC20,
+      ETHAddress,
       vestaCore.borrowerOperations.address,
       vestaCore.troveManager.address,
       vestaCore.troveManagerHelpers.address,
@@ -163,7 +160,7 @@ async function addETHCollaterals() {
       })
 
     deploymentState["ProxyStabilityPoolETH"] = {
-      address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(config.externalAddrs.WETH_ERC20),
+      address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(ETHAddress),
       txHash: txReceiptProxyETH.transactionHash
     }
   }
@@ -176,8 +173,6 @@ async function addBTCCollaterals() {
 
   if (!BTCAddress || BTCAddress == "")
     throw ("CANNOT FIND THE renBTC Address")
-
-  console.log((await vestaCore.priceFeed.lastGoodPrice(BTCAddress)).toString());
 
   if ((await vestaCore.stabilityPoolManager.unsafeGetAssetStabilityPool(BTCAddress)) == ZERO_ADDRESS) {
     console.log("Creating Collateral - BTC")
@@ -200,7 +195,7 @@ async function addBTCCollaterals() {
       .sendAndWaitForTransaction(
         vestaCore.adminContract.addNewCollateral(
           stabilityPoolBTCProxy.address,
-          config.externalAddrs.CHAINLINK_ETHUSD_PROXY,
+          config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
           dec(100_000, 18),
           toBN(dec(100_000, 18)).div(toBN(4)),
