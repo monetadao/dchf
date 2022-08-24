@@ -46,3 +46,4 @@ __pycache__
 build/
 reports/
 tests/simulation.csv
+git.secrets.js
