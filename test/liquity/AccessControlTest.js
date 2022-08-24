@@ -66,7 +66,7 @@ contract('Access Control: Liquity functions with the caller restricted to Liquit
     stabilityPool = await StabilityPool.at(await coreContracts.stabilityPoolManager.getAssetStabilityPool(EMPTY_ADDRESS))
 
     for (account of accounts.slice(0, 10)) {
-      await th.openTrove(coreContracts, { extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+      await th.openTrove(coreContracts, { extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
     }
 
     const expectedCISupplyCap = '64000000000000000000000000' // 32mil

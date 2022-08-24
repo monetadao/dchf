@@ -154,7 +154,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		address _asset,
 		uint256 _tokenAmount,
 		uint256 _maxFeePercentage,
-		uint256 _MONmount,
+		uint256 _DCHFamount,
 		address _upperHint,
 		address _lowerHint
 	) external payable override {
@@ -183,7 +183,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		);
 
 		vars.DCHFFee;
-		vars.netDebt = _MONmount;
+		vars.netDebt = _DCHFamount;
 
 		if (!isRecoveryMode) {
 			vars.DCHFFee = _triggerBorrowingFee(
@@ -191,7 +191,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 				contractsCache.troveManager,
 				contractsCache.troveManagerHelpers,
 				contractsCache.DCHFToken,
-				_MONmount,
+				_DCHFamount,
 				_maxFeePercentage
 			);
 			vars.netDebt = vars.netDebt.add(vars.DCHFFee);
@@ -242,14 +242,14 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		);
 		emit TroveCreated(vars.asset, msg.sender, vars.arrayIndex);
 
-		// Move the ether to the Active Pool, and mint the MONmount to the borrower
+		// Move the ether to the Active Pool, and mint the DCHFAmount to the borrower
 		_activePoolAddColl(vars.asset, contractsCache.activePool, _tokenAmount);
 		_withdrawDCHF(
 			vars.asset,
 			contractsCache.activePool,
 			contractsCache.DCHFToken,
 			msg.sender,
-			_MONmount,
+			_DCHFamount,
 			vars.netDebt
 		);
 		// Move the DCHF gas compensation to the Gas Pool
@@ -329,7 +329,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 	function withdrawDCHF(
 		address _asset,
 		uint256 _maxFeePercentage,
-		uint256 _MONmount,
+		uint256 _DCHFamount,
 		address _upperHint,
 		address _lowerHint
 	) external override {
@@ -338,7 +338,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 			0,
 			msg.sender,
 			0,
-			_MONmount,
+			_DCHFamount,
 			true,
 			_upperHint,
 			_lowerHint,
@@ -349,11 +349,11 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 	// Repay DCHF tokens to a Trove: Burn the repaid DCHF tokens, and reduce the trove's debt accordingly
 	function repayDCHF(
 		address _asset,
-		uint256 _MONmount,
+		uint256 _DCHFamount,
 		address _upperHint,
 		address _lowerHint
 	) external override {
-		_adjustTrove(_asset, 0, msg.sender, 0, _MONmount, false, _upperHint, _lowerHint, 0);
+		_adjustTrove(_asset, 0, msg.sender, 0, _DCHFamount, false, _upperHint, _lowerHint, 0);
 	}
 
 	function adjustTrove(
@@ -600,13 +600,13 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		ITroveManager _troveManager,
 		ITroveManagerHelpers _troveManagerHelpers,
 		IDCHFToken _DCHFToken,
-		uint256 _MONmount,
+		uint256 _DCHFamount,
 		uint256 _maxFeePercentage
 	) internal returns (uint256) {
 		_troveManagerHelpers.decayBaseRateFromBorrowing(_asset); // decay the baseRate state variable
-		uint256 DCHFFee = _troveManagerHelpers.getBorrowingFee(_asset, _MONmount);
+		uint256 DCHFFee = _troveManagerHelpers.getBorrowingFee(_asset, _DCHFamount);
 
-		_requireUserAcceptsFee(DCHFFee, _MONmount, _maxFeePercentage);
+		_requireUserAcceptsFee(DCHFFee, _DCHFamount, _maxFeePercentage);
 
 		// Send fee to MON staking contract
 		_DCHFToken.mint(_asset, MONStakingAddress, DCHFFee);
@@ -705,11 +705,11 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		IActivePool _activePool,
 		IDCHFToken _DCHFToken,
 		address _account,
-		uint256 _MONmount,
+		uint256 _DCHFamount,
 		uint256 _netDebtIncrease
 	) internal {
 		_activePool.increaseDCHFDebt(_asset, _netDebtIncrease);
-		_DCHFToken.mint(_asset, _account, _MONmount);
+		_DCHFToken.mint(_asset, _account, _DCHFamount);
 	}
 
 	// Burn the specified amount of DCHF from _account and decreases the total active debt

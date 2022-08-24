@@ -40,7 +40,7 @@ contract('StabilityPool - MON Rewards', async accounts => {
 
   const ZERO_ADDRESS = th.ZERO_ADDRESS
 
-  const getOpenTroveMONmount = async (totalDebt, asset) => th.getOpenTroveMONmount(contracts, totalDebt, asset)
+  const getOpenTroveDCHFAmount = async (totalDebt, asset) => th.getOpenTroveDCHFAmount(contracts, totalDebt, asset)
 
   const openTrove = async (params) => th.openTrove(contracts, params)
   describe("MON Rewards", async () => {
@@ -102,11 +102,11 @@ contract('StabilityPool - MON Rewards', async accounts => {
 
 
     it("liquidation < 1 minute after a deposit does not change totalMONIssued", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
       // A, B provide to SP
       await stabilityPool.provideToSP(dec(10000, 18), { from: A })
@@ -169,8 +169,8 @@ contract('StabilityPool - MON Rewards', async accounts => {
       assert.equal((await stabilityPoolERC20.deposits(A)).toString(), dec(10000, 18))
 
       // defaulter opens trove
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(100, 'ether') })
-      await borrowerOperations.openTrove(erc20.address, dec(100, 'ether'), th._100pct, await getOpenTroveMONmount(dec(10000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(erc20.address, dec(100, 'ether'), th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
 
       // ETH drops
       await priceFeed.setPrice(dec(100, 18))
@@ -338,7 +338,7 @@ contract('StabilityPool - MON Rewards', async accounts => {
     //   assert.equal(initialIssuanceERC20, 0)
 
     //   // Whale opens Trove with 10k ETH
-    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(10000, 'ether') })
+    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(10000, 'ether') })
 
     //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, dec(10000, 18), A, A, { from: A, value: dec(200, 'ether') })
     //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, dec(20000, 18), B, B, { from: B, value: dec(300, 'ether') })
@@ -346,7 +346,7 @@ contract('StabilityPool - MON Rewards', async accounts => {
     //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, dec(10000, 18), D, D, { from: D, value: dec(100, 'ether') })
 
 
-    //   await borrowerOperations.openTrove(erc20.address, dec(10000, 'ether'), th._100pct, await getOpenTroveMONmount(dec(10000, 18)), whale, whale, { from: whale })
+    //   await borrowerOperations.openTrove(erc20.address, dec(10000, 'ether'), th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), whale, whale, { from: whale })
 
     //   await borrowerOperations.openTrove(erc20.address, dec(200, 'ether'), th._100pct, dec(10000, 18), A, A, { from: A })
     //   await borrowerOperations.openTrove(erc20.address, dec(300, 'ether'), th._100pct, dec(20000, 18), B, B, { from: B })
@@ -507,7 +507,7 @@ contract('StabilityPool - MON Rewards', async accounts => {
     //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, dec(40000, 18), D, D, { from: D, value: dec(500, 'ether') })
     //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, dec(40000, 18), E, E, { from: E, value: dec(600, 'ether') })
 
-    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(30000, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(300, 'ether') })
+    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(30000, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(300, 'ether') })
 
 
     //   await borrowerOperations.openTrove(erc20.address, dec(10000, 'ether'), th._100pct, dec(10000, 18), whale, whale, { from: whale })
@@ -518,7 +518,7 @@ contract('StabilityPool - MON Rewards', async accounts => {
     //   await borrowerOperations.openTrove(erc20.address, dec(500, 'ether'), th._100pct, dec(40000, 18), D, D, { from: D })
     //   await borrowerOperations.openTrove(erc20.address, dec(600, 'ether'), th._100pct, dec(40000, 18), E, E, { from: E })
 
-    //   await borrowerOperations.openTrove(erc20.address, dec(300, 'ether'), th._100pct, await getOpenTroveMONmount(dec(30000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
+    //   await borrowerOperations.openTrove(erc20.address, dec(300, 'ether'), th._100pct, await getOpenTroveDCHFAmount(dec(30000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
 
 
     //   // Check all MON balances are initially 0
@@ -718,20 +718,20 @@ contract('StabilityPool - MON Rewards', async accounts => {
     //   assert.equal(initialIssuanceERC20, 0)
 
     //   // Whale opens Trove with 10k ETH
-    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(10000, 'ether') })
-    //   await borrowerOperations.openTrove(erc20.address, dec(10000, 'ether'), th._100pct, await getOpenTroveMONmount(dec(10000, 18)), whale, whale, { from: whale })
+    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(10000, 'ether') })
+    //   await borrowerOperations.openTrove(erc20.address, dec(10000, 'ether'), th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), whale, whale, { from: whale })
 
     //   const allDepositors = [A, B, C, D, E, F, G, H]
     //   // 4 Defaulters open trove with 200DCHF debt, and 200% ICR
-    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(20000, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(200, 'ether') })
-    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(20000, 18)), defaulter_2, defaulter_2, { from: defaulter_2, value: dec(200, 'ether') })
-    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(20000, 18)), defaulter_3, defaulter_3, { from: defaulter_3, value: dec(200, 'ether') })
-    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(20000, 18)), defaulter_4, defaulter_4, { from: defaulter_4, value: dec(200, 'ether') })
+    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(20000, 18)), defaulter_1, defaulter_1, { from: defaulter_1, value: dec(200, 'ether') })
+    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(20000, 18)), defaulter_2, defaulter_2, { from: defaulter_2, value: dec(200, 'ether') })
+    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(20000, 18)), defaulter_3, defaulter_3, { from: defaulter_3, value: dec(200, 'ether') })
+    //   await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(20000, 18)), defaulter_4, defaulter_4, { from: defaulter_4, value: dec(200, 'ether') })
 
-    //   await borrowerOperations.openTrove(erc20.address, dec(200, 'ether'), th._100pct, await getOpenTroveMONmount(dec(20000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
-    //   await borrowerOperations.openTrove(erc20.address, dec(200, 'ether'), th._100pct, await getOpenTroveMONmount(dec(20000, 18)), defaulter_2, defaulter_2, { from: defaulter_2 })
-    //   await borrowerOperations.openTrove(erc20.address, dec(200, 'ether'), th._100pct, await getOpenTroveMONmount(dec(20000, 18)), defaulter_3, defaulter_3, { from: defaulter_3 })
-    //   await borrowerOperations.openTrove(erc20.address, dec(200, 'ether'), th._100pct, await getOpenTroveMONmount(dec(20000, 18)), defaulter_4, defaulter_4, { from: defaulter_4 })
+    //   await borrowerOperations.openTrove(erc20.address, dec(200, 'ether'), th._100pct, await getOpenTroveDCHFAmount(dec(20000, 18)), defaulter_1, defaulter_1, { from: defaulter_1 })
+    //   await borrowerOperations.openTrove(erc20.address, dec(200, 'ether'), th._100pct, await getOpenTroveDCHFAmount(dec(20000, 18)), defaulter_2, defaulter_2, { from: defaulter_2 })
+    //   await borrowerOperations.openTrove(erc20.address, dec(200, 'ether'), th._100pct, await getOpenTroveDCHFAmount(dec(20000, 18)), defaulter_3, defaulter_3, { from: defaulter_3 })
+    //   await borrowerOperations.openTrove(erc20.address, dec(200, 'ether'), th._100pct, await getOpenTroveDCHFAmount(dec(20000, 18)), defaulter_4, defaulter_4, { from: defaulter_4 })
 
     //   // price drops by 50%: defaulter ICR falls to 100%
     //   await priceFeed.setPrice(dec(100, 18));
@@ -1001,7 +1001,7 @@ contract('StabilityPool - MON Rewards', async accounts => {
     expect A, B, C, D each withdraw ~1 month's worth of MON */
     it("withdrawFromSP(): Several deposits of 100 DCHF span one scale factor change. Depositors withdraw correct MON gains", async () => {
       // Whale opens Trove with 100 ETH
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(100, 'ether') })
 
       const fiveDefaulters = [defaulter_1, defaulter_2, defaulter_3, defaulter_4, defaulter_5]
 
@@ -1014,11 +1014,11 @@ contract('StabilityPool - MON Rewards', async accounts => {
 
       for (const defaulter of fiveDefaulters) {
         // Defaulters 1-5 each withdraw to 9999.9 debt (including gas comp)
-        await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount('9999900000000000000000'), defaulter, defaulter, { from: defaulter, value: dec(100, 'ether') })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount('9999900000000000000000'), defaulter, defaulter, { from: defaulter, value: dec(100, 'ether') })
       }
 
       // Defaulter 6 withdraws to 10k debt (inc. gas comp)
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18)), defaulter_6, defaulter_6, { from: defaulter_6, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), defaulter_6, defaulter_6, { from: defaulter_6, value: dec(100, 'ether') })
 
       // Confirm all depositors have 0 MON
       for (const depositor of [A, B, C, D, E, F]) {
@@ -1155,7 +1155,7 @@ contract('StabilityPool - MON Rewards', async accounts => {
     //COPY PASTE FROM THE LAST TO TEST ONE THING, IM IN A RUSH< PLEASE DONT JUDGE
     it("withdrawFromSP(): Several deposits of 100 DCHF span one scale factor change. Depositors withdraw correct MON gains and set distributrion at zero", async () => {
       // Whale opens Trove with 100 ETH
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(100, 'ether') })
 
       const fiveDefaulters = [defaulter_1, defaulter_2, defaulter_3, defaulter_4, defaulter_5]
 
@@ -1168,11 +1168,11 @@ contract('StabilityPool - MON Rewards', async accounts => {
 
       for (const defaulter of fiveDefaulters) {
         // Defaulters 1-5 each withdraw to 9999.9 debt (including gas comp)
-        await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount('9999900000000000000000'), defaulter, defaulter, { from: defaulter, value: dec(100, 'ether') })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount('9999900000000000000000'), defaulter, defaulter, { from: defaulter, value: dec(100, 'ether') })
       }
 
       // Defaulter 6 withdraws to 10k debt (inc. gas comp)
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18)), defaulter_6, defaulter_6, { from: defaulter_6, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), defaulter_6, defaulter_6, { from: defaulter_6, value: dec(100, 'ether') })
 
       // Confirm all depositors have 0 MON
       for (const depositor of [A, B, C, D, E, F]) {
@@ -1316,7 +1316,7 @@ contract('StabilityPool - MON Rewards', async accounts => {
 
     it("withdrawFromSP(): Play with settings", async () => {
       // Whale opens Trove with 100 ETH
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), whale, whale, { from: whale, value: dec(100, 'ether') })
 
       const fiveDefaulters = [defaulter_1, defaulter_2, defaulter_3, defaulter_4, defaulter_5]
 
@@ -1329,11 +1329,11 @@ contract('StabilityPool - MON Rewards', async accounts => {
 
       for (const defaulter of fiveDefaulters) {
         // Defaulters 1-5 each withdraw to 9999.9 debt (including gas comp)
-        await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount('9999900000000000000000'), defaulter, defaulter, { from: defaulter, value: dec(100, 'ether') })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount('9999900000000000000000'), defaulter, defaulter, { from: defaulter, value: dec(100, 'ether') })
       }
 
       // Defaulter 6 withdraws to 10k debt (inc. gas comp)
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18)), defaulter_6, defaulter_6, { from: defaulter_6, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18)), defaulter_6, defaulter_6, { from: defaulter_6, value: dec(100, 'ether') })
 
       // Confirm all depositors have 0 MON
       for (const depositor of [A, B, C, D, E, F]) {

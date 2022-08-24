@@ -97,15 +97,15 @@ contract('MONStaking revenue share tests', async accounts => {
   })
 
   it("ETH fee per MON staked increases when a redemption fee is triggered and totalStakes > 0", async () => {
-    await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 
@@ -147,17 +147,17 @@ contract('MONStaking revenue share tests', async accounts => {
   })
 
   it("ETH fee per MON staked doesn't change when a redemption fee is triggered and totalStakes == 0", async () => {
-    await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
     // FF time one year so owner can transfer MON
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
@@ -189,17 +189,17 @@ contract('MONStaking revenue share tests', async accounts => {
   })
 
   it("DCHF fee per MON staked increases when a redemption fee is triggered and totalStakes > 0", async () => {
-    await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
     // FF time one year so owner can transfer MON
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
@@ -248,17 +248,17 @@ contract('MONStaking revenue share tests', async accounts => {
   })
 
   it("DCHF fee per MON staked doesn't change when a redemption fee is triggered and totalStakes == 0", async () => {
-    await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
     // FF time one year so owner can transfer MON
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
@@ -296,17 +296,17 @@ contract('MONStaking revenue share tests', async accounts => {
   })
 
   it("MON Staking: A single staker earns all ETH and MON fees that occur", async () => {
-    await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
     // FF time one year so owner can transfer MON
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
@@ -393,17 +393,17 @@ contract('MONStaking revenue share tests', async accounts => {
   })
 
   it("stake(): Top-up sends out all accumulated ETH and DCHF gains to the staker", async () => {
-    await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
     // FF time one year so owner can transfer MON
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
@@ -489,17 +489,17 @@ contract('MONStaking revenue share tests', async accounts => {
   })
 
   it("getPendingETHGain(): Returns the staker's correct pending ETH gain", async () => {
-    await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
     // FF time one year so owner can transfer MON
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
@@ -550,17 +550,17 @@ contract('MONStaking revenue share tests', async accounts => {
   })
 
   it("getPendingDCHFGain(): Returns the staker's correct pending DCHF gain", async () => {
-    await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
     // FF time one year so owner can transfer MON
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
@@ -629,23 +629,23 @@ contract('MONStaking revenue share tests', async accounts => {
 
   // - multi depositors, several rewards
   it("MON Staking: Multiple stakers earn the correct share of all ETH and MON fees, based on their stake size", async () => {
-    await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: G } })
+    await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: G } })
 
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: G } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: F } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: G } })
 
     // FF time one year so owner can transfer MON
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
@@ -875,17 +875,17 @@ contract('MONStaking revenue share tests', async accounts => {
   })
 
   it("unstake(): reverts if caller has ETH gains and can't receive ETH", async () => {
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-    await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+    await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-    await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+    await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_YEAR, web3.currentProvider)
 

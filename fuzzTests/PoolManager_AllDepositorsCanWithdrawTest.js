@@ -73,9 +73,9 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
     const userBalance = (await DCHFToken.balanceOf(randomDepositor))
     const maxUSDVDeposit = userBalance.div(toBN(dec(1, 18)))
 
-    const randomMONmount = th.randAmountInWei(1, maxUSDVDeposit)
+    const randomDCHFAmount = th.randAmountInWei(1, maxUSDVDeposit)
 
-    const depositTx = await stabilityPool.provideToSP(randomMONmount, ZERO_ADDRESS, { from: randomDepositor })
+    const depositTx = await stabilityPool.provideToSP(randomDCHFAmount, ZERO_ADDRESS, { from: randomDepositor })
 
     assert.isTrue(depositTx.receipt.status)
 
@@ -84,7 +84,7 @@ contract("PoolManager - random liquidations/deposits, then check all depositors 
       currentDepositors.push(randomDepositor)
     }
 
-    console.log(`SP deposit. addr: ${th.squeezeAddr(randomDepositor)} amount: ${randomMONmount} tx success: ${depositTx.receipt.status} `)
+    console.log(`SP deposit. addr: ${th.squeezeAddr(randomDepositor)} amount: ${randomDCHFAmount} tx success: ${depositTx.receipt.status} `)
   }
 
   const randomOperation = async (depositorAccounts,

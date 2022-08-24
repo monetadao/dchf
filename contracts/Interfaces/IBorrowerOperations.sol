@@ -47,7 +47,7 @@ interface IBorrowerOperations {
 		address _asset,
 		uint256 _tokenAmount,
 		uint256 _maxFee,
-		uint256 _MONmount,
+		uint256 _DCHFamount,
 		address _upperHint,
 		address _lowerHint
 	) external payable;

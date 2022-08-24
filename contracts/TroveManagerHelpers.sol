@@ -77,6 +77,15 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 	// Internal Function and Modifier onlyBorrowerOperations
 	// @dev This workaround was needed in order to reduce bytecode size
 
+	function _onlyBOorTM() private view {
+		require(msg.sender == borrowerOperationsAddress || msg.sender == troveManagerAddress, "WA");
+	}
+
+	modifier onlyBOorTM() {
+		_onlyBOorTM();
+		_;
+	}
+	
 	function _onlyBorrowerOperations() private view {
 		require(msg.sender == borrowerOperationsAddress, "WA");
 	}
@@ -332,7 +341,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 	function removeStake(address _asset, address _borrower)
 		external
 		override
-		onlyBorrowerOperations
+		onlyBOorTM
 	{
 		return _removeStake(_asset, _borrower);
 	}

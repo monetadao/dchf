@@ -16,7 +16,7 @@ contract BorrowerOperationsScript is CheckContract {
 		address _asset,
 		uint256 _assetAmountSent,
 		uint256 _maxFee,
-		uint256 _MONmount,
+		uint256 _DCHFamount,
 		address _upperHint,
 		address _lowerHint
 	) external payable {
@@ -24,7 +24,7 @@ contract BorrowerOperationsScript is CheckContract {
 			_asset,
 			_assetAmountSent,
 			_maxFee,
-			_MONmount,
+			_DCHFamount,
 			_upperHint,
 			_lowerHint
 		);

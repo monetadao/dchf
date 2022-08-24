@@ -68,8 +68,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt).add(C_totalDebt)
       const totalLiquidatedDebt_Asset = A_totalDebt_Asset.add(B_totalDebt_Asset).add(C_totalDebt_Asset)
 
-      await openTrove({ ICR: toBN(dec(340, 16)), extraMONmount: totalLiquidatedDebt, extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, ICR: toBN(dec(340, 16)), extraMONmount: totalLiquidatedDebt_Asset, extraParams: { from: whale } })
+      await openTrove({ ICR: toBN(dec(340, 16)), extraDCHFAmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, ICR: toBN(dec(340, 16)), extraDCHFAmount: totalLiquidatedDebt_Asset, extraParams: { from: whale } })
       await stabilityPool.provideToSP(totalLiquidatedDebt, { from: whale })
       await stabilityPoolERC20.provideToSP(totalLiquidatedDebt_Asset, { from: whale })
 
@@ -226,8 +226,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt).add(C_totalDebt)
       const totalLiquidatedDebt_Asset = A_totalDebt_Asset.add(B_totalDebt_Asset).add(C_totalDebt_Asset)
 
-      await openTrove({ ICR: toBN(dec(310, 16)), extraMONmount: totalLiquidatedDebt, extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, ICR: toBN(dec(310, 16)), extraMONmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ ICR: toBN(dec(310, 16)), extraDCHFAmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, ICR: toBN(dec(310, 16)), extraDCHFAmount: totalLiquidatedDebt, extraParams: { from: whale } })
       await stabilityPool.provideToSP(totalLiquidatedDebt, { from: whale })
       await stabilityPoolERC20.provideToSP(totalLiquidatedDebt_Asset, { from: whale })
 
@@ -298,8 +298,8 @@ contract('TroveManager - in Recovery Mode - back to normal mode in 1 tx', async 
       const totalLiquidatedDebt = A_totalDebt.add(B_totalDebt)
       const totalLiquidatedDebt_Asset = A_totalDebt_Asset.add(B_totalDebt_Asset)
 
-      await openTrove({ ICR: toBN(dec(300, 16)), extraMONmount: totalLiquidatedDebt, extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, ICR: toBN(dec(300, 16)), extraMONmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ ICR: toBN(dec(300, 16)), extraDCHFAmount: totalLiquidatedDebt, extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, ICR: toBN(dec(300, 16)), extraDCHFAmount: totalLiquidatedDebt, extraParams: { from: whale } })
       await stabilityPool.provideToSP(totalLiquidatedDebt, { from: whale })
       await stabilityPoolERC20.provideToSP(totalLiquidatedDebt_Asset, { from: whale })
 

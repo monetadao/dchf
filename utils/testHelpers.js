@@ -357,12 +357,12 @@ class TestHelper {
    * given the requested DCHF amomunt in openTrove, returns the total debt
    * So, it adds the gas compensation and the borrowing fee
    */
-  static async getOpenTroveTotalDebt(contracts, MONmount, asset) {
+  static async getOpenTroveTotalDebt(contracts, DCHFAmount, asset) {
     if (!asset)
       asset = this.ZERO_ADDRESS;
 
-    const fee = await contracts.troveManager.getBorrowingFee(asset, MONmount)
-    const compositeDebt = await this.getCompositeDebt(contracts, MONmount, asset)
+    const fee = await contracts.troveManager.getBorrowingFee(asset, DCHFAmount)
+    const compositeDebt = await this.getCompositeDebt(contracts, DCHFAmount, asset)
     return compositeDebt.add(fee)
   }
 
@@ -370,7 +370,7 @@ class TestHelper {
    * given the desired total debt, returns the DCHF amount that needs to be requested in openTrove
    * So, it subtracts the gas compensation and then the borrowing fee
    */
-  static async getOpenTroveMONmount(contracts, totalDebt, asset) {
+  static async getOpenTroveDCHFAmount(contracts, totalDebt, asset) {
     if (!asset)
       asset = this.ZERO_ADDRESS;
 
@@ -388,12 +388,12 @@ class TestHelper {
   }
 
   // Adds the borrowing fee
-  static async getAmountWithBorrowingFee(contracts, MONmount, asset) {
+  static async getAmountWithBorrowingFee(contracts, DCHFAmount, asset) {
     if (!asset)
       asset = this.ZERO_ADDRESS
 
-    const fee = await contracts.troveManager.getBorrowingFee(asset, MONmount)
-    return MONmount.add(fee)
+    const fee = await contracts.troveManager.getBorrowingFee(asset, DCHFAmount)
+    return DCHFAmount.add(fee)
   }
 
   // Adds the redemption fee
@@ -417,12 +417,12 @@ class TestHelper {
     for (let i = 0; i < redemptionTx.logs.length; i++) {
       if (redemptionTx.logs[i].event === "Redemption") {
 
-        const MONmount = redemptionTx.logs[i].args[1]
+        const DCHFAmount = redemptionTx.logs[i].args[1]
         const totalDCHFRedeemed = redemptionTx.logs[i].args[2]
         const totalAssetDrawn = redemptionTx.logs[i].args[3]
         const ETHFee = redemptionTx.logs[i].args[4]
 
-        return [MONmount, totalDCHFRedeemed, totalAssetDrawn, ETHFee]
+        return [DCHFAmount, totalDCHFRedeemed, totalAssetDrawn, ETHFee]
       }
     }
     throw ("The transaction logs do not contain a redemption event")
@@ -592,29 +592,29 @@ class TestHelper {
 
   // --- BorrowerOperations gas functions ---
 
-  static async openTrove_allAccounts(accounts, contracts, ETHAmount, MONmount) {
+  static async openTrove_allAccounts(accounts, contracts, ETHAmount, DCHFAmount) {
     const gasCostList = []
-    const totalDebt = await this.getOpenTroveTotalDebt(contracts, MONmount)
+    const totalDebt = await this.getOpenTroveTotalDebt(contracts, DCHFAmount)
 
     for (const account of accounts) {
       const { upperHint, lowerHint } = await this.getBorrowerOpsListHint(contracts, ETHAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, MONmount, upperHint, lowerHint, { from: account, value: ETHAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, DCHFAmount, upperHint, lowerHint, { from: account, value: ETHAmount })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
     return this.getGasMetrics(gasCostList)
   }
 
-  static async openTrove_allAccounts_randomETH(minETH, maxETH, accounts, contracts, MONmount) {
+  static async openTrove_allAccounts_randomETH(minETH, maxETH, accounts, contracts, DCHFAmount) {
     const gasCostList = []
-    const totalDebt = await this.getOpenTroveTotalDebt(contracts, MONmount)
+    const totalDebt = await this.getOpenTroveTotalDebt(contracts, DCHFAmount)
 
     for (const account of accounts) {
       const randCollAmount = this.randAmountInWei(minETH, maxETH)
       const { upperHint, lowerHint } = await this.getBorrowerOpsListHint(contracts, randCollAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, MONmount, upperHint, lowerHint, { from: account, value: randCollAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, DCHFAmount, upperHint, lowerHint, { from: account, value: randCollAmount })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
@@ -671,11 +671,11 @@ class TestHelper {
     const gasCostList = []
 
     for (const account of accounts) {
-      const randMONmount = this.randAmountInWei(minDCHF, maxDCHF)
-      const totalDebt = await this.getOpenTroveTotalDebt(contracts, randMONmount)
+      const randDCHFAmount = this.randAmountInWei(minDCHF, maxDCHF)
+      const totalDebt = await this.getOpenTroveTotalDebt(contracts, randDCHFAmount)
       const { upperHint, lowerHint } = await this.getBorrowerOpsListHint(contracts, ETHAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, randMONmount, upperHint, lowerHint, { from: account, value: ETHAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, randDCHFAmount, upperHint, lowerHint, { from: account, value: ETHAmount })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
@@ -693,17 +693,17 @@ class TestHelper {
     return this.getGasMetrics(gasCostList)
   }
 
-  static async openTrove_allAccounts_decreasingMONmounts(accounts, contracts, ETHAmount, maxMONmount) {
+  static async openTrove_allAccounts_decreasingDCHFAmounts(accounts, contracts, ETHAmount, maxDCHFAmount) {
     const gasCostList = []
 
     let i = 0
     for (const account of accounts) {
-      const MONmount = (maxMONmount - i).toString()
-      const MONmountWei = web3.utils.toWei(MONmount, 'ether')
-      const totalDebt = await this.getOpenTroveTotalDebt(contracts, MONmountWei)
+      const DCHFAmount = (maxDCHFAmount - i).toString()
+      const DCHFAmountWei = web3.utils.toWei(DCHFAmount, 'ether')
+      const totalDebt = await this.getOpenTroveTotalDebt(contracts, DCHFAmountWei)
       const { upperHint, lowerHint } = await this.getBorrowerOpsListHint(contracts, ETHAmount, totalDebt)
 
-      const tx = await contracts.borrowerOperations.openTrove(this._100pct, MONmountWei, upperHint, lowerHint, { from: account, value: ETHAmount })
+      const tx = await contracts.borrowerOperations.openTrove(this._100pct, DCHFAmountWei, upperHint, lowerHint, { from: account, value: ETHAmount })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
       i += 1
@@ -715,7 +715,7 @@ class TestHelper {
     asset,
     assetSent,
     maxFeePercentage,
-    extraMONmount,
+    extraDCHFAmount,
     upperHint,
     lowerHint,
     ICR,
@@ -723,8 +723,8 @@ class TestHelper {
   }) {
     if (!asset) asset = this.ZERO_ADDRESS
     if (!maxFeePercentage) maxFeePercentage = this._100pct
-    if (!extraMONmount) extraMONmount = this.toBN(0)
-    else if (typeof extraMONmount == 'string') extraMONmount = this.toBN(extraMONmount)
+    if (!extraDCHFAmount) extraDCHFAmount = this.toBN(0)
+    else if (typeof extraDCHFAmount == 'string') extraDCHFAmount = this.toBN(extraDCHFAmount)
     if (!upperHint) upperHint = this.ZERO_ADDRESS
     if (!lowerHint) lowerHint = this.ZERO_ADDRESS
 
@@ -733,7 +733,7 @@ class TestHelper {
     const MIN_DEBT = (
       await this.getNetBorrowingAmount(contracts, await contracts.vestaParameters.MIN_NET_DEBT(asset), asset)
     ).add(this.toBN(1)) // add 1 to avoid rounding issues
-    const MONmount = MIN_DEBT.add(extraMONmount)
+    const DCHFAmount = MIN_DEBT.add(extraDCHFAmount)
 
     if (!ICR &&
       ((asset == this.ZERO_ADDRESS && !extraParams.value)
@@ -743,7 +743,7 @@ class TestHelper {
     else if (typeof ICR == 'string')
       ICR = this.toBN(ICR)
 
-    const totalDebt = await this.getOpenTroveTotalDebt(contracts, MONmount, asset)
+    const totalDebt = await this.getOpenTroveTotalDebt(contracts, DCHFAmount, asset)
     const netDebt = await this.getActualDebtFromComposite(totalDebt, contracts, asset)
 
     if (extraParams.value) {
@@ -759,10 +759,10 @@ class TestHelper {
       }
     }
 
-    const tx = await contracts.borrowerOperations.openTrove(asset, assetSent, maxFeePercentage, MONmount, upperHint, lowerHint, extraParams)
+    const tx = await contracts.borrowerOperations.openTrove(asset, assetSent, maxFeePercentage, DCHFAmount, upperHint, lowerHint, extraParams)
 
     return {
-      MONmount,
+      DCHFAmount,
       netDebt,
       totalDebt,
       ICR,
@@ -774,7 +774,7 @@ class TestHelper {
   static async withdrawDCHF(contracts, {
     asset,
     maxFeePercentage,
-    MONmount,
+    DCHFAmount,
     ICR,
     upperHint,
     lowerHint,
@@ -785,7 +785,7 @@ class TestHelper {
     if (!upperHint) upperHint = this.ZERO_ADDRESS
     if (!lowerHint) lowerHint = this.ZERO_ADDRESS
 
-    assert(!(MONmount && ICR) && (MONmount || ICR), "Specify either DCHF amount or target ICR, but not both")
+    assert(!(DCHFAmount && ICR) && (DCHFAmount || ICR), "Specify either DCHF amount or target ICR, but not both")
 
     let increasedTotalDebt
     if (ICR) {
@@ -795,27 +795,27 @@ class TestHelper {
       const targetDebt = coll.mul(price).div(ICR)
       assert(targetDebt > debt, "ICR is already greater than or equal to target")
       increasedTotalDebt = targetDebt.sub(debt)
-      MONmount = await this.getNetBorrowingAmount(contracts, increasedTotalDebt)
+      DCHFAmount = await this.getNetBorrowingAmount(contracts, increasedTotalDebt)
     } else {
-      increasedTotalDebt = await this.getAmountWithBorrowingFee(contracts, MONmount)
+      increasedTotalDebt = await this.getAmountWithBorrowingFee(contracts, DCHFAmount)
     }
 
-    await contracts.borrowerOperations.withdrawDCHF(asset, maxFeePercentage, MONmount, upperHint, lowerHint, extraParams)
+    await contracts.borrowerOperations.withdrawDCHF(asset, maxFeePercentage, DCHFAmount, upperHint, lowerHint, extraParams)
 
     return {
-      MONmount,
+      DCHFAmount,
       increasedTotalDebt
     }
   }
 
-  static async adjustTrove_allAccounts(accounts, contracts, ETHAmount, MONmount) {
+  static async adjustTrove_allAccounts(accounts, contracts, ETHAmount, DCHFAmount) {
     const gasCostList = []
 
     for (const account of accounts) {
       let tx;
 
       let ETHChangeBN = this.toBN(ETHAmount)
-      let DCHFChangeBN = this.toBN(MONmount)
+      let DCHFChangeBN = this.toBN(DCHFAmount)
 
       const { newColl, newDebt } = await this.getCollAndDebtFromAdjustment(contracts, account, ETHChangeBN, DCHFChangeBN)
       const { upperHint, lowerHint } = await this.getBorrowerOpsListHint(contracts, newColl, newDebt)
@@ -953,12 +953,12 @@ class TestHelper {
     const gasCostList = []
 
     for (const account of accounts) {
-      const randMONmount = this.randAmountInWei(min, max)
+      const randDCHFAmount = this.randAmountInWei(min, max)
 
-      const { newColl, newDebt } = await this.getCollAndDebtFromWithdrawDCHF(contracts, account, randMONmount)
+      const { newColl, newDebt } = await this.getCollAndDebtFromWithdrawDCHF(contracts, account, randDCHFAmount)
       const { upperHint, lowerHint } = await this.getBorrowerOpsListHint(contracts, newColl, newDebt)
 
-      const tx = await contracts.borrowerOperations.withdrawDCHF(this._100pct, randMONmount, upperHint, lowerHint, { from: account })
+      const tx = await contracts.borrowerOperations.withdrawDCHF(this._100pct, randDCHFAmount, upperHint, lowerHint, { from: account })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
@@ -983,12 +983,12 @@ class TestHelper {
     const gasCostList = []
 
     for (const account of accounts) {
-      const randMONmount = this.randAmountInWei(min, max)
+      const randDCHFAmount = this.randAmountInWei(min, max)
 
-      const { newColl, newDebt } = await this.getCollAndDebtFromRepayDCHF(contracts, account, randMONmount)
+      const { newColl, newDebt } = await this.getCollAndDebtFromRepayDCHF(contracts, account, randDCHFAmount)
       const { upperHint, lowerHint } = await this.getBorrowerOpsListHint(contracts, newColl, newDebt)
 
-      const tx = await contracts.borrowerOperations.repayDCHF(randMONmount, upperHint, lowerHint, { from: account })
+      const tx = await contracts.borrowerOperations.repayDCHF(randDCHFAmount, upperHint, lowerHint, { from: account })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
@@ -1009,22 +1009,22 @@ class TestHelper {
 
   // --- Redemption functions ---
 
-  static async redeemCollateral(redeemer, contracts, MONmount, asset, maxFee = this._100pct) {
+  static async redeemCollateral(redeemer, contracts, DCHFAmount, asset, maxFee = this._100pct) {
     if (!asset)
       asset = this.ZERO_ADDRESS
 
     const price = await contracts.priceFeedTestnet.getPrice()
-    const tx = await this.performRedemptionTx(redeemer, price, contracts, MONmount, asset, maxFee)
+    const tx = await this.performRedemptionTx(redeemer, price, contracts, DCHFAmount, asset, maxFee)
     const gas = await this.gasUsed(tx)
     return gas
   }
 
-  static async redeemCollateralAndGetTxObject(redeemer, contracts, MONmount, asset, maxFee = this._100pct) {
+  static async redeemCollateralAndGetTxObject(redeemer, contracts, DCHFAmount, asset, maxFee = this._100pct) {
     if (!asset)
       asset = this.ZERO_ADDRESS
 
     const price = await contracts.priceFeedTestnet.getPrice()
-    const tx = await this.performRedemptionTx(redeemer, price, contracts, MONmount, asset, maxFee)
+    const tx = await this.performRedemptionTx(redeemer, price, contracts, DCHFAmount, asset, maxFee)
     return tx
   }
 
@@ -1036,20 +1036,20 @@ class TestHelper {
     const price = await contracts.priceFeedTestnet.getPrice()
 
     for (const redeemer of accounts) {
-      const randMONmount = this.randAmountInWei(min, max)
+      const randDCHFAmount = this.randAmountInWei(min, max)
 
-      await this.performRedemptionTx(redeemer, price, contracts, randMONmount, asset)
+      await this.performRedemptionTx(redeemer, price, contracts, randDCHFAmount, asset)
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
     return this.getGasMetrics(gasCostList)
   }
 
-  static async performRedemptionTx(redeemer, price, contracts, MONmount, asset, maxFee = 0) {
+  static async performRedemptionTx(redeemer, price, contracts, DCHFAmount, asset, maxFee = 0) {
     if (!asset)
       asset = this.ZERO_ADDRESS;
 
-    const redemptionhint = await contracts.hintHelpers.getRedemptionHints(asset, MONmount, price, 0)
+    const redemptionhint = await contracts.hintHelpers.getRedemptionHints(asset, DCHFAmount, price, 0)
 
     const firstRedemptionHint = redemptionhint[0]
     const partialRedemptionNewICR = redemptionhint[1]
@@ -1066,7 +1066,7 @@ class TestHelper {
 
     const tx = await contracts.troveManager.redeemCollateral(
       asset,
-      MONmount,
+      DCHFAmount,
       firstRedemptionHint,
       exactPartialRedemptionHint[0],
       exactPartialRedemptionHint[1],
@@ -1107,8 +1107,8 @@ class TestHelper {
   static async provideToSP_allAccounts_randomAmount(min, max, accounts, stabilityPool) {
     const gasCostList = []
     for (const account of accounts) {
-      const randomMONmount = this.randAmountInWei(min, max)
-      const tx = await stabilityPool.provideToSP(randomMONmount, this.ZERO_ADDRESS, { from: account })
+      const randomDCHFAmount = this.randAmountInWei(min, max)
+      const tx = await stabilityPool.provideToSP(randomDCHFAmount, this.ZERO_ADDRESS, { from: account })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }
@@ -1128,8 +1128,8 @@ class TestHelper {
   static async withdrawFromSP_allAccounts_randomAmount(min, max, accounts, stabilityPool) {
     const gasCostList = []
     for (const account of accounts) {
-      const randomMONmount = this.randAmountInWei(min, max)
-      const tx = await stabilityPool.withdrawFromSP(randomMONmount, { from: account })
+      const randomDCHFAmount = this.randAmountInWei(min, max)
+      const tx = await stabilityPool.withdrawFromSP(randomDCHFAmount, { from: account })
       const gas = this.gasUsed(tx)
       gasCostList.push(gas)
     }

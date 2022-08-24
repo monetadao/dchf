@@ -64,10 +64,10 @@ contract('Pool Manager: Sum-Product rounding errors', async accounts => {
     const defaulters = accounts.slice(101, 301)
 
     for (let account of depositors) {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
       await stabilityPool.provideToSP(dec(100, 18), { from: account })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: account } })
       await stabilityPoolERC20.provideToSP(dec(100, 18), { from: account })
     }
 

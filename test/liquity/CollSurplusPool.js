@@ -25,7 +25,7 @@ contract('CollSurplusPool', async accounts => {
 
   let contracts
 
-  const getOpenTroveMONmount = async (totalDebt, asset) => th.getOpenTroveMONmount(contracts, totalDebt, asset)
+  const getOpenTroveDCHFAmount = async (totalDebt, asset) => th.getOpenTroveDCHFAmount(contracts, totalDebt, asset)
   const openTrove = async (params) => th.openTrove(contracts, params)
 
   beforeEach(async () => {
@@ -54,7 +54,7 @@ contract('CollSurplusPool', async accounts => {
     await priceFeed.setPrice(price)
 
     const { collateral: B_coll, netDebt: B_netDebt } = await openTrove({ ICR: toBN(dec(200, 16)), extraParams: { from: B } })
-    await openTrove({ extraMONmount: B_netDebt, extraParams: { from: A, value: dec(3000, 'ether') } })
+    await openTrove({ extraDCHFAmount: B_netDebt, extraParams: { from: A, value: dec(3000, 'ether') } })
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
@@ -82,11 +82,11 @@ contract('CollSurplusPool', async accounts => {
 
     // open trove from NonPayable proxy contract
     const B_coll = toBN(dec(60, 18))
-    const B_MONmount = toBN(dec(3000, 18))
-    const B_netDebt = await th.getAmountWithBorrowingFee(contracts, B_MONmount)
-    const openTroveData = th.getTransactionData('openTrove(address,uint256,uint256,uint256,address,address)', [ZERO_ADDRESS, 0, '0xde0b6b3a7640000', web3.utils.toHex(B_MONmount), B, B])
+    const B_DCHFAmount = toBN(dec(3000, 18))
+    const B_netDebt = await th.getAmountWithBorrowingFee(contracts, B_DCHFAmount)
+    const openTroveData = th.getTransactionData('openTrove(address,uint256,uint256,uint256,address,address)', [ZERO_ADDRESS, 0, '0xde0b6b3a7640000', web3.utils.toHex(B_DCHFAmount), B, B])
     await nonPayable.forward(borrowerOperations.address, openTroveData, { value: B_coll })
-    await openTrove({ extraMONmount: B_netDebt, extraParams: { from: A, value: dec(3000, 'ether') } })
+    await openTrove({ extraDCHFAmount: B_netDebt, extraParams: { from: A, value: dec(3000, 'ether') } })
 
     // skip bootstrapping phase
     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)

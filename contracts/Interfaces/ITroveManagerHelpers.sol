@@ -137,8 +137,8 @@ interface ITroveManagerHelpers is IDfrancBase {
 	);
 	event Redemption(
 		address indexed _asset,
-		uint256 _attemptedMONmount,
-		uint256 _actualMONmount,
+		uint256 _attemptedDCHFAmount,
+		uint256 _actualDCHFAmount,
 		uint256 _AssetSent,
 		uint256 _AssetFee
 	);

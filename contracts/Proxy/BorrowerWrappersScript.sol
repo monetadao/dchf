@@ -26,7 +26,7 @@ contract BorrowerWrappersScript is
 		uint256 _maxFee;
 		address _upperHint;
 		address _lowerHint;
-		uint256 netMONmount;
+		uint256 netDCHFAmount;
 	}
 
 	string public constant NAME = "BorrowerWrappersScript";
@@ -79,7 +79,7 @@ contract BorrowerWrappersScript is
 	function claimCollateralAndOpenTrove(
 		address _asset,
 		uint256 _maxFee,
-		uint256 _MONmount,
+		uint256 _DCHFamount,
 		address _upperHint,
 		address _lowerHint
 	) external payable {
@@ -100,7 +100,7 @@ contract BorrowerWrappersScript is
 			_asset,
 			totalCollateral,
 			_maxFee,
-			_MONmount,
+			_DCHFamount,
 			_upperHint,
 			_lowerHint
 		);
@@ -126,7 +126,7 @@ contract BorrowerWrappersScript is
 		// Add claimed ETH to trove, get more DCHF and stake it into the Stability Pool
 		if (claimedCollateral > 0) {
 			_requireUserHasTrove(vars._asset, address(this));
-			vars.netMONmount = _getNetMONmount(vars._asset, claimedCollateral);
+			vars.netDCHFAmount = _getNetDCHFAmount(vars._asset, claimedCollateral);
 			borrowerOperations.adjustTrove{
 				value: vars._asset == address(0) ? claimedCollateral : 0
 			}(
@@ -134,14 +134,14 @@ contract BorrowerWrappersScript is
 				claimedCollateral,
 				vars._maxFee,
 				0,
-				vars.netMONmount,
+				vars.netDCHFAmount,
 				true,
 				vars._upperHint,
 				vars._lowerHint
 			);
 			// Provide withdrawn DCHF to Stability Pool
-			if (vars.netMONmount > 0) {
-				stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(vars.netMONmount);
+			if (vars.netDCHFAmount > 0) {
+				stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(vars.netDCHFAmount);
 			}
 		}
 
@@ -173,7 +173,7 @@ contract BorrowerWrappersScript is
 		// Top up trove and get more DCHF, keeping ICR constant
 		if (gainedCollateral > 0) {
 			_requireUserHasTrove(vars._asset, address(this));
-			vars.netMONmount = _getNetMONmount(vars._asset, gainedCollateral);
+			vars.netDCHFAmount = _getNetDCHFAmount(vars._asset, gainedCollateral);
 			borrowerOperations.adjustTrove{
 				value: vars._asset == address(0) ? gainedCollateral : 0
 			}(
@@ -181,14 +181,14 @@ contract BorrowerWrappersScript is
 				gainedCollateral,
 				vars._maxFee,
 				0,
-				vars.netMONmount,
+				vars.netDCHFAmount,
 				true,
 				vars._upperHint,
 				vars._lowerHint
 			);
 		}
 
-		uint256 totalDCHF = gainedDCHF.add(vars.netMONmount);
+		uint256 totalDCHF = gainedDCHF.add(vars.netDCHFAmount);
 		if (totalDCHF > 0) {
 			stabilityPoolManager.getAssetStabilityPool(_asset).provideToSP(totalDCHF);
 
@@ -201,13 +201,13 @@ contract BorrowerWrappersScript is
 		}
 	}
 
-	function _getNetMONmount(address _asset, uint256 _collateral) internal returns (uint256) {
+	function _getNetDCHFAmount(address _asset, uint256 _collateral) internal returns (uint256) {
 		uint256 price = priceFeed.fetchPrice(_asset);
 		uint256 ICR = troveManagerHelpers.getCurrentICR(_asset, address(this), price);
 
-		uint256 MONmount = _collateral.mul(price).div(ICR);
+		uint256 DCHFAmount = _collateral.mul(price).div(ICR);
 		uint256 borrowingRate = troveManagerHelpers.getBorrowingRateWithDecay(_asset);
-		uint256 netDebt = MONmount.mul(DfrancMath.DECIMAL_PRECISION).div(
+		uint256 netDebt = DCHFAmount.mul(DfrancMath.DECIMAL_PRECISION).div(
 			DfrancMath.DECIMAL_PRECISION.add(borrowingRate)
 		);
 

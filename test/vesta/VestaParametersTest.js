@@ -513,11 +513,11 @@ contract('DfrancParameters', async accounts => {
       assert.equal(applyDecimalPrecision(BORROWING_FEE_FLOOR_SAFETY_MIN).toString(), (await vestaParameters.BORROWING_FEE_FLOOR(ZERO_ADDRESS)));
       assert.equal(applyDecimalPrecision(BORROWING_FEE_FLOOR_SAFETY_MAX).toString(), (await vestaParameters.BORROWING_FEE_FLOOR(erc20.address)));
 
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
       const USDVRequest = toBN(dec(10000, 18))
       const txC = await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, USDVRequest, ZERO_ADDRESS, ZERO_ADDRESS, { value: dec(100, 'ether'), from: C })

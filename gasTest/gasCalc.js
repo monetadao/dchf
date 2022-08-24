@@ -176,7 +176,7 @@ contract('Gas cost tests', async accounts => {
   //   const message = 'openTrove(), 10 accounts, each account adds 10 ether and issues less DCHF than the previous one'
   //   const amountETH = dec(10, 'ether')
   //   const amountUSDV = 200
-  //   const gasResults = await th.openTrove_allAccounts_decreasingMONmounts(_10_Accounts, contracts, amountETH, amountUSDV)
+  //   const gasResults = await th.openTrove_allAccounts_decreasingDCHFAmounts(_10_Accounts, contracts, amountETH, amountUSDV)
   //   th.logGasMetrics(gasResults, message)
   //   th.logAllGasCosts(gasResults)
 
@@ -289,7 +289,7 @@ contract('Gas cost tests', async accounts => {
   it("", async () => {
     const message = 'closeTrove(), 10 accounts, 1 account closes its trove'
 
-    await th.openTrove_allAccounts_decreasingMONmounts(_10_Accounts, contracts, dec(10, 'ether'), 200)
+    await th.openTrove_allAccounts_decreasingDCHFAmounts(_10_Accounts, contracts, dec(10, 'ether'), 200)
 
     for (account of _10_Accounts) {
       await DCHFToken.unprotectedMint(account, dec(1000, 18))
@@ -305,7 +305,7 @@ contract('Gas cost tests', async accounts => {
   it("", async () => {
     const message = 'closeTrove(), 20 accounts, each account adds 10 ether and issues less DCHF than the previous one. First 10 accounts close their trove. '
 
-    await th.openTrove_allAccounts_decreasingMONmounts(_20_Accounts, contracts, dec(10, 'ether'), 200)
+    await th.openTrove_allAccounts_decreasingDCHFAmounts(_20_Accounts, contracts, dec(10, 'ether'), 200)
 
     for (account of _20_Accounts) {
       await DCHFToken.unprotectedMint(account, dec(1000, 18))
@@ -544,8 +544,8 @@ contract('Gas cost tests', async accounts => {
     const message = 'single getCurrentICR() call'
 
     await th.openTrove_allAccounts([accounts[1]], contracts, dec(10, 'ether'), 0)
-    const randMONmount = th.randAmountInWei(1, 180)
-    await borrowerOperations.withdrawDCHF(_100pct, randMONmount, accounts[1], ZERO_ADDRESS, { from: accounts[1] })
+    const randDCHFAmount = th.randAmountInWei(1, 180)
+    await borrowerOperations.withdrawDCHF(_100pct, randDCHFAmount, accounts[1], ZERO_ADDRESS, { from: accounts[1] })
 
     const price = await priceFeed.getPrice()
     const tx = await functionCaller.troveManager_getCurrentICR(accounts[1], price)
@@ -593,8 +593,8 @@ contract('Gas cost tests', async accounts => {
   it("", async () => {
     const message = 'single getCurrentICR() call, WITH pending rewards'
 
-    const randMONmount = th.randAmountInWei(1, 180)
-    await borrowerOperations.openTrove(_100pct, randMONmount, accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(10, 'ether') })
+    const randDCHFAmount = th.randAmountInWei(1, 180)
+    await borrowerOperations.openTrove(_100pct, randDCHFAmount, accounts[1], ZERO_ADDRESS, { from: accounts[1], value: dec(10, 'ether') })
 
     // acct 999 adds coll, withdraws DCHF, sits at 111% ICR
     await borrowerOperations.openTrove(_100pct, dec(130, 18), accounts[999], ZERO_ADDRESS, { from: accounts[999], value: dec(1, 'ether') })

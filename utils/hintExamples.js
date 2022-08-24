@@ -24,15 +24,15 @@ async function main() {
   const price = toBN(toWei('2500'))
   await priceFeedTestnet.setPrice(toBN(toWei('2500')))
 
-  const MONmount = toBN(toWei('2500')) // borrower wants to withdraw 2500 DCHF
+  const DCHFAmount = toBN(toWei('2500')) // borrower wants to withdraw 2500 DCHF
   const ETHColl = toBN(toWei('5')) // borrower wants to lock 5 ETH collateral
 
   // Call deployed TroveManager contract to read the liquidation reserve and latest borrowing fee
   const liquidationReserve = await troveManager.DCHF_GAS_COMPENSATION()
-  const expectedFee = await troveManager.getBorrowingFeeWithDecay(MONmount)
+  const expectedFee = await troveManager.getBorrowingFeeWithDecay(DCHFAmount)
 
   // Total debt of the new trove = DCHF amount drawn, plus fee, plus the liquidation reserve
-  const expectedDebt = MONmount.add(expectedFee).add(liquidationReserve)
+  const expectedDebt = DCHFAmount.add(expectedFee).add(liquidationReserve)
 
   // Get the nominal NICR of the new trove
   const _1e20 = toBN(toWei('100'))
@@ -49,7 +49,7 @@ async function main() {
 
   // Finally, call openTrove with the exact upperHint and lowerHint
   const maxFee = '5'.concat('0'.repeat(16)) // Slippage protection: 5%
-  await borrowerOperations.openTrove(maxFee, MONmount, upperHint, lowerHint, { value: ETHColl })
+  await borrowerOperations.openTrove(maxFee, DCHFAmount, upperHint, lowerHint, { value: ETHColl })
 
   // --- adjust trove --- 
 
@@ -80,9 +80,9 @@ async function main() {
   // --- RedeemCollateral ---
 
   // Get the redemptions hints from the deployed HintHelpers contract
-  const redemptionhint = await hintHelpers.getRedemptionHints(MONmount, price, 50)
+  const redemptionhint = await hintHelpers.getRedemptionHints(DCHFAmount, price, 50)
 
-  const { 0: firstRedemptionHint, 1: partialRedemptionNewICR, 2: truncatedMONmount } = redemptionhint
+  const { 0: firstRedemptionHint, 1: partialRedemptionNewICR, 2: truncatedDCHFAmount } = redemptionhint
 
   // Get the approximate partial redemption hint
   const {
@@ -100,7 +100,7 @@ async function main() {
   /* Finally, perform the on-chain redemption, passing the truncated DCHF amount, the correct hints, and the expected
   * ICR of the final partially redeemed trove in the sequence. 
   */
-  await troveManager.redeemCollateral(truncatedMONmount,
+  await troveManager.redeemCollateral(truncatedDCHFAmount,
     firstRedemptionHint,
     exactPartialRedemptionHint[0],
     exactPartialRedemptionHint[1],

@@ -132,8 +132,8 @@ interface ITroveManager is IDfrancBase {
 	);
 	event Redemption(
 		address indexed _asset,
-		uint256 _attemptedMONmount,
-		uint256 _actualMONmount,
+		uint256 _attemptedDCHFAmount,
+		uint256 _actualDCHFAmount,
 		uint256 _AssetSent,
 		uint256 _AssetFee
 	);
@@ -216,7 +216,7 @@ interface ITroveManager is IDfrancBase {
 
 	function redeemCollateral(
 		address _asset,
-		uint256 _MONmount,
+		uint256 _DCHFamount,
 		address _firstRedemptionHint,
 		address _upperPartialRedemptionHint,
 		address _lowerPartialRedemptionHint,

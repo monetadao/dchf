@@ -45,7 +45,7 @@ contract('BorrowerOperations', async accounts => {
 
   let contracts
 
-  const getOpenTroveMONmount = async (totalDebt, asset) => th.getOpenTroveMONmount(contracts, totalDebt, asset)
+  const getOpenTroveDCHFAmount = async (totalDebt, asset) => th.getOpenTroveDCHFAmount(contracts, totalDebt, asset)
   const getNetBorrowingAmount = async (debtWithFee, asset) => th.getNetBorrowingAmount(contracts, debtWithFee, asset)
   const getActualDebtFromComposite = async (compositeDebt) => th.getActualDebtFromComposite(compositeDebt, contracts)
   const openTrove = async (params) => th.openTrove(contracts, params)
@@ -287,16 +287,16 @@ contract('BorrowerOperations', async accounts => {
     it("addColl(), active Trove: applies pending rewards and updates user's L_ETH, L_DCHFDebt snapshots", async () => {
       // --- SETUP ---
       const { collateral: aliceCollBefore, totalDebt: aliceDebtBefore } =
-        await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+        await openTrove({ extraDCHFAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       const { collateral: bobCollBefore, totalDebt: bobDebtBefore } =
-        await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+        await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       const { collateral: aliceCollBeforeAsset, totalDebt: aliceDebtBeforeAsset } =
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       const { collateral: bobCollBeforeAsset, totalDebt: bobDebtBeforeAsset } =
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
       // --- TEST ---
 
       // price drops to 1ETH:100DCHF, reducing Carol's ICR below MCR
@@ -527,11 +527,11 @@ contract('BorrowerOperations', async accounts => {
 
     // reverts when calling address does not have active trove  
     it("withdrawColl(): reverts when calling address does not have active trove", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       // Bob successfully withdraws some coll
       const txBob = await borrowerOperations.withdrawColl(ZERO_ADDRESS, dec(100, 'finney'), bob, bob, { from: bob })
@@ -1049,15 +1049,15 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
-      await openTrove({ extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       const A_DCHFBal = await dchfToken.balanceOf(A)
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -1099,15 +1099,15 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("withdrawDCHF(): reverts if max fee > 100%", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await assertRevert(borrowerOperations.withdrawDCHF(ZERO_ADDRESS, dec(2, 18), dec(1, 18), A, A, { from: A }), "Max fee percentage must be between 0.5% and 100%")
       await assertRevert(borrowerOperations.withdrawDCHF(ZERO_ADDRESS, '1000000000000000001', dec(1, 18), A, A, { from: A }), "Max fee percentage must be between 0.5% and 100%")
@@ -1117,15 +1117,15 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("withdrawDCHF(): reverts if max fee < 0.5% in Normal mode", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await assertRevert(borrowerOperations.withdrawDCHF(ZERO_ADDRESS, 0, dec(1, 18), A, A, { from: A }), "Max fee percentage must be between 0.5% and 100%")
       await assertRevert(borrowerOperations.withdrawDCHF(ZERO_ADDRESS, 1, dec(1, 18), A, A, { from: A }), "Max fee percentage must be between 0.5% and 100%")
@@ -1137,17 +1137,17 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("withdrawDCHF(): reverts if fee exceeds max fee percentage", async () => {
-      await openTrove({ extraMONmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(70, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(80, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ extraMONmount: toBN(dec(180, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraDCHFAmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(70, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(80, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(180, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(70, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(80, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(180, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(70, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(80, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(180, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       const totalSupply = await dchfToken.totalSupply()
 
@@ -1207,17 +1207,17 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("withdrawDCHF(): succeeds when fee is less than max fee percentage", async () => {
-      await openTrove({ extraMONmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(70, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(80, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ extraMONmount: toBN(dec(180, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraDCHFAmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(70, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(80, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(180, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(70, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(80, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(180, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(60, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(70, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(80, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(180, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       const totalSupply = await dchfToken.totalSupply()
 
@@ -1284,17 +1284,17 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       // Check baseRate is zero
       const baseRate_1 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -1332,13 +1332,13 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -1394,14 +1394,14 @@ contract('BorrowerOperations', async accounts => {
 
     it("withdrawDCHF(): borrower can't grief the baseRate and stop it decaying by issuing debt at higher frequency than the decay granularity", async () => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -1447,16 +1447,16 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(MONStaking_DCHFBalance_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -1491,16 +1491,16 @@ contract('BorrowerOperations', async accounts => {
         await monStaking.stake(dec(1, 18), { from: multisig })
 
         await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-        await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-        await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-        await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-        await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+        await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+        await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+        await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+        await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
         await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
         const D_debtBefore = await getTroveEntireDebt(D, ZERO_ADDRESS)
         const D_debtBefore_Asset = await getTroveEntireDebt(D, erc20.address)
@@ -1550,16 +1550,16 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(F_DCHF_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -1597,16 +1597,16 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(MONStaking_DCHFBalance_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -1651,10 +1651,10 @@ contract('BorrowerOperations', async accounts => {
 
     it("withdrawDCHF(): Borrowing at zero base rate changes DCHF fees-per-unit-staked", async () => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check baseRate is zero
       const baseRate_1 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -1681,16 +1681,16 @@ contract('BorrowerOperations', async accounts => {
 
     it("withdrawDCHF(): Borrowing at zero base rate sends debt request to user", async () => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check baseRate is zero
       const baseRate_1 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -2026,11 +2026,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("repayDCHF(): reverts when calling address does not have active trove", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       // Bob successfully repays some DCHF
       const txBob = await borrowerOperations.repayDCHF(ZERO_ADDRESS, dec(10, 18), bob, bob, { from: bob })
       const txBob_Asset = await borrowerOperations.repayDCHF(erc20.address, dec(10, 18), bob, bob, { from: bob })
@@ -2054,11 +2054,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("repayDCHF(): reverts when attempted repayment is > the debt of the trove", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       const aliceDebt = await getTroveEntireDebt(alice)
       const aliceDebt_Asset = await getTroveEntireDebt(alice, erc20.address)
 
@@ -2086,11 +2086,11 @@ contract('BorrowerOperations', async accounts => {
 
     //withdrawDCHF: reduces DCHF debt in Trove
     it("repayDCHF(): reduces the Trove's DCHF debt by the correct amount", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       const aliceDebtBefore = await getTroveEntireDebt(alice)
       const aliceDebtBefore_Asset = await getTroveEntireDebt(alice, erc20.address)
       assert.isTrue(aliceDebtBefore.gt(toBN('0')))
@@ -2109,11 +2109,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("repayDCHF(): decreases DCHF debt in ActivePool by correct amount", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       const aliceDebtBefore = await getTroveEntireDebt(alice)
       const aliceDebtBefore_Asset = await getTroveEntireDebt(alice, erc20.address)
       assert.isTrue(aliceDebtBefore.gt(toBN('0')))
@@ -2136,11 +2136,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("repayDCHF(): decreases user DCHFToken balance by correct amount", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       const aliceDebtBefore = await getTroveEntireDebt(alice)
       const aliceDebtBefore_Asset = await getTroveEntireDebt(alice, erc20.address)
       assert.isTrue(aliceDebtBefore.gt(toBN('0')))
@@ -2162,11 +2162,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it('repayDCHF(): can repay debt in Recovery Mode', async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       const aliceDebtBefore = await getTroveEntireDebt(alice)
       const aliceDebtBefore_Asset = await getTroveEntireDebt(alice, erc20.address)
@@ -2194,11 +2194,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("repayDCHF(): Reverts if borrower has insufficient DCHF balance to cover his debt repayment", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
       const bobBalBefore = await dchfToken.balanceOf(B)
       assert.isTrue(bobBalBefore.gt(toBN('0')))
@@ -2248,8 +2248,8 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): reverts if max fee < 0.5% in Normal mode", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
 
       await assertRevert(borrowerOperations.adjustTrove(ZERO_ADDRESS, 0, 0, 0, dec(1, 18), true, A, A, { from: A, value: dec(2, 16) }), "Max fee percentage must be between 0.5% and 100%")
       await assertRevert(borrowerOperations.adjustTrove(ZERO_ADDRESS, 0, 1, 0, dec(1, 18), true, A, A, { from: A, value: dec(2, 16) }), "Max fee percentage must be between 0.5% and 100%")
@@ -2264,8 +2264,8 @@ contract('BorrowerOperations', async accounts => {
       await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: toBN(dec(100, 'ether')) } })
       await openTrove({ asset: erc20.address, assetSent: toBN(dec(100, 'ether')), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
 
       await priceFeed.setPrice(dec(120, 18))
       assert.isTrue(await th.checkRecoveryMode(contracts))
@@ -2287,18 +2287,18 @@ contract('BorrowerOperations', async accounts => {
 
     it("adjustTrove(): decays a non-zero base rate", async () => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -2341,14 +2341,14 @@ contract('BorrowerOperations', async accounts => {
 
     it("adjustTrove(): doesn't decay a non-zero base rate when user issues 0 debt", async () => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -2358,8 +2358,8 @@ contract('BorrowerOperations', async accounts => {
       await troveManager.setLastFeeOpTimeToNow(erc20.address)
 
       // D opens trove 
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check baseRate is now non-zero
       const baseRate_1 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -2382,11 +2382,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): doesn't change base rate if it is already zero", async () => {
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check baseRate is zero
       const baseRate_1 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -2421,14 +2421,14 @@ contract('BorrowerOperations', async accounts => {
 
     it("adjustTrove(): lastFeeOpTime doesn't update if less time than decay interval has passed since the last fee operation", async () => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -2483,9 +2483,9 @@ contract('BorrowerOperations', async accounts => {
 
     it("adjustTrove(): borrower can't grief the baseRate and stop it decaying by issuing debt at higher frequency than the decay granularity", async () => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -2520,14 +2520,14 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(MONStaking_DCHFBalance_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -2547,8 +2547,8 @@ contract('BorrowerOperations', async accounts => {
       th.fastForwardTime(7200, web3.currentProvider)
 
       // D adjusts trove
-      await openTrove({ extraMONmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check MON DCHF balance after has increased
       const MONStaking_DCHFBalance_After = await dchfToken.balanceOf(monStaking.address)
@@ -2563,16 +2563,16 @@ contract('BorrowerOperations', async accounts => {
         await monStaking.stake(dec(1, 18), { from: multisig })
 
         await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-        await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-        await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-        await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-        await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+        await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+        await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+        await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+        await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
         await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
         const D_debtBefore = await getTroveEntireDebt(D)
         const D_debtBefore_Asset = await getTroveEntireDebt(D, erc20.address)
 
@@ -2624,16 +2624,16 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(F_DCHF_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -2675,16 +2675,16 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(MONStaking_DCHFBalance_Before, '0')
 
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       const D_DCHFBalanceBefore = await dchfToken.balanceOf(D)
 
@@ -2730,16 +2730,16 @@ contract('BorrowerOperations', async accounts => {
 
     it("adjustTrove(): Borrowing at zero base rate changes DCHF balance of MON staking contract", async () => {
       await openTrove({ ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(50, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check baseRate is zero
       const baseRate_1 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -2766,17 +2766,17 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Borrowing at zero base rate changes MON staking contract DCHF fees-per-unit-staked", async () => {
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: toBN(dec(100, 'ether')) } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: toBN(dec(100, 'ether')) } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
-      await openTrove({ asset: erc20.address, assetSent: toBN(dec(100, 'ether')), extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, assetSent: toBN(dec(100, 'ether')), extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check baseRate is zero
       const baseRate_1 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -2808,18 +2808,18 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Borrowing at zero base rate sends total requested DCHF to the user", async () => {
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: toBN(dec(100, 'ether')) } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale, value: toBN(dec(100, 'ether')) } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
 
-      await openTrove({ asset: erc20.address, assetSent: toBN(dec(100, 'ether')), extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, assetSent: toBN(dec(100, 'ether')), extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       const D_DCHFBalBefore = await dchfToken.balanceOf(D)
       // Check baseRate is zero
@@ -2846,11 +2846,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): reverts when calling address has no active trove", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       // Alice coll and debt increase(+1 ETH, +50DCHF)
       await borrowerOperations.adjustTrove(ZERO_ADDRESS, 0, th._100pct, 0, dec(50, 18), true, alice, alice, { from: alice, value: dec(1, 'ether') })
@@ -2872,11 +2872,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): reverts in Recovery Mode when the adjustment would reduce the TCR", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       assert.isFalse(await th.checkRecoveryMode(contracts))
       assert.isFalse(await th.checkRecoveryMode(contracts, erc20.address))
@@ -2936,11 +2936,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): collateral withdrawal reverts in Recovery Mode", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       assert.isFalse(await th.checkRecoveryMode(contracts))
       assert.isFalse(await th.checkRecoveryMode(contracts, erc20.address))
@@ -2960,11 +2960,11 @@ contract('BorrowerOperations', async accounts => {
 
 
     it("adjustTrove(): debt increase that would leave ICR < 150% reverts in Recovery Mode", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       const CCR = await vestaParams.CCR(ZERO_ADDRESS)
       const CCRERC20 = await vestaParams.CCR(erc20.address)
@@ -3003,11 +3003,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): debt increase that would reduce the ICR reverts in Recovery Mode", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       const CCR = await vestaParams.CCR(ZERO_ADDRESS)
       const CCRERC20 = await vestaParams.CCR(erc20.address)
 
@@ -3081,11 +3081,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): A trove with ICR < CCR in Recovery Mode can adjust their trove to ICR > CCR", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       const CCR = await vestaParams.CCR(ZERO_ADDRESS)
       const CCRERC20 = await vestaParams.CCR(erc20.address)
 
@@ -3133,11 +3133,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): A trove with ICR < CCR in Recovery Mode can adjust their trove to ICR > CCR But collateral is blocked from minting, then unblock it", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       const CCR = await vestaParams.CCR(ZERO_ADDRESS)
       const CCRERC20 = await vestaParams.CCR(erc20.address)
 
@@ -3197,11 +3197,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): A trove with ICR > CCR in Recovery Mode can improve their ICR", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
       const CCR = await vestaParams.CCR(ZERO_ADDRESS)
       const CCRERC20 = await vestaParams.CCR(erc20.address)
 
@@ -3249,11 +3249,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): debt increase in Recovery Mode charges no fee", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(200000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(200000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(200000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(200000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       assert.isFalse(await th.checkRecoveryMode(contracts))
       assert.isFalse(await th.checkRecoveryMode(contracts, erc20.address))
@@ -3398,16 +3398,16 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): reverts when change would cause the ICR of the trove to fall below the MCR", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(100, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(100, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(100, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(100, 18)), extraParams: { from: whale } })
 
       await priceFeed.setPrice(dec(100, 18))
 
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(11, 17)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(11, 17)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(11, 17)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(11, 17)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(11, 17)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(11, 17)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(11, 17)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(11, 17)), extraParams: { from: bob } })
 
       // Bob attempts to increase debt by 100 DCHF and 1 ether, i.e. a change that constitutes a 100% ratio of coll:debt.
       // Since his ICR prior is 110%, this change would reduce his ICR below MCR.
@@ -3426,8 +3426,8 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): With 0 coll change, doesnt change borrower's coll or ActivePool coll", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       const aliceCollBefore = await getTroveEntireColl(alice)
       const activePoolCollBefore = await activePool.getAssetBalance(ZERO_ADDRESS)
@@ -3459,9 +3459,9 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): With 0 debt change, doesnt change borrower's debt or ActivePool debt", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       const aliceDebtBefore = await getTroveEntireDebt(alice)
       const activePoolDebtBefore = await activePool.getDCHFDebt(ZERO_ADDRESS)
@@ -3493,11 +3493,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): updates borrower's debt and coll with an increase in both", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const debtBefore = await getTroveEntireDebt(alice)
       const collBefore = await getTroveEntireColl(alice)
@@ -3527,11 +3527,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): updates borrower's debt and coll with a decrease in both", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const debtBefore = await getTroveEntireDebt(alice)
       const collBefore = await getTroveEntireColl(alice)
@@ -3561,11 +3561,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): updates borrower's  debt and coll with coll increase, debt decrease", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const debtBefore = await getTroveEntireDebt(alice)
       const collBefore = await getTroveEntireColl(alice)
@@ -3593,11 +3593,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): updates borrower's debt and coll with coll decrease, debt increase", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const debtBefore = await getTroveEntireDebt(alice)
       const collBefore = await getTroveEntireColl(alice)
@@ -3626,11 +3626,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): updates borrower's stake and totalStakes with a coll increase", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const stakeBefore = await troveManager.getTroveStake(ZERO_ADDRESS, alice)
       const totalStakesBefore = await troveManager.totalStakes(ZERO_ADDRESS);
@@ -3662,11 +3662,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove():  updates borrower's stake and totalStakes with a coll decrease", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const stakeBefore = await troveManager.getTroveStake(ZERO_ADDRESS, alice)
       const totalStakesBefore = await troveManager.totalStakes(ZERO_ADDRESS);
@@ -3697,11 +3697,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): changes DCHFToken balance by the requested decrease", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const alice_DCHFTokenBalance_Before = await dchfToken.balanceOf(alice)
       assert.isTrue(alice_DCHFTokenBalance_Before.gt(toBN('0')))
@@ -3721,11 +3721,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): changes DCHFToken balance by the requested increase", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const alice_DCHFTokenBalance_Before = await dchfToken.balanceOf(alice)
       assert.isTrue(alice_DCHFTokenBalance_Before.gt(toBN('0')))
@@ -3745,11 +3745,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Changes the activePool ETH and raw ether balance by the requested decrease", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const activePool_ETH_Before = await activePool.getAssetBalance(ZERO_ADDRESS)
       const activePool_RawEther_Before = toBN(await web3.eth.getBalance(activePool.address))
@@ -3777,11 +3777,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Changes the activePool ETH and raw ether balance by the amount of ETH sent", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const activePool_ETH_Before = await activePool.getAssetBalance(ZERO_ADDRESS)
       const activePool_RawEther_Before = toBN(await web3.eth.getBalance(activePool.address))
@@ -3809,11 +3809,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Changes the DCHF debt in ActivePool by requested decrease", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const activePooL_DCHFDebt_Before = await activePool.getDCHFDebt(ZERO_ADDRESS)
       assert.isTrue(activePooL_DCHFDebt_Before.gt(toBN('0')))
@@ -3833,11 +3833,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Changes the DCHF debt in ActivePool by requested increase", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const activePooL_DCHFDebt_Before = await activePool.getDCHFDebt(ZERO_ADDRESS)
       assert.isTrue(activePooL_DCHFDebt_Before.gt(toBN('0')))
@@ -3857,11 +3857,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): new coll = 0 and new debt = 0 is not allowed, as gas compensation still counts toward ICR", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const aliceColl = await getTroveEntireColl(alice)
       const aliceDebt = await getTroveEntireColl(alice)
@@ -3891,11 +3891,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Reverts if requested debt increase and amount is zero", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       await assertRevert(borrowerOperations.adjustTrove(ZERO_ADDRESS, 0, th._100pct, 0, 0, true, alice, alice, { from: alice }),
         'BorrowerOps: Debt increase requires non-zero debtChange')
@@ -3904,11 +3904,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Reverts if requested coll withdrawal and ether is sent", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       await assertRevert(borrowerOperations.adjustTrove(ZERO_ADDRESS, 0, th._100pct, dec(1, 'ether'), dec(100, 18), true, alice, alice, { from: alice, value: dec(3, 'ether') }),
         'BorrowerOperations: Cannot withdraw and add coll')
@@ -3917,8 +3917,8 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Reverts if it’s zero adjustment", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       await assertRevert(borrowerOperations.adjustTrove(ZERO_ADDRESS, 0, th._100pct, 0, 0, false, alice, alice, { from: alice }),
         'BorrowerOps: There must be either a collateral change or a debt change')
@@ -3928,11 +3928,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Reverts if requested coll withdrawal is greater than trove's collateral", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
 
       const aliceColl = await getTroveEntireColl(alice)
       const aliceColl_Asset = await getTroveEntireColl(alice, erc20.address)
@@ -3946,9 +3946,9 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("adjustTrove(): Reverts if borrower has insufficient DCHF balance to cover his debt repayment", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
       const bobDebt = await getTroveEntireDebt(B)
 
@@ -3965,7 +3965,7 @@ contract('BorrowerOperations', async accounts => {
       await assertRevert(repayDCHFPromise_B, "revert")
 
       await dchfToken.transfer(C, B_DCHFBal, { from: B })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: B } })
 
       const bobDebt_Asset = await getTroveEntireDebt(B, erc20.address)
 
@@ -3983,11 +3983,11 @@ contract('BorrowerOperations', async accounts => {
 
     if (!withProxy) { // no need to test this with proxies
       it("Internal _adjustTrove(): reverts when op is a withdrawal and _borrower param is not the msg.sender", async () => {
-        await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-        await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
+        await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+        await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
 
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
 
         const txPromise_A = borrowerOperations.callInternalAdjustLoan(ZERO_ADDRESS, 0, alice, dec(1, 18), dec(1, 18), true, alice, alice, { from: bob })
         await assertRevert(txPromise_A, "BorrowerOps: Caller must be the borrower for a withdrawal")
@@ -4009,10 +4009,10 @@ contract('BorrowerOperations', async accounts => {
 
     it("closeTrove(): reverts when it would lower the TCR below CCR", async () => {
       await openTrove({ ICR: toBN(dec(300, 16)), extraParams: { from: alice } })
-      await openTrove({ ICR: toBN(dec(120, 16)), extraMONmount: toBN(dec(300, 18)), extraParams: { from: bob } })
+      await openTrove({ ICR: toBN(dec(120, 16)), extraDCHFAmount: toBN(dec(300, 18)), extraParams: { from: bob } })
 
       await openTrove({ asset: erc20.address, ICR: toBN(dec(300, 16)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, ICR: toBN(dec(120, 16)), extraMONmount: toBN(dec(300, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, ICR: toBN(dec(120, 16)), extraDCHFAmount: toBN(dec(300, 18)), extraParams: { from: bob } })
 
       const price = await priceFeed.getPrice()
 
@@ -4036,11 +4036,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): reverts when calling address does not have active trove", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: bob } })
 
       // Carol with no active trove attempts to close her trove
       try {
@@ -4058,13 +4058,13 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): reverts when system is in Recovery Mode", async () => {
-      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraDCHFAmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // Alice transfers her DCHF to Bob and Carol so they can cover fees
       const aliceBal = await dchfToken.balanceOf(alice)
@@ -4095,8 +4095,8 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): reverts when trove is the only one in the system", async () => {
-      await openTrove({ extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(100000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       // Artificially mint to Alice so she has enough to close her trove
       await dchfToken.unprotectedMint(alice, dec(100000, 18))
@@ -4119,11 +4119,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): reduces a Trove's collateral to zero", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       const aliceCollBefore = await getTroveEntireColl(alice)
       const dennisDCHF = await dchfToken.balanceOf(dennis)
@@ -4147,11 +4147,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): reduces a Trove's debt to zero", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       const aliceDebtBefore = await getTroveEntireColl(alice)
       const aliceDebtBefore_Asset = await getTroveEntireColl(alice, erc20.address)
@@ -4174,11 +4174,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): sets Trove's stake to zero", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       const aliceStakeBefore = await getTroveStake(alice)
       assert.isTrue(aliceStakeBefore.gt(toBN('0')))
@@ -4205,11 +4205,11 @@ contract('BorrowerOperations', async accounts => {
 
     it("closeTrove(): zero's the troves reward snapshots", async () => {
       // Dennis opens trove and transfers tokens to alice
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       // Price drops
       await priceFeed.setPrice(dec(100, 18))
@@ -4224,11 +4224,11 @@ contract('BorrowerOperations', async accounts => {
       await priceFeed.setPrice(dec(200, 18))
 
       // Alice and Carol open troves
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // Price drops ...again
       await priceFeed.setPrice(dec(100, 18))
@@ -4288,11 +4288,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): sets trove's status to closed and removes it from sorted troves list", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       // Check Trove is active
       const alice_Trove_Before = await troveManager.Troves(alice, ZERO_ADDRESS)
@@ -4331,11 +4331,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): reduces ActivePool ETH and raw ether by correct amount", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       const dennisColl = await getTroveEntireColl(dennis)
       const aliceColl = await getTroveEntireColl(alice)
@@ -4381,11 +4381,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): reduces ActivePool debt by correct amount", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       const dennisDebt = await getTroveEntireDebt(dennis)
       const aliceDebt = await getTroveEntireDebt(alice)
@@ -4421,13 +4421,13 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): updates the the total stakes", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       // Get individual stakes
       const aliceStakeBefore = await getTroveStake(alice)
@@ -4470,10 +4470,10 @@ contract('BorrowerOperations', async accounts => {
 
     if (!withProxy) { // TODO: wrap web3.eth.getBalance to be able to go through proxies
       it("closeTrove(): sends the correct amount of ETH to the user", async () => {
-        await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-        await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+        await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+        await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
         const aliceColl = await getTroveEntireColl(alice)
         assert.isTrue(aliceColl.gt(toBN('0')))
@@ -4501,11 +4501,11 @@ contract('BorrowerOperations', async accounts => {
     }
 
     it("closeTrove(): subtracts the debt of the closed Trove from the Borrower's DCHFToken balance", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: dennis } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       const aliceDebt = await getTroveEntireDebt(alice)
       assert.isTrue(aliceDebt.gt(toBN('0')))
@@ -4532,16 +4532,16 @@ contract('BorrowerOperations', async accounts => {
 
     it("closeTrove(): applies pending rewards", async () => {
       // --- SETUP ---
-      await openTrove({ extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(1000000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
 
-      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraDCHFAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // Whale transfers to A and B to cover their fees
       await dchfToken.transfer(alice, dec(10000, 18), { from: whale })
@@ -4561,8 +4561,8 @@ contract('BorrowerOperations', async accounts => {
       const [liquidatedDebt_C_Asset, liquidatedColl_C_Asset] = th.getEmittedLiquidationValues(liquidationTx_Asset)
 
       // Dennis opens a new Trove 
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // check Alice and Bob's reward snapshots are zero before they alter their Troves
       const alice_rewardSnapshot_Before = await troveManager.rewardSnapshots(alice, ZERO_ADDRESS)
@@ -4655,9 +4655,9 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("closeTrove(): reverts if borrower has insufficient DCHF balance to repay his entire debt", async () => {
-      await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
 
       //Confirm Bob's DCHF balance is less than his trove debt
       const B_DCHFBal = await dchfToken.balanceOf(B)
@@ -4670,7 +4670,7 @@ contract('BorrowerOperations', async accounts => {
 
 
       await dchfToken.transfer(C, await B_DCHFBal, { from: B })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
       const B_DCHFBal_Asset = await dchfToken.balanceOf(B)
       const B_troveDebt_Asset = await getTroveEntireDebt(B, erc20.address)
@@ -4686,13 +4686,13 @@ contract('BorrowerOperations', async accounts => {
 
     if (!withProxy) { // TODO: use rawLogs instead of logs
       it("openTrove(): emits a TroveUpdated event with the correct collateral and debt", async () => {
-        const txA = (await openTrove({ extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })).tx
-        const txB = (await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })).tx
-        const txC = (await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })).tx
+        const txA = (await openTrove({ extraDCHFAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })).tx
+        const txB = (await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })).tx
+        const txC = (await openTrove({ extraDCHFAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })).tx
 
-        const txA_Asset = (await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })).tx
-        const txB_Asset = (await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })).tx
-        const txC_Asset = (await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })).tx
+        const txA_Asset = (await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(15000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })).tx
+        const txB_Asset = (await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })).tx
+        const txC_Asset = (await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })).tx
 
         const A_Coll = await getTroveEntireColl(A)
         const B_Coll = await getTroveEntireColl(B)
@@ -4750,11 +4750,11 @@ contract('BorrowerOperations', async accounts => {
         assert.isTrue((await troveManager.baseRate(ZERO_ADDRESS)).gt(baseRateBefore))
         assert.isTrue((await troveManager.baseRate(erc20.address)).gt(baseRateBefore_Asset))
 
-        const txD = (await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })).tx
-        const txE = (await openTrove({ extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })).tx
+        const txD = (await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })).tx
+        const txE = (await openTrove({ extraDCHFAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })).tx
 
-        const txD_Asset = (await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })).tx
-        const txE_Asset = (await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })).tx
+        const txD_Asset = (await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })).tx
+        const txE_Asset = (await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(3000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })).tx
 
         const D_Coll = await getTroveEntireColl(D)
         const E_Coll = await getTroveEntireColl(E)
@@ -4830,15 +4830,15 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): decays a non-zero base rate", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -4856,8 +4856,8 @@ contract('BorrowerOperations', async accounts => {
       th.fastForwardTime(7200, web3.currentProvider)
 
       // D opens trove 
-      await openTrove({ extraMONmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check baseRate has decreased
       const baseRate_2 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -4869,8 +4869,8 @@ contract('BorrowerOperations', async accounts => {
       th.fastForwardTime(3600, web3.currentProvider)
 
       // E opens trove 
-      await openTrove({ extraMONmount: toBN(dec(12, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(12, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraDCHFAmount: toBN(dec(12, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(12, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       const baseRate_3 = await troveManager.baseRate(ZERO_ADDRESS)
       assert.isTrue(baseRate_3.lt(baseRate_2))
@@ -4880,15 +4880,15 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): doesn't change base rate if it is already zero", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Check baseRate is zero
       const baseRate_1 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -4901,8 +4901,8 @@ contract('BorrowerOperations', async accounts => {
       th.fastForwardTime(7200, web3.currentProvider)
 
       // D opens trove 
-      await openTrove({ extraMONmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check baseRate is still 0
       const baseRate_2 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -4914,8 +4914,8 @@ contract('BorrowerOperations', async accounts => {
       th.fastForwardTime(3600, web3.currentProvider)
 
       // E opens trove 
-      await openTrove({ extraMONmount: toBN(dec(12, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(12, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraDCHFAmount: toBN(dec(12, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(12, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       const baseRate_3 = await troveManager.baseRate(ZERO_ADDRESS)
       assert.equal(baseRate_3, '0')
@@ -4925,15 +4925,15 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): lastFeeOpTime doesn't update if less time than decay interval has passed since the last fee operation", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -4952,8 +4952,8 @@ contract('BorrowerOperations', async accounts => {
       const lastFeeOpTime_1_Asset = await troveManager.lastFeeOperationTime(erc20.address)
 
       // Borrower D triggers a fee
-      await openTrove({ extraMONmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       const lastFeeOpTime_2 = await troveManager.lastFeeOperationTime(ZERO_ADDRESS)
       const lastFeeOpTime_2_Asset = await troveManager.lastFeeOperationTime(erc20.address)
@@ -4972,8 +4972,8 @@ contract('BorrowerOperations', async accounts => {
       assert.isTrue(toBN(timeNow).sub(lastFeeOpTime_1_Asset).gte(3600))
 
       // Borrower E triggers a fee
-      await openTrove({ extraMONmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraDCHFAmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       const lastFeeOpTime_3 = await troveManager.lastFeeOperationTime(ZERO_ADDRESS)
       const lastFeeOpTime_3_Asset = await troveManager.lastFeeOperationTime(erc20.address)
@@ -5023,13 +5023,13 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): reverts if fee exceeds max fee percentage", async () => {
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       const totalSupply = await dchfToken.totalSupply()
 
@@ -5082,13 +5082,13 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): succeeds when fee is less than max fee percentage", async () => {
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -5159,15 +5159,15 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): borrower can't grief the baseRate and stop it decaying by issuing debt at higher frequency than the decay granularity", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -5188,15 +5188,15 @@ contract('BorrowerOperations', async accounts => {
 
       // Assume Borrower also owns accounts D and E
       // Borrower triggers a fee, before decay interval has passed
-      await openTrove({ extraMONmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // 1 minute pass
       th.fastForwardTime(3540, web3.currentProvider)
 
       // Borrower triggers another fee
-      await openTrove({ extraMONmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ extraDCHFAmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(1, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: E } })
 
       // Check base rate has decreased even though Borrower tried to stop it decaying
       const baseRate_2 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -5216,15 +5216,15 @@ contract('BorrowerOperations', async accounts => {
       const MONStaking_DCHFBalance_Before = await dchfToken.balanceOf(monStaking.address)
       assert.equal(MONStaking_DCHFBalance_Before, '0')
 
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -5244,8 +5244,8 @@ contract('BorrowerOperations', async accounts => {
       th.fastForwardTime(7200, web3.currentProvider)
 
       // D opens trove 
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check MON DCHF balance after has increased
       const MONStaking_DCHFBalance_After = await dchfToken.balanceOf(monStaking.address)
@@ -5259,15 +5259,15 @@ contract('BorrowerOperations', async accounts => {
         await monToken.approve(monStaking.address, dec(1, 18), { from: multisig })
         await monStaking.stake(dec(1, 18), { from: multisig })
 
-        await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-        await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-        await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-        await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+        await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+        await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+        await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+        await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-        await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+        await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
         // Artificially make baseRate 5%
         await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -5317,15 +5317,15 @@ contract('BorrowerOperations', async accounts => {
       const F_DCHF_Before = await monStaking.F_DCHF()
       assert.equal(F_DCHF_Before, '0')
 
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -5342,8 +5342,8 @@ contract('BorrowerOperations', async accounts => {
       th.fastForwardTime(7200, web3.currentProvider)
 
       // D opens trove 
-      await openTrove({ extraMONmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check MON contract DCHF fees-per-unit-staked has increased
       const F_DCHF_After = await monStaking.F_DCHF()
@@ -5360,15 +5360,15 @@ contract('BorrowerOperations', async accounts => {
       const MONStaking_DCHFBalance_Before = await dchfToken.balanceOf(monStaking.address)
       assert.equal(MONStaking_DCHFBalance_Before, '0')
 
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(20000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(30000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(40000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Artificially make baseRate 5%
       await troveManager.setBaseRate(ZERO_ADDRESS, dec(5, 16))
@@ -5402,13 +5402,13 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): Borrowing at zero base rate changes the MON staking contract DCHF fees-per-unit-staked", async () => {
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: C } })
 
       // Check baseRate is zero
       const baseRate_1 = await troveManager.baseRate(ZERO_ADDRESS)
@@ -5429,8 +5429,8 @@ contract('BorrowerOperations', async accounts => {
       await monStaking.stake(dec(100, 18), { from: A })
 
       // D opens trove 
-      await openTrove({ extraMONmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ extraDCHFAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(37, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: D } })
 
       // Check DCHF reward per MON staked > 0
       const F_DCHF_After = await monStaking.F_DCHF()
@@ -5438,11 +5438,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): Borrowing at zero base rate charges minimum fee", async () => {
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: A } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: B } })
 
       const DCHFRequest = toBN(dec(10000, 18))
       const txC = await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, DCHFRequest, ZERO_ADDRESS, ZERO_ADDRESS, { value: dec(100, 'ether'), from: C })
@@ -5457,11 +5457,11 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): reverts when system is in Recovery Mode and ICR < CCR", async () => {
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       assert.isFalse(await th.checkRecoveryMode(contracts))
       assert.isFalse(await th.checkRecoveryMode(contracts, erc20.address))
@@ -5474,7 +5474,7 @@ contract('BorrowerOperations', async accounts => {
 
       // Bob tries to open a trove with 149% ICR during Recovery Mode
       try {
-        const txBob = await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(149, 16)), extraParams: { from: alice } })
+        const txBob = await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(149, 16)), extraParams: { from: alice } })
         assert.isFalse(txBob.receipt.status)
       } catch (err) {
         assert.include(err.message, "revert")
@@ -5482,7 +5482,7 @@ contract('BorrowerOperations', async accounts => {
 
       // Bob tries to open a trove with 149% ICR during Recovery Mode
       try {
-        const txBob_Asset = await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(149, 16)), extraParams: { from: alice } })
+        const txBob_Asset = await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(149, 16)), extraParams: { from: alice } })
         assert.isFalse(txBob_Asset.receipt.status)
       } catch (err) {
         assert.include(err.message, "revert")
@@ -5490,25 +5490,25 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): reverts when trove ICR < MCR", async () => {
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       assert.isFalse(await th.checkRecoveryMode(contracts))
       assert.isFalse(await th.checkRecoveryMode(contracts, erc20.address))
 
       // Bob attempts to open a 109% ICR trove in Normal Mode
       try {
-        const txBob = (await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(109, 16)), extraParams: { from: bob } })).tx
+        const txBob = (await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(109, 16)), extraParams: { from: bob } })).tx
         assert.isFalse(txBob.receipt.status)
       } catch (err) {
         assert.include(err.message, "revert")
       }
 
       try {
-        const txBob = (await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(109, 16)), extraParams: { from: bob } })).tx
+        const txBob = (await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(109, 16)), extraParams: { from: bob } })).tx
         assert.isFalse(txBob.receipt.status)
       } catch (err) {
         assert.include(err.message, "revert")
@@ -5522,14 +5522,14 @@ contract('BorrowerOperations', async accounts => {
 
       // Bob attempts to open a 109% ICR trove in Recovery Mode
       try {
-        const txBob = await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(109, 16)), extraParams: { from: bob } })
+        const txBob = await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(109, 16)), extraParams: { from: bob } })
         assert.isFalse(txBob.receipt.status)
       } catch (err) {
         assert.include(err.message, "revert")
       }
 
       try {
-        const txBob = await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(109, 16)), extraParams: { from: bob } })
+        const txBob = await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(109, 16)), extraParams: { from: bob } })
         assert.isFalse(txBob.receipt.status)
       } catch (err) {
         assert.include(err.message, "revert")
@@ -5540,8 +5540,8 @@ contract('BorrowerOperations', async accounts => {
       await priceFeed.setPrice(dec(100, 18))
 
       // Alice creates trove with 150% ICR.  System TCR = 150%.
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
 
       const TCR = await th.getTCR(contracts)
       assert.equal(TCR, dec(150, 16))
@@ -5552,14 +5552,14 @@ contract('BorrowerOperations', async accounts => {
       // Bob attempts to open a trove with ICR = 149% 
       // System TCR would fall below 150%
       try {
-        const txBob = await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(149, 16)), extraParams: { from: bob } })
+        const txBob = await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(149, 16)), extraParams: { from: bob } })
         assert.isFalse(txBob.receipt.status)
       } catch (err) {
         assert.include(err.message, "revert")
       }
 
       try {
-        const txBob = await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(149, 16)), extraParams: { from: bob } })
+        const txBob = await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(149, 16)), extraParams: { from: bob } })
         assert.isFalse(txBob.receipt.status)
       } catch (err) {
         assert.include(err.message, "revert")
@@ -5567,23 +5567,23 @@ contract('BorrowerOperations', async accounts => {
     })
 
     it("openTrove(): reverts if trove is already active", async () => {
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(10, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
 
       try {
-        const txB_1 = await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: bob } })
+        const txB_1 = await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: bob } })
         assert.isFalse(txB_1.receipt.status)
       } catch (err) {
         assert.include(err.message, 'revert')
       }
 
       try {
-        const txB_1 = await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: bob } })
+        const txB_1 = await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(3, 18)), extraParams: { from: bob } })
         assert.isFalse(txB_1.receipt.status)
       } catch (err) {
         assert.include(err.message, 'revert')
@@ -5607,11 +5607,11 @@ contract('BorrowerOperations', async accounts => {
     it("openTrove(): Can open a trove with ICR >= CCR when system is in Recovery Mode", async () => {
       // --- SETUP ---
       //  Alice and Bob add coll and withdraw such  that the TCR is ~150%
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
 
       const TCR = (await th.getTCR(contracts)).toString()
       assert.equal(TCR, '1500000000000000000')
@@ -5627,8 +5627,8 @@ contract('BorrowerOperations', async accounts => {
       assert.isTrue(await th.checkRecoveryMode(contracts, erc20.address))
 
       // Carol opens at 150% ICR in Recovery Mode
-      const txCarol = (await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: carol } })).tx
-      const txCarol_Asset = (await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: carol } })).tx
+      const txCarol = (await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: carol } })).tx
+      const txCarol_Asset = (await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: carol } })).tx
       assert.isTrue(txCarol.receipt.status)
       assert.isTrue(txCarol_Asset.receipt.status)
       assert.isTrue(await sortedTroves.contains(ZERO_ADDRESS, carol))
@@ -5650,11 +5650,11 @@ contract('BorrowerOperations', async accounts => {
     it("openTrove(): Reverts opening a trove with min debt when system is in Recovery Mode", async () => {
       // --- SETUP ---
       //  Alice and Bob add coll and withdraw such  that the TCR is ~150%
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
 
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: bob } })
 
       const TCR = (await th.getTCR(contracts)).toString()
       assert.equal(TCR, '1500000000000000000')
@@ -5736,8 +5736,8 @@ contract('BorrowerOperations', async accounts => {
       const TroveOwnersCount_Before_Asset = (await troveManager.getTroveOwnersCount(erc20.address)).toString();
       assert.equal(TroveOwnersCount_Before_Asset, '0')
 
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
 
       const TroveOwnersCount_After = (await troveManager.getTroveOwnersCount(ZERO_ADDRESS)).toString();
       const TroveOwnersCount_After_Asset = (await troveManager.getTroveOwnersCount(erc20.address)).toString();
@@ -5757,8 +5757,8 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(aliceStakeBefore_Asset, '0')
       assert.equal(totalStakesBefore_Asset, '0')
 
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       const aliceCollAfter = await getTroveEntireColl(alice)
       const aliceStakeAfter = await getTroveStake(alice)
@@ -5792,8 +5792,8 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(aliceTroveInList_Before_Asset, false)
       assert.equal(listIsEmpty_Before_Asset, true)
 
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       // check after
       const aliceTroveInList_After = await sortedTroves.contains(ZERO_ADDRESS, alice)
@@ -5820,8 +5820,8 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(activePool_ETH_Before_Asset, 0)
       assert.equal(activePool_RawEther_Before_Asset, 0)
 
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       const aliceCollAfter = await getTroveEntireColl(alice)
       const aliceCollAfter_Asset = await getTroveEntireColl(alice, erc20.address)
 
@@ -5840,10 +5840,10 @@ contract('BorrowerOperations', async accounts => {
     it("openTrove(): records up-to-date initial snapshots of L_ETH and L_DCHFDebt", async () => {
       // --- SETUP ---
 
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // --- TEST ---
 
@@ -5869,8 +5869,8 @@ contract('BorrowerOperations', async accounts => {
       assert.isTrue(L_DCHF_Asset.gt(toBN('0')))
 
       // Bob opens trove
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: bob } })
 
       // Check Bob's snapshots of L_ETH and L_DCHF equal the respective current values
       const bob_rewardSnapshot = await troveManager.rewardSnapshots(bob, ZERO_ADDRESS)
@@ -5890,12 +5890,12 @@ contract('BorrowerOperations', async accounts => {
 
     it("openTrove(): allows a user to open a Trove, then close it, then re-open it", async () => {
       // Open Troves
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: carol } })
 
       // Check Trove is active
       const alice_Trove_1 = await troveManager.Troves(alice, ZERO_ADDRESS)
@@ -5930,8 +5930,8 @@ contract('BorrowerOperations', async accounts => {
       assert.isFalse(await sortedTroves.contains(erc20.address, alice))
 
       // Re-open Trove
-      await openTrove({ extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(5000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
 
       // Check Trove is re-opened
       const alice_Trove_3 = await troveManager.Troves(alice, ZERO_ADDRESS)
@@ -5955,8 +5955,8 @@ contract('BorrowerOperations', async accounts => {
       const debt_Before_Asset = alice_Trove_Before_Asset[th.TROVE_DEBT_INDEX]
       assert.equal(debt_Before_Asset, 0)
 
-      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveMONmount(dec(10000, 18), ZERO_ADDRESS), alice, alice, { from: alice, value: dec(100, 'ether') })
-      await borrowerOperations.openTrove(erc20.address, dec(100, 'ether'), th._100pct, await getOpenTroveMONmount(dec(10000, 18), ZERO_ADDRESS), alice, alice, { from: alice })
+      await borrowerOperations.openTrove(ZERO_ADDRESS, 0, th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18), ZERO_ADDRESS), alice, alice, { from: alice, value: dec(100, 'ether') })
+      await borrowerOperations.openTrove(erc20.address, dec(100, 'ether'), th._100pct, await getOpenTroveDCHFAmount(dec(10000, 18), ZERO_ADDRESS), alice, alice, { from: alice })
 
       // check after
       const alice_Trove_After = await troveManager.Troves(alice, ZERO_ADDRESS)
@@ -5974,8 +5974,8 @@ contract('BorrowerOperations', async accounts => {
       assert.equal(activePooL_DCHFDebt_Before, 0)
       assert.equal(activePooL_DCHFDebt_Before_Asset, 0)
 
-      await openTrove({ extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
-      await openTrove({ asset: erc20.address, extraMONmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
+      await openTrove({ asset: erc20.address, extraDCHFAmount: toBN(dec(10000, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: alice } })
       const aliceDebt = await getTroveEntireDebt(alice)
       const aliceDebt_Asset = await getTroveEntireDebt(alice, erc20.address)
       assert.isTrue(aliceDebt.gt(toBN('0')))
@@ -6142,14 +6142,14 @@ contract('BorrowerOperations', async accounts => {
         // --- SETUP --- Create a Liquity instance with an Active Pool and pending rewards (Default Pool)
         const troveColl = toBN(dec(1000, 'ether'))
         const troveTotalDebt = toBN(dec(100000, 18))
-        const troveMONmount = await getOpenTroveMONmount(troveTotalDebt, ZERO_ADDRESS)
-        const troveMONmount_Asset = await getOpenTroveMONmount(troveTotalDebt, erc20.address)
+        const troveDCHFAmount = await getOpenTroveDCHFAmount(troveTotalDebt, ZERO_ADDRESS)
+        const troveDCHFAmount_Asset = await getOpenTroveDCHFAmount(troveTotalDebt, erc20.address)
 
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, alice, alice, { from: alice, value: troveColl })
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, bob, bob, { from: bob, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, alice, alice, { from: alice, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, bob, bob, { from: bob, value: troveColl })
 
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, alice, alice, { from: alice })
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, bob, bob, { from: bob })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, alice, alice, { from: alice })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, bob, bob, { from: bob })
 
         await priceFeed.setPrice(dec(100, 18))
 
@@ -6185,14 +6185,14 @@ contract('BorrowerOperations', async accounts => {
         // --- SETUP --- Create a Liquity instance with an Active Pool and pending rewards (Default Pool)
         const troveColl = toBN(dec(1000, 'ether'))
         const troveTotalDebt = toBN(dec(100000, 18))
-        const troveMONmount = await getOpenTroveMONmount(troveTotalDebt, ZERO_ADDRESS)
-        const troveMONmount_Asset = await getOpenTroveMONmount(troveTotalDebt, erc20.address)
+        const troveDCHFAmount = await getOpenTroveDCHFAmount(troveTotalDebt, ZERO_ADDRESS)
+        const troveDCHFAmount_Asset = await getOpenTroveDCHFAmount(troveTotalDebt, erc20.address)
 
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, alice, alice, { from: alice, value: troveColl })
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, bob, bob, { from: bob, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, alice, alice, { from: alice, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, bob, bob, { from: bob, value: troveColl })
 
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, alice, alice, { from: alice })
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, bob, bob, { from: bob })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, alice, alice, { from: alice })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, bob, bob, { from: bob })
 
         await priceFeed.setPrice(dec(100, 18))
 
@@ -6229,14 +6229,14 @@ contract('BorrowerOperations', async accounts => {
         // --- SETUP --- Create a Liquity instance with an Active Pool and pending rewards (Default Pool)
         const troveColl = toBN(dec(1000, 'ether'))
         const troveTotalDebt = toBN(dec(100000, 18))
-        const troveMONmount = await getOpenTroveMONmount(troveTotalDebt, ZERO_ADDRESS)
-        const troveMONmount_Asset = await getOpenTroveMONmount(troveTotalDebt, erc20.address)
+        const troveDCHFAmount = await getOpenTroveDCHFAmount(troveTotalDebt, ZERO_ADDRESS)
+        const troveDCHFAmount_Asset = await getOpenTroveDCHFAmount(troveTotalDebt, erc20.address)
 
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, alice, alice, { from: alice, value: troveColl })
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, bob, bob, { from: bob, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, alice, alice, { from: alice, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, bob, bob, { from: bob, value: troveColl })
 
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, alice, alice, { from: alice })
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, bob, bob, { from: bob })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, alice, alice, { from: alice })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, bob, bob, { from: bob })
 
         await priceFeed.setPrice(dec(100, 18))
 
@@ -6272,14 +6272,14 @@ contract('BorrowerOperations', async accounts => {
         // --- SETUP --- Create a Liquity instance with an Active Pool and pending rewards (Default Pool)
         const troveColl = toBN(dec(1000, 'ether'))
         const troveTotalDebt = toBN(dec(100000, 18))
-        const troveMONmount = await getOpenTroveMONmount(troveTotalDebt, ZERO_ADDRESS)
-        const troveMONmount_Asset = await getOpenTroveMONmount(troveTotalDebt, erc20.address)
+        const troveDCHFAmount = await getOpenTroveDCHFAmount(troveTotalDebt, ZERO_ADDRESS)
+        const troveDCHFAmount_Asset = await getOpenTroveDCHFAmount(troveTotalDebt, erc20.address)
 
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, alice, alice, { from: alice, value: troveColl })
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, bob, bob, { from: bob, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, alice, alice, { from: alice, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, bob, bob, { from: bob, value: troveColl })
 
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, alice, alice, { from: alice })
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, bob, bob, { from: bob })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, alice, alice, { from: alice })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, bob, bob, { from: bob })
 
         await priceFeed.setPrice(dec(100, 18))
 
@@ -6314,14 +6314,14 @@ contract('BorrowerOperations', async accounts => {
         // --- SETUP --- Create a Liquity instance with an Active Pool and pending rewards (Default Pool)
         const troveColl = toBN(dec(1000, 'ether'))
         const troveTotalDebt = toBN(dec(100000, 18))
-        const troveMONmount = await getOpenTroveMONmount(troveTotalDebt, ZERO_ADDRESS)
-        const troveMONmount_Asset = await getOpenTroveMONmount(troveTotalDebt, erc20.address)
+        const troveDCHFAmount = await getOpenTroveDCHFAmount(troveTotalDebt, ZERO_ADDRESS)
+        const troveDCHFAmount_Asset = await getOpenTroveDCHFAmount(troveTotalDebt, erc20.address)
 
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, alice, alice, { from: alice, value: troveColl })
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, bob, bob, { from: bob, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, alice, alice, { from: alice, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, bob, bob, { from: bob, value: troveColl })
 
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, alice, alice, { from: alice })
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, bob, bob, { from: bob })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, alice, alice, { from: alice })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, bob, bob, { from: bob })
 
         await priceFeed.setPrice(dec(100, 18))
 
@@ -6358,14 +6358,14 @@ contract('BorrowerOperations', async accounts => {
         // --- SETUP --- Create a Liquity instance with an Active Pool and pending rewards (Default Pool)
         const troveColl = toBN(dec(1000, 'ether'))
         const troveTotalDebt = toBN(dec(100000, 18))
-        const troveMONmount = await getOpenTroveMONmount(troveTotalDebt, ZERO_ADDRESS)
-        const troveMONmount_Asset = await getOpenTroveMONmount(troveTotalDebt, erc20.address)
+        const troveDCHFAmount = await getOpenTroveDCHFAmount(troveTotalDebt, ZERO_ADDRESS)
+        const troveDCHFAmount_Asset = await getOpenTroveDCHFAmount(troveTotalDebt, erc20.address)
 
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, alice, alice, { from: alice, value: troveColl })
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, bob, bob, { from: bob, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, alice, alice, { from: alice, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, bob, bob, { from: bob, value: troveColl })
 
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, alice, alice, { from: alice })
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, bob, bob, { from: bob })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, alice, alice, { from: alice })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, bob, bob, { from: bob })
 
         await priceFeed.setPrice(dec(100, 18))
 
@@ -6402,14 +6402,14 @@ contract('BorrowerOperations', async accounts => {
         // --- SETUP --- Create a Liquity instance with an Active Pool and pending rewards (Default Pool)
         const troveColl = toBN(dec(1000, 'ether'))
         const troveTotalDebt = toBN(dec(100000, 18))
-        const troveMONmount = await getOpenTroveMONmount(troveTotalDebt, ZERO_ADDRESS)
-        const troveMONmount_Asset = await getOpenTroveMONmount(troveTotalDebt, erc20.address)
+        const troveDCHFAmount = await getOpenTroveDCHFAmount(troveTotalDebt, ZERO_ADDRESS)
+        const troveDCHFAmount_Asset = await getOpenTroveDCHFAmount(troveTotalDebt, erc20.address)
 
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, alice, alice, { from: alice, value: troveColl })
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, bob, bob, { from: bob, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, alice, alice, { from: alice, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, bob, bob, { from: bob, value: troveColl })
 
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, alice, alice, { from: alice })
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, bob, bob, { from: bob })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, alice, alice, { from: alice })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, bob, bob, { from: bob })
 
         await priceFeed.setPrice(dec(100, 18))
 
@@ -6446,14 +6446,14 @@ contract('BorrowerOperations', async accounts => {
         // --- SETUP --- Create a Liquity instance with an Active Pool and pending rewards (Default Pool)
         const troveColl = toBN(dec(1000, 'ether'))
         const troveTotalDebt = toBN(dec(100000, 18))
-        const troveMONmount = await getOpenTroveMONmount(troveTotalDebt, ZERO_ADDRESS)
-        const troveMONmount_Asset = await getOpenTroveMONmount(troveTotalDebt, erc20.address)
+        const troveDCHFAmount = await getOpenTroveDCHFAmount(troveTotalDebt, ZERO_ADDRESS)
+        const troveDCHFAmount_Asset = await getOpenTroveDCHFAmount(troveTotalDebt, erc20.address)
 
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, alice, alice, { from: alice, value: troveColl })
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, bob, bob, { from: bob, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, alice, alice, { from: alice, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, bob, bob, { from: bob, value: troveColl })
 
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, alice, alice, { from: alice })
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, bob, bob, { from: bob })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, alice, alice, { from: alice })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, bob, bob, { from: bob })
 
         await priceFeed.setPrice(dec(100, 18))
 
@@ -6490,14 +6490,14 @@ contract('BorrowerOperations', async accounts => {
         // --- SETUP --- Create a Liquity instance with an Active Pool and pending rewards (Default Pool)
         const troveColl = toBN(dec(1000, 'ether'))
         const troveTotalDebt = toBN(dec(100000, 18))
-        const troveMONmount = await getOpenTroveMONmount(troveTotalDebt, ZERO_ADDRESS)
-        const troveMONmount_Asset = await getOpenTroveMONmount(troveTotalDebt, erc20.address)
+        const troveDCHFAmount = await getOpenTroveDCHFAmount(troveTotalDebt, ZERO_ADDRESS)
+        const troveDCHFAmount_Asset = await getOpenTroveDCHFAmount(troveTotalDebt, erc20.address)
 
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, alice, alice, { from: alice, value: troveColl })
-        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveMONmount, bob, bob, { from: bob, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, alice, alice, { from: alice, value: troveColl })
+        await borrowerOperations.openTrove(ZERO_ADDRESS, troveColl, th._100pct, troveDCHFAmount, bob, bob, { from: bob, value: troveColl })
 
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, alice, alice, { from: alice })
-        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveMONmount_Asset, bob, bob, { from: bob })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, alice, alice, { from: alice })
+        await borrowerOperations.openTrove(erc20.address, troveColl, th._100pct, troveDCHFAmount_Asset, bob, bob, { from: bob })
 
         await priceFeed.setPrice(dec(100, 18))
 

@@ -55,7 +55,7 @@
 
 //   let DCHF_GAS_COMPENSATION
 
-//   const getOpenTroveMONmount = async (asset, totalDebt) => th.getOpenTroveMONmount(contracts, totalDebt, asset)
+//   const getOpenTroveDCHFAmount = async (asset, totalDebt) => th.getOpenTroveDCHFAmount(contracts, totalDebt, asset)
 //   const getActualDebtFromComposite = async (compositeDebt) => th.getActualDebtFromComposite(compositeDebt, contracts)
 //   const getNetBorrowingAmount = async (asset, debtWithFee) => th.getNetBorrowingAmount(contracts, debtWithFee, asset)
 //   const openTrove = async (params) => th.openTrove(contracts, params)
@@ -137,7 +137,7 @@
 //     await openTrove({ ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
 //     // alice opens Trove
-//     const { MONmount, collateral } = await openTrove({ ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
+//     const { DCHFAmount, collateral } = await openTrove({ ICR: toBN(dec(15, 17)), extraParams: { from: alice } })
 
 //     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
@@ -147,23 +147,23 @@
 
 //     // alice claims collateral and re-opens the trove
 //     await assertRevert(
-//       borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, MONmount, alice, alice, { from: alice }),
+//       borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, DCHFAmount, alice, alice, { from: alice }),
 //       'CollSurplusPool: No collateral available to claim'
 //     )
 
 //     // check everything remain the same
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
 //     th.assertIsApproximatelyEqual(await collSurplusPool.getCollateral(proxyAddress), '0')
-//     th.assertIsApproximatelyEqual(await dchfToken.balanceOf(proxyAddress), MONmount)
+//     th.assertIsApproximatelyEqual(await dchfToken.balanceOf(proxyAddress), DCHFAmount)
 //     assert.equal(await troveManager.getTroveStatus(proxyAddress), 1)
 //     th.assertIsApproximatelyEqual(await troveManager.getTroveColl(ZERO_ADDRESS, proxyAddress), collateral)
 //   })
 
 //   it('claimCollateralAndOpenTrove(): without sending any value', async () => {
 //     // alice opens Trove
-//     const { MONmount, netDebt: redeemAmount, collateral } = await openTrove({ extraMONmount: 0, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
+//     const { DCHFAmount, netDebt: redeemAmount, collateral } = await openTrove({ extraDCHFAmount: 0, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
 //     // Whale opens Trove
-//     await openTrove({ extraMONmount: redeemAmount, ICR: toBN(dec(5, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraDCHFAmount: redeemAmount, ICR: toBN(dec(5, 18)), extraParams: { from: whale } })
 
 //     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
@@ -182,20 +182,20 @@
 //     assert.equal(await troveManager.getTroveStatus(proxyAddress), 4) // closed by redemption
 
 //     // alice claims collateral and re-opens the trove
-//     await borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, MONmount, alice, alice, { from: alice })
+//     await borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, DCHFAmount, alice, alice, { from: alice })
 
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
 //     th.assertIsApproximatelyEqual(await collSurplusPool.getCollateral(proxyAddress), '0')
-//     th.assertIsApproximatelyEqual(await dchfToken.balanceOf(proxyAddress), MONmount.mul(toBN(2)))
+//     th.assertIsApproximatelyEqual(await dchfToken.balanceOf(proxyAddress), DCHFAmount.mul(toBN(2)))
 //     assert.equal(await troveManager.getTroveStatus(proxyAddress), 1)
 //     th.assertIsApproximatelyEqual(await troveManager.getTroveColl(ZERO_ADDRESS, proxyAddress), expectedSurplus)
 //   })
 
 //   it('claimCollateralAndOpenTrove(): sending value in the transaction', async () => {
 //     // alice opens Trove
-//     const { MONmount, netDebt: redeemAmount, collateral } = await openTrove({ extraParams: { from: alice } })
+//     const { DCHFAmount, netDebt: redeemAmount, collateral } = await openTrove({ extraParams: { from: alice } })
 //     // Whale opens Trove
-//     await openTrove({ extraMONmount: redeemAmount, ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraDCHFAmount: redeemAmount, ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
 //     const proxyAddress = borrowerWrappers.getProxyAddressFromUser(alice)
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
@@ -214,11 +214,11 @@
 //     assert.equal(await troveManager.getTroveStatus(proxyAddress), 4) // closed by redemption
 
 //     // alice claims collateral and re-opens the trove
-//     await borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, MONmount, alice, alice, { from: alice, value: collateral })
+//     await borrowerWrappers.claimCollateralAndOpenTrove(th._100pct, DCHFAmount, alice, alice, { from: alice, value: collateral })
 
 //     assert.equal(await web3.eth.getBalance(proxyAddress), '0')
 //     th.assertIsApproximatelyEqual(await collSurplusPool.getCollateral(proxyAddress), '0')
-//     th.assertIsApproximatelyEqual(await dchfToken.balanceOf(proxyAddress), MONmount.mul(toBN(2)))
+//     th.assertIsApproximatelyEqual(await dchfToken.balanceOf(proxyAddress), DCHFAmount.mul(toBN(2)))
 //     assert.equal(await troveManager.getTroveStatus(proxyAddress), 1)
 //     th.assertIsApproximatelyEqual(await troveManager.getTroveColl(ZERO_ADDRESS, proxyAddress), expectedSurplus.add(collateral))
 //   })
@@ -227,12 +227,12 @@
 
 //   it('claimSPRewardsAndRecycle(): only owner can call it', async () => {
 //     // Whale opens Trove
-//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 //     // Whale deposits 1850 DCHF in StabilityPool
 //     await stabilityPool.provideToSP(dec(1850, 18), ZERO_ADDRESS, { from: whale })
 
 //     // alice opens trove and provides 150 DCHF to StabilityPool
-//     await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 //     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
 //     // Defaulter Trove opened
@@ -256,17 +256,17 @@
 //   it('claimSPRewardsAndRecycle():', async () => {
 //     // Whale opens Trove
 //     const whaleDeposit = toBN(dec(2350, 18))
-//     await openTrove({ extraMONmount: whaleDeposit, ICR: toBN(dec(4, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraDCHFAmount: whaleDeposit, ICR: toBN(dec(4, 18)), extraParams: { from: whale } })
 //     // Whale deposits 1850 DCHF in StabilityPool
 //     await stabilityPool.provideToSP(whaleDeposit, ZERO_ADDRESS, { from: whale })
 
 //     // alice opens trove and provides 150 DCHF to StabilityPool
 //     const aliceDeposit = toBN(dec(150, 18))
-//     await openTrove({ extraMONmount: aliceDeposit, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
+//     await openTrove({ extraDCHFAmount: aliceDeposit, ICR: toBN(dec(3, 18)), extraParams: { from: alice } })
 //     await stabilityPool.provideToSP(aliceDeposit, ZERO_ADDRESS, { from: alice })
 
 //     // Defaulter Trove opened
-//     const { MONmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const { DCHFAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
 
 //     // price drops: defaulters' Troves fall below MCR, alice and whale Trove remain active
 //     const price = toBN(dec(100, 18))
@@ -348,10 +348,10 @@
 
 //   it('claimStakingGainsAndRecycle(): only owner can call it', async () => {
 //     // Whale opens Trove
-//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
 //     // alice opens trove
-//     await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 
 //     // mint some MON
 //     await monTokenOriginal.unprotectedMint(borrowerOperations.getProxyAddressFromUser(whale), dec(1850, 18))
@@ -362,7 +362,7 @@
 //     await monStaking.stake(dec(150, 18), { from: alice })
 
 //     // Defaulter Trove opened
-//     const { MONmount, netDebt, totalDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const { DCHFAmount, netDebt, totalDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
 
 //     // skip bootstrapping phase
 //     await th.fastForwardTime(timeValues.SECONDS_IN_ONE_WEEK * 2, web3.currentProvider)
@@ -382,12 +382,12 @@
 //     const price = toBN(dec(200, 18))
 
 //     // Whale opens Trove
-//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 //     // Whale deposits 1850 DCHF in StabilityPool
 //     await stabilityPool.provideToSP(dec(1850, 18), ZERO_ADDRESS, { from: whale })
 
 //     // alice opens trove and provides 150 DCHF to StabilityPool
-//     //await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     //await openTrove({ extraDCHFAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 //     //await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
 //     // mint some MON
@@ -399,8 +399,8 @@
 //     await monStaking.stake(dec(150, 18), { from: alice })
 
 //     // Defaulter Trove opened
-//     const { MONmount, netDebt, totalDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
-//     const borrowingFee = netDebt.sub(MONmount)
+//     const { DCHFAmount, netDebt, totalDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const borrowingFee = netDebt.sub(DCHFAmount)
 
 //     // Alice DCHF gain is ((150/2000) * borrowingFee)
 //     const expectedDCHFGain_A = borrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
@@ -457,14 +457,14 @@
 //     const price = toBN(dec(200, 18))
 
 //     // Whale opens Trove
-//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
 //     // Defaulter Trove opened
-//     const { MONmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
-//     const borrowingFee = netDebt.sub(MONmount)
+//     const { DCHFAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const borrowingFee = netDebt.sub(DCHFAmount)
 
 //     // alice opens trove and provides 150 DCHF to StabilityPool
-//     await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 //     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
 //     // mint some MON
@@ -546,10 +546,10 @@
 //     const price = toBN(dec(200, 18))
 
 //     // Whale opens Trove
-//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
 //     // alice opens trove and provides 150 DCHF to StabilityPool
-//     await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 //     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
 //     // mint some MON
@@ -561,8 +561,8 @@
 //     await monStaking.stake(dec(150, 18), { from: alice })
 
 //     // Defaulter Trove opened
-//     const { MONmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
-//     const borrowingFee = netDebt.sub(MONmount)
+//     const { DCHFAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const borrowingFee = netDebt.sub(DCHFAmount)
 
 //     // Alice DCHF gain is ((150/2000) * borrowingFee)
 //     const expectedDCHFGain_A = borrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
@@ -615,10 +615,10 @@
 //     const price = toBN(dec(200, 18))
 
 //     // Whale opens Trove
-//     await openTrove({ extraMONmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(1850, 18)), ICR: toBN(dec(2, 18)), extraParams: { from: whale } })
 
 //     // alice opens trove and provides 150 DCHF to StabilityPool
-//     await openTrove({ extraMONmount: toBN(dec(150, 18)), extraParams: { from: alice } })
+//     await openTrove({ extraDCHFAmount: toBN(dec(150, 18)), extraParams: { from: alice } })
 //     await stabilityPool.provideToSP(dec(150, 18), ZERO_ADDRESS, { from: alice })
 
 //     // mint some MON
@@ -630,8 +630,8 @@
 //     await monStaking.stake(dec(150, 18), { from: alice })
 
 //     // Defaulter Trove opened
-//     const { MONmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
-//     const borrowingFee = netDebt.sub(MONmount)
+//     const { DCHFAmount, netDebt, collateral } = await openTrove({ ICR: toBN(dec(210, 16)), extraParams: { from: defaulter_1 } })
+//     const borrowingFee = netDebt.sub(DCHFAmount)
 
 //     // Alice DCHF gain is ((150/2000) * borrowingFee)
 //     const expectedDCHFGain_A = borrowingFee.mul(toBN(dec(150, 18))).div(toBN(dec(2000, 18)))
