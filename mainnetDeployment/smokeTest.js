@@ -22,8 +22,8 @@ async function main() {
     config = configParams;
     gasPrice = config.GAS_PRICE;
 
-    ADMIN_WALLET = config.vestaAddresses.ADMIN_MULTI
-    TREASURY_WALLET = config.vestaAddresses.VSTA_SAFE
+    ADMIN_WALLET = config.dfrancAddresses.ADMIN_MULTI
+    TREASURY_WALLET = config.dfrancAddresses.VSTA_SAFE
 
     deployerWallet = (await ethers.getSigners())[0]
     mdh = new MainnetDeploymentHelper(config, deployerWallet)

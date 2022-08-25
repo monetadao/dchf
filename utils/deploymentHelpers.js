@@ -80,7 +80,7 @@ class DeploymentHelper {
     const stabilityPoolTemplate = await StabilityPool.new()
     const stabilityPoolTemplateV2 = await StabilityPool.new()
     const stabilityPoolManager = await StabilityPoolManager.new()
-    const vestaParameters = await DfrancParameters.new()
+    const dfrancParameters = await DfrancParameters.new()
     const gasPool = await GasPool.new()
     const defaultPool = await DefaultPool.new()
     const collSurplusPool = await CollSurplusPool.new()
@@ -109,7 +109,7 @@ class DeploymentHelper {
     FunctionCaller.setAsDeployed(functionCaller)
     BorrowerOperations.setAsDeployed(borrowerOperations)
     HintHelpers.setAsDeployed(hintHelpers)
-    DfrancParameters.setAsDeployed(vestaParameters);
+    DfrancParameters.setAsDeployed(dfrancParameters);
     ERC20Test.setAsDeployed(erc20);
     AdminContract.setAsDeployed(adminContract);
 
@@ -124,7 +124,7 @@ class DeploymentHelper {
       stabilityPoolTemplate,
       stabilityPoolTemplateV2,
       stabilityPoolManager,
-      vestaParameters,
+      dfrancParameters,
       gasPool,
       defaultPool,
       collSurplusPool,
@@ -150,7 +150,7 @@ class DeploymentHelper {
     testerContracts.defaultPool = await DefaultPoolTester.new()
     testerContracts.stabilityPoolTemplate = await StabilityPoolTester.new()
     testerContracts.stabilityPoolManager = await StabilityPoolManager.new()
-    testerContracts.vestaParameters = await DfrancParameters.new()
+    testerContracts.dfrancParameters = await DfrancParameters.new()
     testerContracts.gasPool = await GasPool.new()
     testerContracts.collSurplusPool = await CollSurplusPool.new()
     testerContracts.math = await DfrancMathTester.new()
@@ -243,7 +243,7 @@ class DeploymentHelper {
     await contracts.functionCaller.setTroveManagerAddress(contracts.troveManager.address)
     await contracts.functionCaller.setSortedTrovesAddress(contracts.sortedTroves.address)
 
-    await contracts.vestaParameters.setAddresses(
+    await contracts.dfrancParameters.setAddresses(
       contracts.activePool.address,
       contracts.defaultPool.address,
       contracts.priceFeedTestnet.address,
@@ -259,7 +259,7 @@ class DeploymentHelper {
       contracts.dchfToken.address,
       contracts.sortedTroves.address,
       MONContracts.monStaking.address,
-      contracts.vestaParameters.address
+      contracts.dfrancParameters.address
     )
 
     // set contracts in BorrowerOperations 
@@ -271,12 +271,12 @@ class DeploymentHelper {
       contracts.sortedTroves.address,
       contracts.dchfToken.address,
       MONContracts.monStaking.address,
-      contracts.vestaParameters.address
+      contracts.dfrancParameters.address
     )
 
     await contracts.stabilityPoolManager.setAddresses(contracts.adminContract.address)
 
-    await contracts.adminContract.setAddresses(contracts.vestaParameters.address,
+    await contracts.adminContract.setAddresses(contracts.dfrancParameters.address,
       contracts.stabilityPoolManager.address,
       contracts.borrowerOperations.address,
       contracts.troveManager.address,
@@ -308,7 +308,7 @@ class DeploymentHelper {
     await contracts.hintHelpers.setAddresses(
       contracts.sortedTroves.address,
       contracts.troveManager.address,
-      contracts.vestaParameters.address
+      contracts.dfrancParameters.address
     )
 
   }
@@ -356,7 +356,7 @@ class DeploymentHelper {
       return;
 
     //Set Liquity Configs (since the tests have been designed with it)
-    await coreContracts.vestaParameters.setCollateralParameters(
+    await coreContracts.dfrancParameters.setCollateralParameters(
       ZERO_ADDRESS,
       "1100000000000000000",
       "1500000000000000000",
@@ -368,7 +368,7 @@ class DeploymentHelper {
       50
     );
 
-    await coreContracts.vestaParameters.setCollateralParameters(
+    await coreContracts.dfrancParameters.setCollateralParameters(
       coreContracts.erc20.address,
       "1100000000000000000",
       "1500000000000000000",

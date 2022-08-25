@@ -20,10 +20,10 @@ const gOHMParameters = {
 }
 
 
-const vestaAddresses = {
-  ADMIN_MULTI: "0xed9DeD8d0ee1d7086EC2BbFD8c5AD999d4BB7034",
-  MON_SAFE: "0xed9DeD8d0ee1d7086EC2BbFD8c5AD999d4BB7034", // to be passed to MONToken as the MON multisig address
-  DEPLOYER: "0xed9DeD8d0ee1d7086EC2BbFD8c5AD999d4BB7034" // Mainnet REAL deployment address
+const dfrancAddresses = {
+  ADMIN_MULTI: "0x00dCC22fD0DF66a07Be512AA617c78E703bDC550",
+  MON_SAFE: "0x2bA480A4Ae70f172Ff73FcDb29A1909c9C9df785", // to be passed to MONToken as the MON multisig address
+  DEPLOYER: "0xF4981efCd76f992d7Ba54aE25cE35525b9CBF8f8" // Mainnet REAL deployment address
 }
 
 // Beneficiaries for lockup contracts. 
@@ -96,11 +96,11 @@ const waitFunction = async () => {
 const GAS_PRICE = 25000000000
 const TX_CONFIRMATIONS = 3 // for mainnet
 
-const ETHERSCAN_BASE_URL = 'https://arbiscan.io/address'
+const ETHERSCAN_BASE_URL = 'https://rinkeby.etherscan.io/address'
 
 module.exports = {
   externalAddrs,
-  vestaAddresses,
+  dfrancAddresses,
   beneficiaries,
   OUTPUT_FILE,
   waitFunction,

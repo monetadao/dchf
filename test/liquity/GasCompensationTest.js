@@ -76,7 +76,7 @@ contract('Gas compensation tests', async accounts => {
     await deploymentHelper.connectCoreContracts(contracts, MONContracts)
     await deploymentHelper.connectMONContractsToCore(MONContracts, contracts)
 
-    contracts.troveManager.setDfrancParameters(contracts.vestaParameters.address)
+    contracts.troveManager.setDfrancParameters(contracts.dfrancParameters.address)
 
     stabilityPool = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(ZERO_ADDRESS))
     stabilityPoolERC20 = await StabilityPool.at(await contracts.stabilityPoolManager.getAssetStabilityPool(erc20.address));

@@ -728,10 +728,10 @@ class TestHelper {
     if (!upperHint) upperHint = this.ZERO_ADDRESS
     if (!lowerHint) lowerHint = this.ZERO_ADDRESS
 
-    await contracts.vestaParameters.sanitizeParameters(asset);
+    await contracts.dfrancParameters.sanitizeParameters(asset);
 
     const MIN_DEBT = (
-      await this.getNetBorrowingAmount(contracts, await contracts.vestaParameters.MIN_NET_DEBT(asset), asset)
+      await this.getNetBorrowingAmount(contracts, await contracts.dfrancParameters.MIN_NET_DEBT(asset), asset)
     ).add(this.toBN(1)) // add 1 to avoid rounding issues
     const DCHFAmount = MIN_DEBT.add(extraDCHFAmount)
 

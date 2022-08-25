@@ -12,7 +12,7 @@ const externalAddrs = {
   GOHM: "NONE",
 }
 
-const vestaAddresses = {
+const dfrancAddresses = {
   ADMIN_MULTI: "0x03859cff40DcC115D5DF6225E8167d5955E68FF1",
   MON_SAFE: "0x03859cff40DcC115D5DF6225E8167d5955E68FF1", // TODO
   DEPLOYER: "0x03859cff40DcC115D5DF6225E8167d5955E68FF1",
@@ -38,7 +38,7 @@ const TX_CONFIRMATIONS = 1 // for local fork test
 
 module.exports = {
   externalAddrs,
-  vestaAddresses,
+  dfrancAddresses,
   beneficiaries,
   OUTPUT_FILE,
   waitFunction,

@@ -41,7 +41,7 @@ contract('TroveManager', async accounts => {
   let collSurplusPool
   let defaultPool
   let borrowerOperations
-  let vestaParameters
+  let dfrancParameters
   let hintHelpers
   let erc20
 
@@ -71,7 +71,7 @@ contract('TroveManager', async accounts => {
     collSurplusPool = contracts.collSurplusPool
     borrowerOperations = contracts.borrowerOperations
     hintHelpers = contracts.hintHelpers
-    vestaParameters = contracts.vestaParameters;
+    dfrancParameters = contracts.dfrancParameters;
 
     monStaking = MONContracts.monStaking
     monToken = MONContracts.monToken
@@ -112,8 +112,8 @@ contract('TroveManager', async accounts => {
     const ICR_Before_Asset = await troveManager.getCurrentICR(erc20.address, alice, price)
     assert.equal(ICR_Before_Asset, dec(4, 18))
 
-    assert.equal((await vestaParameters.MCR(ZERO_ADDRESS)).toString(), '1100000000000000000')
-    assert.equal((await vestaParameters.MCR(erc20.address)).toString(), '1100000000000000000')
+    assert.equal((await dfrancParameters.MCR(ZERO_ADDRESS)).toString(), '1100000000000000000')
+    assert.equal((await dfrancParameters.MCR(erc20.address)).toString(), '1100000000000000000')
 
     // Alice increases debt to 180 DCHF, lowering her ICR to 1.11
     await getNetBorrowingAmount(dec(130, 18))

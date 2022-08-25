@@ -27,9 +27,9 @@ contract('StabilityPool', async accounts => {
     stabilityPool = await StabilityPool.new()
     const mockCommunityIssuance = (await CommunityIssuance.new()).address
     const dumbContractAddress = (await NonPayable.new()).address
-    const vestaParameters = await DfrancParameters.new();
-    await vestaParameters.sanitizeParameters(ZERO_ADDRESS);
-    await stabilityPool.setAddresses(ZERO_ADDRESS, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, mockCommunityIssuance, vestaParameters.address)
+    const dfrancParameters = await DfrancParameters.new();
+    await dfrancParameters.sanitizeParameters(ZERO_ADDRESS);
+    await stabilityPool.setAddresses(ZERO_ADDRESS, dumbContractAddress, dumbContractAddress, dumbContractAddress, dumbContractAddress, mockCommunityIssuance, dfrancParameters.address)
   })
 
   it('getAssetBalance(): gets the recorded ETH balance', async () => {

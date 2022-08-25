@@ -88,7 +88,7 @@ contract('BorrowerOperations', async accounts => {
       defaultPool = contracts.defaultPool
       borrowerOperations = contracts.borrowerOperations
       hintHelpers = contracts.hintHelpers
-      vestaParams = contracts.vestaParameters
+      vestaParams = contracts.dfrancParameters
 
       monStaking = MONContracts.monStaking
       monToken = MONContracts.monToken

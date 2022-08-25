@@ -22,7 +22,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   let monStaking
   let monToken
   let communityIssuance
-  let vestaParameters
+  let dfrancParameters
 
   before(async () => {
     const coreContracts = await deploymentHelper.deployLiquityCore()
@@ -37,7 +37,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
     defaultPool = coreContracts.defaultPool
     functionCaller = coreContracts.functionCaller
     borrowerOperations = coreContracts.borrowerOperations
-    vestaParameters = coreContracts.vestaParameters
+    dfrancParameters = coreContracts.dfrancParameters
 
     monStaking = MONContracts.monStaking
     monToken = MONContracts.monToken
@@ -49,13 +49,13 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   })
 
   it('Check if correct Addresses in Vault Parameters', async () => {
-    assert.equal(priceFeed.address, await vestaParameters.priceFeed())
-    assert.equal(activePool.address, await vestaParameters.activePool())
-    assert.equal(defaultPool.address, await vestaParameters.defaultPool())
+    assert.equal(priceFeed.address, await dfrancParameters.priceFeed())
+    assert.equal(activePool.address, await dfrancParameters.activePool())
+    assert.equal(defaultPool.address, await dfrancParameters.defaultPool())
   })
 
   it('Sets the correct vestaParams address in TroveManager', async () => {
-    assert.equal(vestaParameters.address, await troveManager.vestaParams());
+    assert.equal(dfrancParameters.address, await troveManager.vestaParams());
   })
 
   it('Sets the correct DCHFToken address in TroveManager', async () => {
@@ -178,7 +178,7 @@ contract('Deployment script - Sets correct contract addresses dependencies after
   //--- BorrowerOperations ---
 
   it('Sets the correct DfrancParameters address in BorrowerOperations', async () => {
-    assert.equal(vestaParameters.address, await borrowerOperations.vestaParams())
+    assert.equal(dfrancParameters.address, await borrowerOperations.vestaParams())
   })
 
   // TroveManager in BO

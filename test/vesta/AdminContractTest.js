@@ -63,7 +63,7 @@ contract('AdminContract', async accounts => {
       assert.equal(dataOracle[1], fakeIndex);
       assert.equal(dataOracle[2], true);
 
-      assert.notEqual((await contracts.vestaParameters.redemptionBlock(ZERO_ADDRESS)).toString(), 0);
+      assert.notEqual((await contracts.dfrancParameters.redemptionBlock(ZERO_ADDRESS)).toString(), 0);
       assert.notEqual(await stabilityPoolManager.unsafeGetAssetStabilityPool(ZERO_ADDRESS), ZERO_ADDRESS)
       assert.equal((await monToken.balanceOf(MONContracts.communityIssuance.address)).toString(), dec(100, 18))
       assert.notEqual((await MONContracts.communityIssuance.monDistributionsByPool), 0);
@@ -84,7 +84,7 @@ contract('AdminContract', async accounts => {
         contracts.dchfToken.address,
         contracts.sortedTroves.address,
         MONContracts.communityIssuance.address,
-        contracts.vestaParameters.address
+        contracts.dfrancParameters.address
       ));
 
       assert.notEqual(stabilityPoolV1.address, stabilityPoolV2.address);

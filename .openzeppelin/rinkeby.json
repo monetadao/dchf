@@ -202,6 +202,86 @@
       "address": "0x635E84949abfD8b90b5A819aB1762b43391D2660",
       "txHash": "0xbf77038a104ddfc10b3159cac8f3b42452952a4fe35d1de46f8d5bd596fa7d63",
       "kind": "transparent"
+    },
+    {
+      "address": "0x98b4f260BB42B7265dCf8B5b11dC30378916496A",
+      "txHash": "0x09b3d1c23fa8720fd04911c10382a3490d767495ff74fa169a2fa56c38a72adc",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xb9aDd76A225c7Cf87E2Acb04687200cD2E771b2d",
+      "txHash": "0xe02a1ec712b4428557632ba5442f2f7d663bce53bb7b8c2fc96084e2b93e3411",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xea95145978354051A967285d0F40c9649C60B03d",
+      "txHash": "0x5e04f62e81dfe4b7f5bc628ff7e38ec8ec9171e6899746b4ad235698d997383d",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x42F97aC9641f6766e6977af6E0ed2Ab568B7cFfE",
+      "txHash": "0xda68fd2ccfa89f399008f9eab1e9f7c6aade0da2f1e3c9092d7f3957a5e9b20f",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xF33A704056f3Fc3A0F0cE946777515Ac38491c67",
+      "txHash": "0x83d87553486e07a6039257b641b6040d8d6092a6c363eaaf9b089baecda0e386",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x035C16cf7Ea9cc1611D035BfFE4E8140A83734C0",
+      "txHash": "0xea22567be9f1dcc52c3cfa1adce6bbb463fa7f82dd8bb9fe8545b6dd07687c18",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x99AbB7B303C11da813d645739F1733C5A35DA1C6",
+      "txHash": "0x15d81e44748e13362bdbcc44e3cb9b0aab5c3848da9b39704b1b9c1f63954f67",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x75dFD75fdDc75494dbC33c7dcEAE37a92CE3f0bE",
+      "txHash": "0x58d0ec87d5e99f7b85fdd4e55f8d664f50c012f4c78e78b002a2e34c09f2ade1",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x03AF9A3eec020Fd1ED47eb231Ea95E34a7Db2A16",
+      "txHash": "0xd2548240c779fc5adcc382337ddac1c1519e6faa2b0cb25efc972ba72683355b",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x03d234F4eEc60e42685a485f610A3485D23bF8DA",
+      "txHash": "0x6b1863b17eab9e11e0a8cd32e9c07f53f70bb0b84784a154a04b2266426a9aa6",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x412B7A9744C9C88e0da628d2c3e1eD6da462C1fc",
+      "txHash": "0x5623095c370061010ad0ec98671fc077d6c9730d04d0358ca4b80de723ab2f12",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xfc84eD50dc3970Ca09F59Fa27CCE37B1501ef842",
+      "txHash": "0xa01083b5c6fa458c727639483d8c8f36d31adcaef13d944451c306d355e71f5a",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xAA0ac168B523bc9F2c6e30dEDc427e2d898FCa4C",
+      "txHash": "0x56d274d3080f4ea3793652b6f3256e244b196e11194381b27b7117b6f48f0522",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x01204d84F2a5Eb722fEEEd1a3698fB1Fa286ed60",
+      "txHash": "0xec1d57919cfbdf09a106c9669a67f7806508bb056cb85c62cb471724b08ac464",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x4Db0B145ED57A9E2E2381Cea1ec307F1690053b6",
+      "txHash": "0xcdd3b8122b73fa839230805c084cd2be40f41bd7de726e2d465a0f374ddd19b3",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xb03a4720fb69aD39cDa0535b2e22E577d64B8000",
+      "txHash": "0xf5c682307da58170ed1ec13be101f1bcfdd5a1f9fe88aa4e9be8723aa14813d5",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -2213,6 +2293,254 @@
           },
           "t_bool": {
             "label": "bool"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "5de56c3909ca445599336fff4701f0bad98c8b453daa9ab90240086cb68c1c2e": {
+      "address": "0x7e27e6659d6a6B715dD8710Dd7c1730697531082",
+      "txHash": "0x70d39542b233393e2d5b1e8a83737892d20dacf25cac7be2c082c02f5a8f70be",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "DfrancBase",
+            "label": "vestaParams",
+            "type": "t_contract(IDfrancParameters)11781",
+            "src": "contracts/Dependencies/DfrancBase.sol:21"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "borrowerOperationsAddress",
+            "type": "t_address",
+            "src": "contracts/TroveManagerHelpers.sol:16"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "troveManagerAddress",
+            "type": "t_address",
+            "src": "contracts/TroveManagerHelpers.sol:17"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "dchfToken",
+            "type": "t_contract(IDCHFToken)11470",
+            "src": "contracts/TroveManagerHelpers.sol:19"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "sortedTroves",
+            "type": "t_contract(ISortedTroves)12232",
+            "src": "contracts/TroveManagerHelpers.sol:22"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "baseRate",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/TroveManagerHelpers.sol:39"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "lastFeeOperationTime",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/TroveManagerHelpers.sol:42"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "Troves",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12895_storage))",
+            "src": "contracts/TroveManagerHelpers.sol:44"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "totalStakes",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/TroveManagerHelpers.sol:46"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "totalStakesSnapshot",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/TroveManagerHelpers.sol:49"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "totalCollateralSnapshot",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/TroveManagerHelpers.sol:52"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "L_ASSETS",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/TroveManagerHelpers.sol:62"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "L_DCHFDebts",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/TroveManagerHelpers.sol:63"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "rewardSnapshots",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13023_storage))",
+            "src": "contracts/TroveManagerHelpers.sol:66"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "TroveOwners",
+            "type": "t_mapping(t_address,t_array(t_address)dyn_storage)",
+            "src": "contracts/TroveManagerHelpers.sol:69"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "lastETHError_Redistribution",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/TroveManagerHelpers.sol:72"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "lastDCHFDebtError_Redistribution",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts/TroveManagerHelpers.sol:73"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts/TroveManagerHelpers.sol:75"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_contract(IDCHFToken)11470": {
+            "label": "contract IDCHFToken"
+          },
+          "t_contract(ISortedTroves)12232": {
+            "label": "contract ISortedTroves"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12895_storage))": {
+            "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.Trove))"
+          },
+          "t_mapping(t_address,t_struct(Trove)12895_storage)": {
+            "label": "mapping(address => struct ITroveManagerHelpers.Trove)"
+          },
+          "t_struct(Trove)12895_storage": {
+            "label": "struct ITroveManagerHelpers.Trove",
+            "members": [
+              {
+                "label": "asset",
+                "type": "t_address"
+              },
+              {
+                "label": "debt",
+                "type": "t_uint256"
+              },
+              {
+                "label": "coll",
+                "type": "t_uint256"
+              },
+              {
+                "label": "stake",
+                "type": "t_uint256"
+              },
+              {
+                "label": "status",
+                "type": "t_enum(Status)12881"
+              },
+              {
+                "label": "arrayIndex",
+                "type": "t_uint128"
+              }
+            ]
+          },
+          "t_enum(Status)12881": {
+            "label": "enum ITroveManagerHelpers.Status",
+            "members": [
+              "nonExistent",
+              "active",
+              "closedByOwner",
+              "closedByLiquidation",
+              "closedByRedemption"
+            ]
+          },
+          "t_uint128": {
+            "label": "uint128"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13023_storage))": {
+            "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.RewardSnapshot))"
+          },
+          "t_mapping(t_address,t_struct(RewardSnapshot)13023_storage)": {
+            "label": "mapping(address => struct ITroveManagerHelpers.RewardSnapshot)"
+          },
+          "t_struct(RewardSnapshot)13023_storage": {
+            "label": "struct ITroveManagerHelpers.RewardSnapshot",
+            "members": [
+              {
+                "label": "asset",
+                "type": "t_uint256"
+              },
+              {
+                "label": "DCHFDebt",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_mapping(t_address,t_array(t_address)dyn_storage)": {
+            "label": "mapping(address => address[])"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_contract(IDfrancParameters)11781": {
+            "label": "contract IDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]"

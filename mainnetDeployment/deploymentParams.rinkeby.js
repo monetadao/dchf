@@ -21,10 +21,10 @@ const gOHMParameters = {
   BORROWING_FEE_FLOOR: 125
 }
 
-const vestaAddresses = {
-  ADMIN_MULTI: "0xD740C7524a14ef1a03B097DBD65304A9586DC38C",
-  MON_SAFE: "0xD740C7524a14ef1a03B097DBD65304A9586DC38C", // TODO
-  DEPLOYER: "0x31c57298578f7508B5982062cfEc5ec8BD346247",
+const dfrancAddresses = {
+  ADMIN_MULTI: "0x00dCC22fD0DF66a07Be512AA617c78E703bDC550",
+  MON_SAFE: "0x2bA480A4Ae70f172Ff73FcDb29A1909c9C9df785", // TODO
+  DEPLOYER: "0xF4981efCd76f992d7Ba54aE25cE35525b9CBF8f8",
 }
 
 const beneficiaries = {
@@ -93,14 +93,14 @@ const waitFunction = async () => {
   return delay(90000) // wait 90s
 }
 
-const GAS_PRICE = 1500000000 // 1.5 Gwei
+const GAS_PRICE = 25000000000
 const TX_CONFIRMATIONS = 1
 
-const ETHERSCAN_BASE_URL = 'https://rinkeby-explorer.arbitrum.io/address'
+const ETHERSCAN_BASE_URL = 'https://rinkeby.etherscan.io/address'
 
 module.exports = {
   externalAddrs,
-  vestaAddresses,
+  dfrancAddresses,
   beneficiaries,
   OUTPUT_FILE,
   waitFunction,

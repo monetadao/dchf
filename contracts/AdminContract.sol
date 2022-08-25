@@ -18,7 +18,7 @@ contract AdminContract is ProxyAdmin {
 		0xf704b47f65a99b2219b7213612db4be4a436cdf50624f4baca1373ef0de0aac7;
 	bool public isInitialized;
 
-	IDfrancParameters private vestaParameters;
+	IDfrancParameters private dfrancParameters;
 	IStabilityPoolManager private stabilityPoolManager;
 	ICommunityIssuance private communityIssuance;
 
@@ -56,7 +56,7 @@ contract AdminContract is ProxyAdmin {
 		sortedTrovesAddress = _sortedTrovesAddress;
 		communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
 
-		vestaParameters = IDfrancParameters(_paramaters);
+		dfrancParameters = IDfrancParameters(_paramaters);
 		stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManager);
 	}
 
@@ -76,8 +76,8 @@ contract AdminContract is ProxyAdmin {
 			"This collateral already exists"
 		);
 
-		vestaParameters.priceFeed().addOracle(_asset, _chainlinkOracle, _chainlinkIndex);
-		vestaParameters.setAsDefaultWithRemptionBlock(_asset, redemptionLockInDay);
+		dfrancParameters.priceFeed().addOracle(_asset, _chainlinkOracle, _chainlinkIndex);
+		dfrancParameters.setAsDefaultWithRemptionBlock(_asset, redemptionLockInDay);
 
 		stabilityPoolManager.addStabilityPool(_asset, _stabilityPoolProxyAddress);
 		communityIssuance.addFundToStabilityPoolFrom(

@@ -77,9 +77,9 @@ class MainnetDeploymentHelper {
 
   async deployPartially(treasurySigAddress, deploymentState) {
     const MONTokenFactory = await this.getFactory("MONToken")
-    const lockedVstaFactory = await this.getFactory("LockedMON")
+    const lockedMONFactory = await this.getFactory("LockedMON")
 
-    const lockedVsta = await this.loadOrDeploy(lockedVstaFactory, 'lockedVsta', deploymentState)
+    const lockedMON = await this.loadOrDeploy(lockedMONFactory, 'lockedMON', deploymentState)
 
     // Deploy MON Token, passing Community Issuance and Factory addresses to the constructor
     const MONToken = await this.loadOrDeploy(
@@ -93,18 +93,18 @@ class MainnetDeploymentHelper {
     if (!this.configParams.ETHERSCAN_BASE_URL) {
       console.log('No Etherscan Url defined, skipping verification')
     } else {
-      await this.verifyContract('lockedVsta', deploymentState, [treasurySigAddress])
+      await this.verifyContract('lockedMON', deploymentState, [treasurySigAddress])
       await this.verifyContract('MONToken', deploymentState, [treasurySigAddress])
     }
 
-    await this.isOwnershipRenounced(lockedVsta) ||
-      await this.sendAndWaitForTransaction(lockedVsta.setAddresses(
+    await this.isOwnershipRenounced(lockedMON) ||
+      await this.sendAndWaitForTransaction(lockedMON.setAddresses(
         MONToken.address,
         { gasPrice: this.configParams.GAS_PRICE }
       ))
 
     const partialContracts = {
-      lockedVsta,
+      lockedMON,
       MONToken
     }
 
@@ -127,7 +127,7 @@ class MainnetDeploymentHelper {
     const hintHelpersFactory = await this.getFactory("HintHelpers")
     const DCHFTokenFactory = await this.getFactory("DCHFToken")
     const vaultParametersFactory = await this.getFactory("DfrancParameters")
-    const lockedVstaFactory = await this.getFactory("LockedMON")
+    const lockedMONFactory = await this.getFactory("LockedMON")
     const adminContractFactory = await this.getFactory("AdminContract")
 
     // Deploy txs
@@ -142,12 +142,12 @@ class MainnetDeploymentHelper {
     const collSurplusPool = await this.loadOrDeploy(collSurplusPoolFactory, 'collSurplusPool', deploymentState, true)
     const borrowerOperations = await this.loadOrDeploy(borrowerOperationsFactory, 'borrowerOperations', deploymentState, true)
     const hintHelpers = await this.loadOrDeploy(hintHelpersFactory, 'hintHelpers', deploymentState, true)
-    const vestaParameters = await this.loadOrDeploy(vaultParametersFactory, 'vestaParameters', deploymentState, true)
+    const dfrancParameters = await this.loadOrDeploy(vaultParametersFactory, 'dfrancParameters', deploymentState, true)
 
     //// NO PROXY
     const stabilityPoolV1 = await this.loadOrDeploy(stabilityPoolFactory, 'stabilityPoolV1', deploymentState)
     const gasPool = await this.loadOrDeploy(gasPoolFactory, 'gasPool', deploymentState)
-    const lockedVsta = await this.loadOrDeploy(lockedVstaFactory, 'lockedVsta', deploymentState)
+    const lockedMON = await this.loadOrDeploy(lockedMONFactory, 'lockedMON', deploymentState)
     const adminContract = await this.loadOrDeploy(adminContractFactory, 'adminContract', deploymentState)
 
     const DCHFTokenParams = [
@@ -178,8 +178,8 @@ class MainnetDeploymentHelper {
       await this.verifyContract('borrowerOperations', deploymentState)
       await this.verifyContract('hintHelpers', deploymentState)
       await this.verifyContract('DCHFToken', deploymentState, DCHFTokenParams)
-      await this.verifyContract('vestaParameters', deploymentState)
-      await this.verifyContract('lockedVsta', deploymentState)
+      await this.verifyContract('dfrancParameters', deploymentState)
+      await this.verifyContract('lockedMON', deploymentState)
       await this.verifyContract('adminContract', deploymentState)
     }
 
@@ -197,8 +197,8 @@ class MainnetDeploymentHelper {
       collSurplusPool,
       borrowerOperations,
       hintHelpers,
-      vestaParameters,
-      lockedVsta
+      dfrancParameters,
+      lockedMON
     }
     return coreContracts
   }
@@ -282,14 +282,14 @@ class MainnetDeploymentHelper {
         { gasPrice }
       ))
 
-    await this.isOwnershipRenounced(contracts.lockedVsta) ||
-      await this.sendAndWaitForTransaction(contracts.lockedVsta.setAddresses(
+    await this.isOwnershipRenounced(contracts.lockedMON) ||
+      await this.sendAndWaitForTransaction(contracts.lockedMON.setAddresses(
         MONContracts.MONToken.address,
         { gasPrice }
       ))
 
-    await this.isOwnershipRenounced(contracts.vestaParameters) ||
-      await this.sendAndWaitForTransaction(contracts.vestaParameters.setAddresses(
+    await this.isOwnershipRenounced(contracts.dfrancParameters) ||
+      await this.sendAndWaitForTransaction(contracts.dfrancParameters.setAddresses(
         contracts.activePool.address,
         contracts.defaultPool.address,
         contracts.priceFeed.address,
@@ -306,7 +306,7 @@ class MainnetDeploymentHelper {
         contracts.dchfToken.address,
         contracts.sortedTroves.address,
         MONContracts.MONStaking.address,
-        contracts.vestaParameters.address,
+        contracts.dfrancParameters.address,
         { gasPrice }
       ))
 
@@ -319,7 +319,7 @@ class MainnetDeploymentHelper {
         contracts.sortedTroves.address,
         contracts.dchfToken.address,
         MONContracts.MONStaking.address,
-        contracts.vestaParameters.address,
+        contracts.dfrancParameters.address,
         { gasPrice }
       ))
 
@@ -356,7 +356,7 @@ class MainnetDeploymentHelper {
 
     await this.isOwnershipRenounced(contracts.adminContract) ||
       await this.sendAndWaitForTransaction(contracts.adminContract.setAddresses(
-        contracts.vestaParameters.address,
+        contracts.dfrancParameters.address,
         contracts.stabilityPoolManager.address,
         contracts.borrowerOperations.address,
         contracts.troveManager.address,
@@ -371,7 +371,7 @@ class MainnetDeploymentHelper {
       await this.sendAndWaitForTransaction(contracts.hintHelpers.setAddresses(
         contracts.sortedTroves.address,
         contracts.troveManager.address,
-        contracts.vestaParameters.address,
+        contracts.dfrancParameters.address,
         { gasPrice }
       ))
   }
