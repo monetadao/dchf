@@ -69,9 +69,9 @@ async function mainnetDeploy(configParams) {
     await transferOwnership(partialContracts.lockedMON, TREASURY_WALLET);
 
 
-    const balance = await partialContracts.MONToken.balanceOf(deployerWallet.address);
+    /*const balance = await partialContracts.MONToken.balanceOf(deployerWallet.address);
     console.log(`Sending ${balance} MON to ${TREASURY_WALLET}`);
-    await partialContracts.MONToken.transfer(TREASURY_WALLET, balance)
+    await partialContracts.MONToken.transfer(TREASURY_WALLET, balance)*/
 
     console.log(`deployerETHBalance after: ${await ethers.provider.getBalance(deployerWallet.address)}`)
 
@@ -152,8 +152,7 @@ async function addETHCollaterals() {
           stabilityPoolETHProxy.address,
           config.externalAddrs.CHAINLINK_ETHUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
-          dec(100_000, 18),
-          toBN(dec(100_000, 18)).div(toBN(4)),
+          dec(16_000_000, 18),
           config.REDEMPTION_SAFETY), {
         gasPrice,
       })
@@ -196,8 +195,7 @@ async function addBTCCollaterals() {
           stabilityPoolBTCProxy.address,
           config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
-          dec(100_000, 18),
-          toBN(dec(100_000, 18)).div(toBN(4)),
+          dec(16_000_000, 18),
           config.REDEMPTION_SAFETY), {
         gasPrice,
       });
