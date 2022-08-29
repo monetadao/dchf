@@ -46,7 +46,7 @@ async function mainnetDeploy(configParams) {
     console.log("Beneficiaries")
 
     if ((await partialContracts.MONToken.allowance(deployerWallet.address, partialContracts.lockedMON.address)) == 0)
-      await partialContracts.MONToken.approve(partialContracts.lockedMON.address, ethers.constants.MaxUint256)
+      await (await partialContracts.MONToken.approve(partialContracts.lockedMON.address, ethers.constants.MaxUint256)).wait();
 
     for (const [wallet, amount] of Object.entries(config.beneficiaries)) {
 
@@ -110,7 +110,6 @@ async function mainnetDeploy(configParams) {
 
   await addETHCollaterals();
   await addBTCCollaterals();
-  // await addGOHMCollaterals();
 
   mdh.saveDeployment(deploymentState)
 
@@ -210,51 +209,6 @@ async function addBTCCollaterals() {
   }
 }
 
-async function addGOHMCollaterals() {
-  const OHMAddress = !config.IsMainnet
-    ? await mdh.deployMockERC20Contract(deploymentState, "gOHM")
-    : config.externalAddrs.GOHM
-
-
-  if (!OHMAddress || OHMAddress == "")
-    throw ("CANNOT FIND THE renBTC Address")
-
-
-  if ((await vestaCore.stabilityPoolManager.unsafeGetAssetStabilityPool(OHMAddress)) == ZERO_ADDRESS) {
-    console.log("Creating Collateral - OHM")
-    let txReceiptProxyOHM;
-
-    txReceiptProxyOHM = await mdh
-      .sendAndWaitForTransaction(
-        vestaCore.adminContract.addNewCollateral(
-          OHMAddress,
-          vestaCore.stabilityPoolV1.address,
-          config.externalAddrs.CHAINLINK_OHM_PROXY,
-          config.IsMainnet ? config.externalAddrs.CHAINLINK_OHM_INDEX_PROXY : ZERO_ADDRESS,
-          dec(30_000, 18),
-          toBN(dec(30_000, 18)).div(toBN(4)),
-          config.REDEMPTION_SAFETY))
-
-    deploymentState["ProxyStabilityPoolOHM"] = {
-      address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(OHMAddress),
-      txHash: txReceiptProxyOHM.transactionHash
-    }
-    //Configure Collateral;
-    await mdh.sendAndWaitForTransaction(
-      vestaCore.dfrancParameters.setMCR(OHMAddress, config.gOHMParameters.MCR)
-    );
-    await mdh.sendAndWaitForTransaction(
-      vestaCore.dfrancParameters.setCCR(OHMAddress, config.gOHMParameters.CCR)
-    );
-    await mdh.sendAndWaitForTransaction(
-      vestaCore.dfrancParameters.setPercentDivisor(OHMAddress, config.gOHMParameters.PERCENT_DIVISOR)
-    );
-    await mdh.sendAndWaitForTransaction(
-      vestaCore.dfrancParameters.setBorrowingFeeFloor(OHMAddress, config.gOHMParameters.BORROWING_FEE_FLOOR)
-    );
-
-  }
-}
 
 async function giveContractsOwnerships() {
   await transferOwnership(vestaCore.adminContract, ADMIN_WALLET);

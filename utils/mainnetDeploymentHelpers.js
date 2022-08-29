@@ -95,7 +95,7 @@ class MainnetDeploymentHelper {
     if (!this.configParams.ETHERSCAN_BASE_URL) {
       console.log('No Etherscan Url defined, skipping verification')
     } else {
-      await this.verifyContract('lockedMON', deploymentState, [treasurySigAddress])
+      await this.verifyContract('lockedMON', deploymentState, [])
       await this.verifyContract('MONToken', deploymentState, [treasurySigAddress])
     }
 
