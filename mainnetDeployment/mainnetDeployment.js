@@ -25,8 +25,8 @@ async function mainnetDeploy(configParams) {
   config = configParams;
   gasPrice = config.GAS_PRICE;
 
-  ADMIN_WALLET = config.vestaAddresses.ADMIN_MULTI
-  TREASURY_WALLET = config.vestaAddresses.MON_SAFE
+  ADMIN_WALLET = config.dchfAddresses.ADMIN_MULTI
+  TREASURY_WALLET = config.dchfAddresses.MON_SAFE
 
   deployerWallet = (await ethers.getSigners())[0]
   mdh = new MainnetDeploymentHelper(config, deployerWallet)
@@ -34,7 +34,7 @@ async function mainnetDeploy(configParams) {
   deploymentState = mdh.loadPreviousDeployment()
 
   console.log(`deployer address: ${deployerWallet.address}`)
-  assert.equal(deployerWallet.address, config.vestaAddresses.DEPLOYER)
+  assert.equal(deployerWallet.address, config.dchfAddresses.DEPLOYER)
 
   console.log(`deployerETHBalance before: ${await ethers.provider.getBalance(deployerWallet.address)}`)
 
@@ -46,11 +46,13 @@ async function mainnetDeploy(configParams) {
     console.log("Beneficiaries")
 
     if ((await partialContracts.MONToken.allowance(deployerWallet.address, partialContracts.lockedVsta.address)) == 0)
-      await partialContracts.MONToken.approve(partialContracts.lockedVsta.address, ethers.constants.MaxUint256)
+      await (await partialContracts.MONToken.approve(partialContracts.lockedVsta.address, ethers.constants.MaxUint256)).wait();
 
     for (const [wallet, amount] of Object.entries(config.beneficiaries)) {
 
       if (amount == 0) continue
+
+      console.log(await partialContracts.MONToken.allowance(deployerWallet.address, partialContracts.lockedVsta.address));
 
       if (!(await partialContracts.lockedVsta.isEntityExits(wallet))) {
         console.log("Beneficiary: %s for %s", wallet, amount)
@@ -110,7 +112,6 @@ async function mainnetDeploy(configParams) {
 
   await addETHCollaterals();
   await addBTCCollaterals();
-  // await addGOHMCollaterals();
 
   mdh.saveDeployment(deploymentState)
 
@@ -207,52 +208,6 @@ async function addBTCCollaterals() {
       address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(BTCAddress),
       txHash: txReceiptProxyBTC.transactionHash
     }
-  }
-}
-
-async function addGOHMCollaterals() {
-  const OHMAddress = !config.IsMainnet
-    ? await mdh.deployMockERC20Contract(deploymentState, "gOHM")
-    : config.externalAddrs.GOHM
-
-
-  if (!OHMAddress || OHMAddress == "")
-    throw ("CANNOT FIND THE renBTC Address")
-
-
-  if ((await vestaCore.stabilityPoolManager.unsafeGetAssetStabilityPool(OHMAddress)) == ZERO_ADDRESS) {
-    console.log("Creating Collateral - OHM")
-    let txReceiptProxyOHM;
-
-    txReceiptProxyOHM = await mdh
-      .sendAndWaitForTransaction(
-        vestaCore.adminContract.addNewCollateral(
-          OHMAddress,
-          vestaCore.stabilityPoolV1.address,
-          config.externalAddrs.CHAINLINK_OHM_PROXY,
-          config.IsMainnet ? config.externalAddrs.CHAINLINK_OHM_INDEX_PROXY : ZERO_ADDRESS,
-          dec(30_000, 18),
-          toBN(dec(30_000, 18)).div(toBN(4)),
-          config.REDEMPTION_SAFETY))
-
-    deploymentState["ProxyStabilityPoolOHM"] = {
-      address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(OHMAddress),
-      txHash: txReceiptProxyOHM.transactionHash
-    }
-    //Configure Collateral;
-    await mdh.sendAndWaitForTransaction(
-      vestaCore.vestaParameters.setMCR(OHMAddress, config.gOHMParameters.MCR)
-    );
-    await mdh.sendAndWaitForTransaction(
-      vestaCore.vestaParameters.setCCR(OHMAddress, config.gOHMParameters.CCR)
-    );
-    await mdh.sendAndWaitForTransaction(
-      vestaCore.vestaParameters.setPercentDivisor(OHMAddress, config.gOHMParameters.PERCENT_DIVISOR)
-    );
-    await mdh.sendAndWaitForTransaction(
-      vestaCore.vestaParameters.setBorrowingFeeFloor(OHMAddress, config.gOHMParameters.BORROWING_FEE_FLOOR)
-    );
-
   }
 }
 

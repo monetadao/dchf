@@ -76,7 +76,7 @@ module.exports = {
     },*/
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cf9de047e0f54fac8d44b12783036bc8",
-      accounts: ["1a4a5d0d814a76a164e080819070bff2a553b0cb3fcae26c98ef3521f8d3f8ed"]
+      accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
     },
   },
   etherscan: {
