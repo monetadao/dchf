@@ -152,8 +152,8 @@ async function addETHCollaterals() {
           stabilityPoolETHProxy.address,
           config.externalAddrs.CHAINLINK_ETHUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
-          dec(100_000, 18),
-          toBN(dec(100_000, 18)).div(toBN(4)),
+          dec(config.monetaCommunityIssuanceParams.ETH_STABILITY_POOL_FUNDING, 18),
+          dec(config.monetaCommunityIssuanceParams.ETH_STABILITY_POOL_WEEKLY_DISTRIBUTION, 18),
           config.REDEMPTION_SAFETY), {
         gasPrice,
       })
@@ -196,8 +196,8 @@ async function addBTCCollaterals() {
           stabilityPoolBTCProxy.address,
           config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
-          dec(100_000, 18),
-          toBN(dec(100_000, 18)).div(toBN(4)),
+          dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_FUNDING, 18),
+          dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION, 18),
           config.REDEMPTION_SAFETY), {
         gasPrice,
       });

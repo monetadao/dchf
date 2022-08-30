@@ -18,6 +18,14 @@ const dfrancAddresses = {
   DEPLOYER: "0x31c57298578f7508B5982062cfEc5ec8BD346247"
 }
 
+const monetaCommunityIssuanceParams = {
+  ETH_STABILITY_POOL_FUNDING: 100_000,
+  BTC_STABILITY_POOL_FUNDING: 100_000,
+  ETH_STABILITY_POOL_WEEKLY_DISTRIBUTION: 25_000,
+  BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION: 25_000,
+
+}
+
 const beneficiaries = {
   //MARKETING GROWTH
   "0x4F74e01855E79e4ec65ee67C51540144A698D972": 17_000_000,
@@ -47,6 +55,7 @@ const ETHERSCAN_BASE_URL = 'https://rinkeby.etherscan.io/address'
 module.exports = {
   externalAddrs,
   dfrancAddresses,
+  monetaCommunityIssuanceParams,
   beneficiaries,
   OUTPUT_FILE,
   waitFunction,
