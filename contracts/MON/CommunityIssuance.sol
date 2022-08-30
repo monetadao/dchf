@@ -20,35 +20,20 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 	uint256 public constant DISTRIBUTION_DURATION = 7 days / 60;
 	uint256 public constant SECONDS_IN_ONE_MINUTE = 60;
 
-	/* The issuance factor F determines the curvature of the issuance curve.
-	 *
-	 * Minutes in one year: 60*24*365 = 525600
-	 *
-	 * For 50% of remaining tokens issued each year, with minutes as time units, we have:
-	 *
-	 * F ** 525600 = 0.5
-	 *
-	 * Re-arranging:
-	 *
-	 * 525600 * ln(F) = ln(0.5)
-	 * F = 0.5 ** (1/525600)
-	 * F = 0.999998681227695000
-	 */
-	uint256 public constant ISSUANCE_FACTOR = 999998681227695000;
-
 	IERC20Upgradeable public monToken;
 	IStabilityPoolManager public stabilityPoolManager;
 
 	mapping(address => uint256) public totalMONIssued;
-	mapping(address => uint256) public totalMONAssigned;
-	mapping(address => uint256) public initializedTime;
+	mapping(address => uint256) public lastUpdateTime;
+	mapping(address => uint256) public MONSupplyCaps;
+	mapping(address => uint256) public monDistributionsByPool;
 
 	address public adminContract;
 
 	bool public isInitialized;
 
 	modifier activeStabilityPoolOnly(address _pool) {
-		require(initializedTime[_pool] != 0, "CommunityIssuance: Pool needs to be added first.");
+		require(lastUpdateTime[_pool] != 0, "CommunityIssuance: Pool needs to be added first.");
 		_;
 	}
 
@@ -100,23 +85,43 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 		adminContract = _admin;
 	}
 
-	function initializeStabilityPool(address _pool, uint256 _assignedSupply)
+	function addFundToStabilityPool(address _pool, uint256 _assignedSupply)
 		external
 		override
 		isController
 	{
-		_initializeStabilityPool(_pool, _assignedSupply, msg.sender);
+		_addFundToStabilityPoolFrom(_pool, _assignedSupply, msg.sender);
 	}
 
-	function initializeStabilityPoolFrom(
+	function removeFundFromStabilityPool(address _pool, uint256 _fundToRemove)
+		external
+		onlyOwner
+		activeStabilityPoolOnly(_pool)
+	{
+		uint256 newCap = MONSupplyCaps[_pool].sub(_fundToRemove);
+		require(
+			totalMONIssued[_pool] <= newCap,
+			"CommunityIssuance: Stability Pool doesn't have enough supply."
+		);
+
+		MONSupplyCaps[_pool] -= _fundToRemove;
+
+		if (totalMONIssued[_pool] == MONSupplyCaps[_pool]) {
+			disableStabilityPool(_pool);
+		}
+
+		monToken.safeTransfer(msg.sender, _fundToRemove);
+	}
+
+	function addFundToStabilityPoolFrom(
 		address _pool,
 		uint256 _assignedSupply,
 		address _spender
 	) external override isController {
-		_initializeStabilityPool(_pool, _assignedSupply, _spender);
+		_addFundToStabilityPoolFrom(_pool, _assignedSupply, _spender);
 	}
 
-	function _initializeStabilityPool(
+	function _addFundToStabilityPoolFrom(
 		address _pool,
 		uint256 _assignedSupply,
 		address _spender
@@ -126,12 +131,43 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 			"CommunityIssuance: Invalid Stability Pool"
 		);
 
-		require(initializedTime[_pool] == 0, "Stability Pool already initialized");
+		if (lastUpdateTime[_pool] == 0) {
+			lastUpdateTime[_pool] = block.timestamp;
+		}
 
-		initializedTime[_pool] = block.timestamp;
-		totalMONAssigned[_pool] = _assignedSupply;
-
+		MONSupplyCaps[_pool] += _assignedSupply;
 		monToken.safeTransferFrom(_spender, address(this), _assignedSupply);
+	}
+
+	function transferFundToAnotherStabilityPool(
+		address _target,
+		address _receiver,
+		uint256 _quantity
+	)
+		external
+		override
+		onlyOwner
+		activeStabilityPoolOnly(_target)
+		activeStabilityPoolOnly(_receiver)
+	{
+		uint256 newCap = MONSupplyCaps[_target].sub(_quantity);
+		require(
+			totalMONIssued[_target] <= newCap,
+			"CommunityIssuance: Stability Pool doesn't have enough supply."
+		);
+
+		MONSupplyCaps[_target] -= _quantity;
+		MONSupplyCaps[_receiver] += _quantity;
+
+		if (totalMONIssued[_target] == MONSupplyCaps[_target]) {
+			disableStabilityPool(_target);
+		}
+	}
+
+	function disableStabilityPool(address _pool) internal {
+		lastUpdateTime[_pool] = 0;
+		MONSupplyCaps[_pool] = 0;
+		totalMONIssued[_pool] = 0;
 	}
 
 	function issueMON() external override onlyStabilityPool returns (uint256) {
@@ -139,37 +175,46 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 	}
 
 	function _issueMON(address _pool) internal isStabilityPool(_pool) returns (uint256) {
-		uint256 latestTotalMONIssued = totalMONAssigned[_pool]
-			.mul(_getCumulativeIssuanceFraction(_pool))
-			.div(DECIMAL_PRECISION);
-		uint256 issuance = latestTotalMONIssued.sub(totalMONIssued[_pool]);
+		uint256 maxPoolSupply = MONSupplyCaps[_pool];
 
-		totalMONIssued[_pool] = latestTotalMONIssued;
-		emit TotalMONIssuedUpdated(_pool, latestTotalMONIssued);
+		if (totalMONIssued[_pool] >= maxPoolSupply) return 0;
+
+		uint256 issuance = _getLastUpdateTokenDistribution(_pool);
+		uint256 totalIssuance = issuance.add(totalMONIssued[_pool]);
+
+		if (totalIssuance > maxPoolSupply) {
+			issuance = maxPoolSupply.sub(totalMONIssued[_pool]);
+			totalIssuance = maxPoolSupply;
+		}
+
+		lastUpdateTime[_pool] = block.timestamp;
+		totalMONIssued[_pool] = totalIssuance;
+		emit TotalMONIssuedUpdated(_pool, totalIssuance);
 
 		return issuance;
 	}
 
-	/* Gets 1-f^t    where: f < 1
-    f: issuance factor that determines the shape of the curve
-    t:  time passed since last LQTY issuance event  */
-	function _getCumulativeIssuanceFraction(address _pool) internal view returns (uint256) {
-		// Get the time passed since deployment
-		uint256 timePassedInMinutes = block.timestamp.sub(initializedTime[_pool]).div(
+	function _getLastUpdateTokenDistribution(address stabilityPool)
+		internal
+		view
+		returns (uint256)
+	{
+		require(lastUpdateTime[stabilityPool] != 0, "Stability pool hasn't been assigned");
+		uint256 timePassed = block.timestamp.sub(lastUpdateTime[stabilityPool]).div(
 			SECONDS_IN_ONE_MINUTE
 		);
+		uint256 totalDistribuedSinceBeginning = monDistributionsByPool[stabilityPool].mul(
+			timePassed
+		);
 
-		// f^t
-		uint256 power = DfrancMath._decPow(ISSUANCE_FACTOR, timePassedInMinutes);
-
-		//  (1 - f^t)
-		uint256 cumulativeIssuanceFraction = (uint256(DECIMAL_PRECISION).sub(power));
-		assert(cumulativeIssuanceFraction <= DECIMAL_PRECISION); // must be in range [0,1]
-
-		return cumulativeIssuanceFraction;
+		return totalDistribuedSinceBeginning;
 	}
 
-	function sendMON(address _account, uint256 _MONamount) external override onlyStabilityPool {
+	function sendMON(address _account, uint256 _MONamount)
+		external
+		override
+		onlyStabilityPool
+	{
 		uint256 balanceMON = monToken.balanceOf(address(this));
 		uint256 safeAmount = balanceMON >= _MONamount ? _MONamount : balanceMON;
 
@@ -178,5 +223,13 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 		}
 
 		monToken.transfer(_account, safeAmount);
+	}
+
+	function setWeeklyVstaDistribution(address _stabilityPool, uint256 _weeklyReward)
+		external
+		isController
+		isStabilityPool(_stabilityPool)
+	{
+		monDistributionsByPool[_stabilityPool] = _weeklyReward.div(DISTRIBUTION_DURATION);
 	}
 }

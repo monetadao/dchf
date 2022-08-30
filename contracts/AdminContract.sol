@@ -66,6 +66,7 @@ contract AdminContract is ProxyAdmin {
 		address _chainlinkOracle,
 		address _chainlinkIndex,
 		uint256 assignedToken,
+		uint256 _tokenPerWeekDistributed,
 		uint256 redemptionLockInDay
 	) external onlyOwner {
 		address _asset = IStabilityPool(_stabilityPoolProxyAddress).getAssetType();
@@ -79,10 +80,14 @@ contract AdminContract is ProxyAdmin {
 		dfrancParameters.setAsDefaultWithRemptionBlock(_asset, redemptionLockInDay);
 
 		stabilityPoolManager.addStabilityPool(_asset, _stabilityPoolProxyAddress);
-		communityIssuance.initializeStabilityPoolFrom(
+		communityIssuance.addFundToStabilityPoolFrom(
 			_stabilityPoolProxyAddress,
 			assignedToken,
 			msg.sender
+		);
+		communityIssuance.setWeeklyVstaDistribution(
+			_stabilityPoolProxyAddress,
+			_tokenPerWeekDistributed
 		);
 	}
 }

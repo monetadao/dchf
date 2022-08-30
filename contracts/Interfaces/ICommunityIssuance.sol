@@ -21,11 +21,19 @@ interface ICommunityIssuance {
 
 	function sendMON(address _account, uint256 _MONamount) external;
 
-	function initializeStabilityPool(address _pool, uint256 _assignedSupply) external;
+	function addFundToStabilityPool(address _pool, uint256 _assignedSupply) external;
 
-	function initializeStabilityPoolFrom(
+	function addFundToStabilityPoolFrom(
 		address _pool,
 		uint256 _assignedSupply,
 		address _spender
 	) external;
+
+	function transferFundToAnotherStabilityPool(
+		address _target,
+		address _receiver,
+		uint256 _quantity
+	) external;
+
+	function setWeeklyVstaDistribution(address _stabilityPool, uint256 _weeklyReward) external;
 }
