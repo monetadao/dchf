@@ -22,8 +22,8 @@ contract LockedMON is Ownable, CheckContract {
 	}
 
 	string public constant NAME = "LockedMON";
-	uint256 public constant SIX_MONTHS = 26 weeks;
-	uint256 public constant TWO_YEARS = 730 days;
+	uint256 public constant ZERO_DAYS = 0;
+	uint256 public constant ONE_YEAR = 365 days;
 
 	bool public isInitialized;
 
@@ -55,8 +55,8 @@ contract LockedMON is Ownable, CheckContract {
 		entitiesVesting[_entity] = Rule(
 			block.timestamp,
 			_totalSupply,
-			block.timestamp.add(SIX_MONTHS),
-			block.timestamp.add(TWO_YEARS),
+			block.timestamp.add(ZERO_DAYS),
+			block.timestamp.add(ONE_YEAR),
 			0
 		);
 
@@ -124,7 +124,7 @@ contract LockedMON is Ownable, CheckContract {
 		} else {
 			claimable = entityRule
 				.totalSupply
-				.div(TWO_YEARS)
+				.div(ONE_YEAR)
 				.mul(block.timestamp.sub(entityRule.createdDate))
 				.sub(entityRule.claimed);
 		}
