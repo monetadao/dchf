@@ -67,10 +67,11 @@ async function mainnetDeploy(configParams) {
 
     await transferOwnership(partialContracts.lockedMON, TREASURY_WALLET);
 
-
+    /*
     const balance = await partialContracts.MONToken.balanceOf(deployerWallet.address);
     console.log(`Sending ${balance} MON to ${TREASURY_WALLET}`);
     await partialContracts.MONToken.transfer(TREASURY_WALLET, balance)
+    */
 
     console.log(`deployerETHBalance after: ${await ethers.provider.getBalance(deployerWallet.address)}`)
 

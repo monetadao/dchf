@@ -19,7 +19,7 @@ contract MONToken is CheckContract, ERC20Permit {
 
 		//Lazy Mint to setup protocol.
 		//After the deployment scripts, deployer addr automatically send the fund to the treasury.
-		_mint(msg.sender, _1_MILLION.mul(42));
-		_mint(_treasurySig, _1_MILLION.mul(58));
+		_mint(msg.sender, _1_MILLION.mul(50));
+		_mint(_treasurySig, _1_MILLION.mul(50));
 	}
 }

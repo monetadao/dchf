@@ -18,7 +18,7 @@ Do the following steps to deploy the whole infrastructure:
 2. Create a `secrets.js` from the template `secrets.js.template` file. Add the `RINKEBY_PRIVATE_KEY`, the `RINKEBY_RPC_URL` and the `ETHERSCAN_API_KEY` for rinkeby deployment (todo: mainnetdeplyoment)
 3. In `deployment/deploymentParams/deploymentParams.rinkeby.js` (todo mainnetdeployment) it's needed to replace the values between the lines 16-18 to the Deployer's wallet (accordingly to the private key set on `secrets.js` file). All the oracles addresses are correct and should not be changed. Also the value `GAS_PRICE` is set correctly and you risk getting stuck in the deployment if the value is changed.
 4. You can choose to either deploy only the MONETA contracts (moneta token, vesting) or the whole infrastructure. Set the parameter `MON_TOKEN_ONLY` to handle this
-5. Run `npx hardhat run deployment/deploymentScripts/rinkebyDeployment.js` (todo mainnet deployment), to deploy the contracts.
+5. Run `npx hardhat run deployment/deploymentScripts/rinkebyDeployment.js --network rinkeby` (todo mainnet deployment), to deploy the contracts.
 6. You can check and verify the contracts by checking the output file in `deployment/output/rinkebyDeploymentOutput.json`.
 
 ## Important Notes
