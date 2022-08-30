@@ -1,10 +1,30 @@
--> DCHF Development Repo:
+# DCHF Contracts
 
-1. Currently the private keys / api keys for deployment are hard-coded in the "hardhat.config.js" file (don't use the git.secrets.js file).
+## General Information
 
-2. In mainnetDeployment/deploymentParams.rinkeby.js it's needed to replace the values between the lines 25-27 to the Deployer's wallet (accordingly to the private key set on hardhat.config.js file). All the oracles addresses are correct and should not be changed. Also the value in line 96 (GAS_PRICE) is set correctly and you risk getting stuck in the deployment if the value is changed.
+This repository was initially forked from vesta finance (link) and was changed in order to be deployable on Ethereum Mainnet. It deploys all contracts for the DCHF ecosystem and sets them up.
 
-3. The contract DfrancParameters.sol contains all the parameters from the system and should not be modified. However, the system is set to block redemptions in it's first 14 days. For testing purposes, it's recommended to change it for a lower value. You can find it on the line 15.
+## Changes
+
+The main changes from the fork were done such that the contracts are deployable on mainnet. Vesta Finance deployed the contracts on Arbitrum which does not have a max byte size limit for contracts. Therefore, the TroveManager.sol was over 25kb of size and needed to be split up into TroveManager.sol and TroveManagerHelpers.sol.
+
+In Addition, the repository was cleaned up such that it can only be deployed to rinkeby and mainnet. Many scripts, tests, helpers etc. were removed.
+
+## Deployment
+
+Do the following steps to deploy the whole infrastructure:
+
+1. Run `npm i`
+2. Create a `secrets.js` from the template `secrets.js.template` file. Add the `RINKEBY_PRIVATE_KEY`, the `RINKEBY_RPC_URL` and the `ETHERSCAN_API_KEY` for rinkeby deployment (todo: mainnetdeplyoment)
+3. In `deployment/deploymentParams/deploymentParams.rinkeby.js` (todo mainnetdeployment) it's needed to replace the values between the lines 16-18 to the Deployer's wallet (accordingly to the private key set on `secrets.js` file). All the oracles addresses are correct and should not be changed. Also the value `GAS_PRICE` is set correctly and you risk getting stuck in the deployment if the value is changed.
+4. You can choose to either deploy only the MONETA contracts (moneta token, vesting) or the whole infrastructure. Set the parameter `MON_TOKEN_ONLY` to handle this
+5. Run `npx hardhat run deployment/deploymentScripts/rinkebyDeployment.js --network rinkeby` (todo mainnet deployment), to deploy the contracts.
+6. You can check and verify the contracts by checking the output file in `deployment/output/rinkebyDeploymentOutput.json`.
+
+## Important Notes
+
+The contract DfrancParameters.sol contains all the parameters from the system and should not be modified. However, the system is set to block redemptions in it's first 14 days. For testing purposes, it's recommended to change it for a lower value. You can find it on the line 15.
+
 
 -> Call Diagram
 

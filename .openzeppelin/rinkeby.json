@@ -1,10 +1,10 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0xdA52588868beB38f948859FD83fb06FFA590852e",
-    "txHash": "0xab07e631b9a0e3739867b3796d967438a11fb061ebc295ed11436c0369cea350",
+    "address": "0xa84b3294d8671A998366D5262dC28B96443969d3",
+    "txHash": "0xd0d63049dc9cb54092989183a7ca50662ccc708a3c89dac08973f066c90810f9",
     "deployTransaction": {
-      "hash": "0xab07e631b9a0e3739867b3796d967438a11fb061ebc295ed11436c0369cea350",
+      "hash": "0xd0d63049dc9cb54092989183a7ca50662ccc708a3c89dac08973f066c90810f9",
       "type": 2,
       "accessList": [],
       "blockHash": null,
@@ -14,15 +14,15 @@
       "from": "0x4F74e01855E79e4ec65ee67C51540144A698D972",
       "gasPrice": {
         "type": "BigNumber",
-        "hex": "0x48b7b911"
+        "hex": "0x3b9aca0f"
       },
       "maxPriorityFeePerGas": {
         "type": "BigNumber",
-        "hex": "0x48b7b8fd"
+        "hex": "0x3b9aca00"
       },
       "maxFeePerGas": {
         "type": "BigNumber",
-        "hex": "0x48b7b911"
+        "hex": "0x3b9aca0f"
       },
       "gasLimit": {
         "type": "BigNumber",
@@ -33,261 +33,181 @@
         "type": "BigNumber",
         "hex": "0x00"
       },
-      "nonce": 197,
+      "nonce": 541,
       "data": "0x608060405234801561001057600080fd5b50600080546001600160a01b031916339081178255604051909182917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a350610759806100616000396000f3fe60806040526004361061007b5760003560e01c80639623609d1161004e5780639623609d1461011157806399a88ec414610124578063f2fde38b14610144578063f3b7dead146101645761007b565b8063204e1c7a14610080578063715018a6146100bc5780637eff275e146100d35780638da5cb5b146100f3575b600080fd5b34801561008c57600080fd5b506100a061009b366004610515565b610184565b6040516001600160a01b03909116815260200160405180910390f35b3480156100c857600080fd5b506100d1610215565b005b3480156100df57600080fd5b506100d16100ee366004610554565b610292565b3480156100ff57600080fd5b506000546001600160a01b03166100a0565b6100d161011f36600461058c565b61031c565b34801561013057600080fd5b506100d161013f366004610554565b6103ad565b34801561015057600080fd5b506100d161015f366004610515565b610405565b34801561017057600080fd5b506100a061017f366004610515565b6104ef565b6000806000836001600160a01b03166040516101aa90635c60da1b60e01b815260040190565b600060405180830381855afa9150503d80600081146101e5576040519150601f19603f3d011682016040523d82523d6000602084013e6101ea565b606091505b5091509150816101f957600080fd5b8080602001905181019061020d9190610538565b949350505050565b6000546001600160a01b031633146102485760405162461bcd60e51b815260040161023f906106c0565b60405180910390fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031633146102bc5760405162461bcd60e51b815260040161023f906106c0565b6040516308f2839760e41b81526001600160a01b038281166004830152831690638f283970906024015b600060405180830381600087803b15801561030057600080fd5b505af1158015610314573d6000803e3d6000fd5b505050505050565b6000546001600160a01b031633146103465760405162461bcd60e51b815260040161023f906106c0565b60405163278f794360e11b81526001600160a01b03841690634f1ef286903490610376908690869060040161065d565b6000604051808303818588803b15801561038f57600080fd5b505af11580156103a3573d6000803e3d6000fd5b5050505050505050565b6000546001600160a01b031633146103d75760405162461bcd60e51b815260040161023f906106c0565b604051631b2ce7f360e11b81526001600160a01b038281166004830152831690633659cfe6906024016102e6565b6000546001600160a01b0316331461042f5760405162461bcd60e51b815260040161023f906106c0565b6001600160a01b0381166104945760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b606482015260840161023f565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b6000806000836001600160a01b03166040516101aa906303e1469160e61b815260040190565b600060208284031215610526578081fd5b81356105318161070b565b9392505050565b600060208284031215610549578081fd5b81516105318161070b565b60008060408385031215610566578081fd5b82356105718161070b565b915060208301356105818161070b565b809150509250929050565b6000806000606084860312156105a0578081fd5b83356105ab8161070b565b925060208401356105bb8161070b565b9150604084013567ffffffffffffffff808211156105d7578283fd5b818601915086601f8301126105ea578283fd5b8135818111156105fc576105fc6106f5565b604051601f8201601f19908116603f01168101908382118183101715610624576106246106f5565b8160405282815289602084870101111561063c578586fd5b82602086016020830137856020848301015280955050505050509250925092565b600060018060a01b038416825260206040818401528351806040850152825b818110156106985785810183015185820160600152820161067c565b818111156106a95783606083870101525b50601f01601f191692909201606001949350505050565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b634e487b7160e01b600052604160045260246000fd5b6001600160a01b038116811461072057600080fd5b5056fea2646970667358221220d849f96f3086b9f82cdcf665adb8c697ace05638da1c7c16ab2d26293717af6764736f6c63430008020033",
-      "r": "0xfa961fdb25b40ada828c725e04301a4e6bee339215445842f7e5f5949047e703",
-      "s": "0x26f7e92db33a50a4a05742bd81e8295899357df7db8245699a4b7e181b07a6b1",
+      "r": "0xd9f9ca8f328df93e12103d4f5f7602a80ea8e2a264f5405bf9d8d5bda47df92e",
+      "s": "0x75f3f80abf4e2c7e65ded959481c3feeb2d949980b400387f7128f91e136f971",
       "v": 0,
-      "creates": "0xdA52588868beB38f948859FD83fb06FFA590852e",
+      "creates": "0xa84b3294d8671A998366D5262dC28B96443969d3",
       "chainId": 4
     }
   },
   "proxies": [
     {
-      "address": "0xa5c36499cD35356FdfEae5D996816c892359fB11",
-      "txHash": "0x048f6ec6924a6c4fc9c749f7cb603ca5e9482126d7cd8d2b873260d6a8e0027b",
+      "address": "0x074294f5D3438eb0513D3EC7a3fE7717061b25A9",
+      "txHash": "0x52846cdf129d471cd11e3c787bd0fee31e759e205fe56302cd5f6accd423e4b7",
       "kind": "transparent"
     },
     {
-      "address": "0xB65671729fBB0dacf4c51878c1338DC54B2cB247",
-      "txHash": "0x986f72b4819cf87e5a362480691559d02cf3ed3c1bfb8868039f1b8b7b6b2665",
+      "address": "0x105101A71Ad51D2ba8B3A99240A2F8D68322A90e",
+      "txHash": "0xec7e3eafd1692a656efe579f6278e1734833543f3aa7af0816d98798a1ad3ef1",
       "kind": "transparent"
     },
     {
-      "address": "0x2D226608853F90a4D6839AE99Aff3AdEF281EE1D",
-      "txHash": "0x0209f2d82438a33625040decb665a6e969ba57b80072c37d71b63ed156dced0a",
+      "address": "0x38d37537be3B850296bc0077155a3311bcfbBd48",
+      "txHash": "0x47370fcca1b31319c6af2c65c5eb897383c02f2cf0ba802904c8b18d57433f36",
       "kind": "transparent"
     },
     {
-      "address": "0x73c3C938C8026229aa10c331346E0De623CBeeF1",
-      "txHash": "0xd498e937825a0eef760c8da8dcbfb0b5cf3162f349427363cc6e951f83861cfd",
+      "address": "0xf7AD113753c5775B212b50A8ccC31C158eAcb006",
+      "txHash": "0x357dbe310462d871d5ebf690d9f774a931c18a7c25132f82e03eac273a43c489",
       "kind": "transparent"
     },
     {
-      "address": "0xb556f6ce430D3c95e42a7B7Da10A3FF36AAADDd8",
-      "txHash": "0xdbbcd367f1d5fe263c6772c5dd7850a61277e4193564f26ed9bf16ecd2302c20",
+      "address": "0x9dd349F36736201274609018Cd155D1E10f15586",
+      "txHash": "0xf50c958f03b62dea27fa7378a6a9f3ce4531848e5213154d559b879d2054815f",
       "kind": "transparent"
     },
     {
-      "address": "0xE650FC597B1f8A928bDDa678c63693a079497b4f",
-      "txHash": "0xdb3862fab0a0a829cc0a78641b681a3f7bd217d0da81e021eb35104c5e53b98d",
+      "address": "0x01ec12624c2d1FBb422226907E8eD833Ba2823D2",
+      "txHash": "0x41f0138f93be1d36177433c6fc4fd4f68421189c12175c9eef79cf0fc4a777e6",
       "kind": "transparent"
     },
     {
-      "address": "0x7462752D3D8A85bbc831f4056106451b8219e558",
-      "txHash": "0x0eae8220da32c0d27bde2739fa3e4f2d34dd2bea1bdd482f984025b7afacfe36",
+      "address": "0x0Ff37CFc5110FAB74E9EDE2BaB7EBDfd916baf72",
+      "txHash": "0xe85c3ddafc33b250890e4392e4b48053a4db8b1be27dd8c57794be239a474ad9",
       "kind": "transparent"
     },
     {
-      "address": "0xd4503022e8D53eB280ac56787319CfA7DFD04B51",
-      "txHash": "0x60c16480ac3763efdec402554fc38792e139828f8a9477448f6f2f6cefc4089a",
+      "address": "0xc446d2f5A33d0dC5f54bFa46a231675AB086EBb2",
+      "txHash": "0xfc9f10c9055db932e7d5790b9625d423082356fc55766b6c598c3d53c7c54bce",
       "kind": "transparent"
     },
     {
-      "address": "0xEEfBE572a9eB7D17613d6737a5066f7EF684aC65",
-      "txHash": "0x182c776e9c7fca5ae16178e112eb039637887bdc84c428c215e7f74dbf3e8402",
+      "address": "0x89Da5E4C480392556A6F2FB1b470f3265635064d",
+      "txHash": "0xbd1477b911fd4749e3cb908a67ff766144a641e875f633f4e04340379e2cea89",
       "kind": "transparent"
     },
     {
-      "address": "0x9c5A2a4ecbD72850faAb2A45782f3370Ea5f4E25",
-      "txHash": "0x41de80dea4706db5d5288f1fc22019285942479e7b1f87dbf58698e871578622",
+      "address": "0x1fA088b01272d62348C9919e984170fc82aC1238",
+      "txHash": "0x9e35f2b4afed4343677e1d22074798097522bade1ad066ceddec4ee9249f5787",
       "kind": "transparent"
     },
     {
-      "address": "0x0fB34c5Ad35C120B87FF19e464b3eAF1ee42684b",
-      "txHash": "0x147ba995945eebdd7034fe1964ff4aad3e6a8603ca755ff8cf5e35dae412d417",
+      "address": "0xfEF6A00B12766c0Fa0D9C0BA36f12f7e0357c2F4",
+      "txHash": "0xd968e1859f1178bf333d881f359424f2b5494781541d541406c4564ef1e75b17",
       "kind": "transparent"
     },
     {
-      "address": "0x6FB288CB13b15Ee9124c19FD3b2999939dCB7CA6",
-      "txHash": "0x40e265ae5f33df8523dbf4afd88e4c8b98303f3fca6f15a7b67f79f786dfaeb8",
+      "address": "0xb70FE1C72190B38c06454E286878f3f3930a4C5F",
+      "txHash": "0x4833d8bb1862fb5ecc8a174b70325886b6d226e0e39880ff0c610dca07fa357e",
       "kind": "transparent"
     },
     {
-      "address": "0x63fdc0587f3c56dC77A2bB904BDfD53e12b019A1",
-      "txHash": "0xbb64eb6c564ecae2941a5c5a28fa0cb8cac1b4534ed4b34230f05930d1fb7aa0",
+      "address": "0x462E49FC131DB7949a6A6B9795f26127698099fb",
+      "txHash": "0x913864f2bd8f14f1e47e5a92bfd152e54bea92e334fdc1f192465c58bc893237",
       "kind": "transparent"
     },
     {
-      "address": "0x66b8765ecE84a099070eCCE88949c96fB203Cb6C",
-      "txHash": "0x069c58b4c2de69a06f2ba851580fd3d5545e8f2c6b283f951d4721d3b4886230",
+      "address": "0x20056021b0DD4F4EAf870066DFFd9cbE66a2ae1d",
+      "txHash": "0x8d58bc595344ac0c1e0e48d1232f1518e644fc2c38b9cc05ff86803a97a48fab",
       "kind": "transparent"
     },
     {
-      "address": "0x10CA40AC4C9114638a330959039394AEaf8146DE",
-      "txHash": "0x77edf3125b864eee5ac2a890d86ae73b65de6ef0cc882bce9cecb78b0a587d5d",
+      "address": "0x92Ac5B1feA1CDA0C171704c284D037576dCDeFE0",
+      "txHash": "0xb2e9a6ba1d1b69310f3e5cb08a78eddfc968c4b54f85f93159e6f15c86422f5c",
       "kind": "transparent"
     },
     {
-      "address": "0x7cB6C1a5a9618634226C20A90e0e91330af8E9f9",
-      "txHash": "0x58099a444140aa05a6670651772f137d85f49936377cc9da8082baa9b429363c",
+      "address": "0xe5eDc5A9d2112d74593F002f438a760588161766",
+      "txHash": "0xf092f07783739d93079aa6c1e6eeec1317e4713eaf301014066fc3d6628d91cd",
       "kind": "transparent"
     },
     {
-      "address": "0x9Ba1E3Fb9E1eA187718Ae5f76210D6fC37391d0d",
-      "txHash": "0x8ef4c768523241990022f0555088d10c8900cea43d85e6441a2d9637c0bded77",
+      "address": "0xA1499AD83Ca08a843952599C03dB488426591c5a",
+      "txHash": "0xb941d022694f800baaee320dde1a9909057e5aa3a7eaa3b43f14c0f0e0795647",
       "kind": "transparent"
     },
     {
-      "address": "0xB8732fcDEd0839d0A6f3198747A0F1425A1Cca16",
-      "txHash": "0x60fbbbcc1347cb0ebb4afab70ebf15403b249bf4393406741c1918bc21bcc2a8",
+      "address": "0x3F5e0f8a532847B8BE016c530Bb2afde5362fcdc",
+      "txHash": "0x7d42c72653bce80f849f4349511a8730d80bd417ea15c0fd05a645752f5ecfe1",
       "kind": "transparent"
     },
     {
-      "address": "0x6D4c1B215c29F1CB2F117Bf987451492926Eb1E1",
-      "txHash": "0xa14fd1b962f31fe26027f4e08d621a585118377a9164f4d94b896763e7546637",
+      "address": "0x121937a4e43b8A2401C8d0020D46A270561897eb",
+      "txHash": "0x8d284a6f64a8ccb4a4a6a359a13ccac1351efb283362764497b201556d997573",
       "kind": "transparent"
     },
     {
-      "address": "0xDf1C985ED6BF1c2e4e20bb92C4a5EA166B333Fe0",
-      "txHash": "0xcf8ad3a914c5b4a93dac3223c8398a2aa5c74b4265fa020aae34977045e5e928",
+      "address": "0x13bc0833FeB65Ef4Fdf35F6b2749207e40a01Fc2",
+      "txHash": "0x01872881f45f2ff27c91c016e65ccfd9b1b118e0a3462a1901a9057bc158ae18",
       "kind": "transparent"
     },
     {
-      "address": "0xAabd85c04F352bC98098Dcc294bfa42A373277F5",
-      "txHash": "0xe3c00673991dab9a5453f0f575d62f67c7d8724d3e4ddd3f6d4750a05f427291",
+      "address": "0x35963848e67A1a4C5605db6D3Ff3048b60E7DE83",
+      "txHash": "0x9f65ab7f07ef32bc9d585f04cf41efb348e3994cabd828522c434e9cd91d121a",
       "kind": "transparent"
     },
     {
-      "address": "0xAEa0535483F1b987ff72abACB9b73982F4a3eF07",
-      "txHash": "0xa071cc9e01c41dc909c3c626c236acf174a28c50d22a16f2ca62de0397430087",
+      "address": "0x7B0E2b142aE548900Ab98A2BE616AaC0Ba5ef51a",
+      "txHash": "0xdc406b0be409a74553527fe3d1418cc3834d6bbc5f22a7d6143075c0d6e2ec7b",
       "kind": "transparent"
     },
     {
-      "address": "0x281dDD7419CA6b5E388291af0FB9B0Ff88ae4AC2",
-      "txHash": "0x8207f7b43f6b7598f975969251013ca1e218f4819d6bfbc114f5651b384d520b",
+      "address": "0xdF06d33DDB2FF966Ea278C2911eC24e198dDFe99",
+      "txHash": "0x6e5e0d8124f54ab907456381628b9d4fc7317555af5df034d4305b3adfc71250",
       "kind": "transparent"
     },
     {
-      "address": "0x21a1e6887BE7a1dF5CD571001783290182A18Ade",
-      "txHash": "0xb2a324955e8dd3f5fa6e8368a6b393c3413fb540797abed0af30cede65ac31e0",
+      "address": "0xB435fA1FB1B8512597690b5b5CB7842568EAC4c4",
+      "txHash": "0x58b225749f5e7b94b56afc58e161a507193b2df8246d075147e4f270ae0b6a3b",
       "kind": "transparent"
     },
     {
-      "address": "0x3821Ad518656E1a92d12df42EdeF5e0C1D4EAaDB",
-      "txHash": "0x5cccde3f5472c1a26378fe982c85ee73c7fa745190e274c26f72a585839fa7ae",
+      "address": "0x7bB09088382839b0fEec43BCBA93653807F73157",
+      "txHash": "0x45be274fc68f9fc86016e0fade0c1a432c2e5f4d3320ce25dae92ffc0a1f9f7c",
       "kind": "transparent"
     },
     {
-      "address": "0x2748E35eb7DfcF471536359eB2FF03fFD7349fF3",
-      "txHash": "0x27d6d7bdfe4f65595022f883d3e5709170a4c72732e554b9d1ceed26bff08516",
+      "address": "0x34209c486c713185272D5CA65FB83F30F6e7B7BF",
+      "txHash": "0xfc2ceca0e2d0b69d51c8c3fcbb2b513f1094ac07d42292b137d3a3e12875a913",
       "kind": "transparent"
     },
     {
-      "address": "0x0BA28853dCC0827343a6713eEff40Fc491E8317b",
-      "txHash": "0x42f578cb6ada3ab6db5a833dddc84357228e8c468e115b8fda4f587e6493a000",
+      "address": "0xB2eaC87bac13B9f7e7Bd150d2be0172ad50086d9",
+      "txHash": "0x53810c82c94a34d55b25ccd48d24ae9fc957c4081237a17b5f36b9816eaa1260",
       "kind": "transparent"
     },
     {
-      "address": "0x56C341FeeCBB79afb1de1A905AC60c3BBd88f3E8",
-      "txHash": "0x2578e71398ec2a1268a24c6aee5b7b230d265948ebec431d900ab16098bcbb9a",
+      "address": "0xD67ec335DF4dc2Fe9E9c9FC41970F554040Ca492",
+      "txHash": "0xf56968774f5b0567b986febe16246d1e043c8b7350cf6a643a5402b4ef110e4f",
       "kind": "transparent"
     },
     {
-      "address": "0xE68614a65950fCe34240abEa815A6eb0A992a229",
-      "txHash": "0xf919d2efdc67c7381e1e457bb598429db915bc5989243e9fb338a6d887c049e0",
+      "address": "0xD51e4DDA0387c4473BFf9EE32922e7C6a8FBaDB1",
+      "txHash": "0xff46b1730e447d6ab18d0736ed2f0455bd90925e4ce064e3293dcc3f2e36b295",
       "kind": "transparent"
     },
     {
-      "address": "0xFFDD187e5f1DE1E5b373Ae5D51044E628cb31DB3",
-      "txHash": "0x31229a1ff4f171d6c06d74065e00382065fb5daff617a1225104fd21f8bd01ac",
+      "address": "0xD90ec095c6C0926e0094b7560094650b09bbd1f5",
+      "txHash": "0x474d4532ca4123b5bd6284c1661c588e2a8f4bb286351fac8a0df6ef328a69ba",
       "kind": "transparent"
     },
     {
-      "address": "0xe90122E4aFEe7a5Af585098A5F39Fd83e852082E",
-      "txHash": "0xf80e80afb7125cb3d125c31da6c1a703f4d6f33033d773e3c9ead60229e3d627",
+      "address": "0xE2227cD2C04F0ef6e5d5e72Bb662bceef3cC60e5",
+      "txHash": "0x3b7e589e61f7eaee41cbee878003593dad32d80f61980b83c1fd2e3deb549106",
       "kind": "transparent"
     },
     {
-      "address": "0x635E84949abfD8b90b5A819aB1762b43391D2660",
-      "txHash": "0xbf77038a104ddfc10b3159cac8f3b42452952a4fe35d1de46f8d5bd596fa7d63",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x98b4f260BB42B7265dCf8B5b11dC30378916496A",
-      "txHash": "0x09b3d1c23fa8720fd04911c10382a3490d767495ff74fa169a2fa56c38a72adc",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xb9aDd76A225c7Cf87E2Acb04687200cD2E771b2d",
-      "txHash": "0xe02a1ec712b4428557632ba5442f2f7d663bce53bb7b8c2fc96084e2b93e3411",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xea95145978354051A967285d0F40c9649C60B03d",
-      "txHash": "0x5e04f62e81dfe4b7f5bc628ff7e38ec8ec9171e6899746b4ad235698d997383d",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x42F97aC9641f6766e6977af6E0ed2Ab568B7cFfE",
-      "txHash": "0xda68fd2ccfa89f399008f9eab1e9f7c6aade0da2f1e3c9092d7f3957a5e9b20f",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xF33A704056f3Fc3A0F0cE946777515Ac38491c67",
-      "txHash": "0x83d87553486e07a6039257b641b6040d8d6092a6c363eaaf9b089baecda0e386",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x035C16cf7Ea9cc1611D035BfFE4E8140A83734C0",
-      "txHash": "0xea22567be9f1dcc52c3cfa1adce6bbb463fa7f82dd8bb9fe8545b6dd07687c18",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x99AbB7B303C11da813d645739F1733C5A35DA1C6",
-      "txHash": "0x15d81e44748e13362bdbcc44e3cb9b0aab5c3848da9b39704b1b9c1f63954f67",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x75dFD75fdDc75494dbC33c7dcEAE37a92CE3f0bE",
-      "txHash": "0x58d0ec87d5e99f7b85fdd4e55f8d664f50c012f4c78e78b002a2e34c09f2ade1",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x03AF9A3eec020Fd1ED47eb231Ea95E34a7Db2A16",
-      "txHash": "0xd2548240c779fc5adcc382337ddac1c1519e6faa2b0cb25efc972ba72683355b",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x03d234F4eEc60e42685a485f610A3485D23bF8DA",
-      "txHash": "0x6b1863b17eab9e11e0a8cd32e9c07f53f70bb0b84784a154a04b2266426a9aa6",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x412B7A9744C9C88e0da628d2c3e1eD6da462C1fc",
-      "txHash": "0x5623095c370061010ad0ec98671fc077d6c9730d04d0358ca4b80de723ab2f12",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xfc84eD50dc3970Ca09F59Fa27CCE37B1501ef842",
-      "txHash": "0xa01083b5c6fa458c727639483d8c8f36d31adcaef13d944451c306d355e71f5a",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xAA0ac168B523bc9F2c6e30dEDc427e2d898FCa4C",
-      "txHash": "0x56d274d3080f4ea3793652b6f3256e244b196e11194381b27b7117b6f48f0522",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x01204d84F2a5Eb722fEEEd1a3698fB1Fa286ed60",
-      "txHash": "0xec1d57919cfbdf09a106c9669a67f7806508bb056cb85c62cb471724b08ac464",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x4Db0B145ED57A9E2E2381Cea1ec307F1690053b6",
-      "txHash": "0xcdd3b8122b73fa839230805c084cd2be40f41bd7de726e2d465a0f374ddd19b3",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xb03a4720fb69aD39cDa0535b2e22E577d64B8000",
-      "txHash": "0xf5c682307da58170ed1ec13be101f1bcfdd5a1f9fe88aa4e9be8723aa14813d5",
+      "address": "0xE7d711526F9eD8aBeC5B67000eEc44Ec7B5cB2B5",
+      "txHash": "0x987779483dd586d3db2bc394a4c0156ecf0fce6603f2fd627a5e5f44f93704f8",
       "kind": "transparent"
     }
   ],
   "impls": {
     "09b848383c3c1ffa1f6a049a1bbb6e6f18e5f80e2427fd12b407d0bd4160df6e": {
-      "address": "0x112c885c710eAda64155cD9AD5820F261CD224AA",
-      "txHash": "0x206a92eb42b94e04240f2585c0c7f13e8de7465aa7818a8c85aff1cada92f423",
+      "address": "0xF3B8Bb3184A4eBE86c892DCE0E61b9C44c2f496f",
+      "txHash": "0x56e37c61acc0cd6b989c8af3c3eea5e146e3c8c15fda0c0983c9f79eb555cbe8",
       "layout": {
         "storage": [
           {
@@ -324,37 +244,37 @@
             "contract": "PriceFeed",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\PriceFeedV2.sol:27"
+            "src": "contracts\\PriceFeed.sol:27"
           },
           {
             "contract": "PriceFeed",
             "label": "adminContract",
             "type": "t_address",
-            "src": "contracts\\PriceFeedV2.sol:29"
+            "src": "contracts\\PriceFeed.sol:29"
           },
           {
             "contract": "PriceFeed",
             "label": "status",
-            "type": "t_enum(Status)12026",
-            "src": "contracts\\PriceFeedV2.sol:31"
+            "type": "t_enum(Status)12079",
+            "src": "contracts\\PriceFeed.sol:31"
           },
           {
             "contract": "PriceFeed",
             "label": "registeredOracles",
-            "type": "t_mapping(t_address,t_struct(RegisterOracle)12023_storage)",
-            "src": "contracts\\PriceFeedV2.sol:32"
+            "type": "t_mapping(t_address,t_struct(RegisterOracle)12076_storage)",
+            "src": "contracts\\PriceFeed.sol:32"
           },
           {
             "contract": "PriceFeed",
             "label": "lastGoodPrice",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\PriceFeedV2.sol:33"
+            "src": "contracts\\PriceFeed.sol:33"
           },
           {
             "contract": "PriceFeed",
             "label": "lastGoodIndex",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\PriceFeedV2.sol:34"
+            "src": "contracts\\PriceFeed.sol:34"
           }
         ],
         "types": {
@@ -364,17 +284,17 @@
           "t_address": {
             "label": "address"
           },
-          "t_enum(Status)12026": {
+          "t_enum(Status)12079": {
             "label": "enum IPriceFeed.Status",
             "members": [
               "chainlinkWorking",
               "chainlinkUntrusted"
             ]
           },
-          "t_mapping(t_address,t_struct(RegisterOracle)12023_storage)": {
+          "t_mapping(t_address,t_struct(RegisterOracle)12076_storage)": {
             "label": "mapping(address => struct IPriceFeed.RegisterOracle)"
           },
-          "t_struct(RegisterOracle)12023_storage": {
+          "t_struct(RegisterOracle)12076_storage": {
             "label": "struct IPriceFeed.RegisterOracle",
             "members": [
               {
@@ -410,8 +330,8 @@
       }
     },
     "e1e64ba0c2d91d59baf843cfe675049853722707537f1cdf80f189a02cb4f2c0": {
-      "address": "0x1cE31E2853198AB71F5125F4b57b2Ad9506Dc742",
-      "txHash": "0x623f94d1b16dfefe4477efff4389452791eac55677dcb53d484628f00e365b51",
+      "address": "0x9d6a28A72d3E4feC943afAd603f5a6258922112C",
+      "txHash": "0xcee70ac490faa14f20a31d1f71699bcc4f3dd998a0accc1f0b3b4bceba4054bf",
       "layout": {
         "storage": [
           {
@@ -459,19 +379,19 @@
           {
             "contract": "SortedTroves",
             "label": "troveManager",
-            "type": "t_contract(ITroveManager)12862",
+            "type": "t_contract(ITroveManager)12915",
             "src": "contracts\\SortedTroves.sol:58"
           },
           {
             "contract": "SortedTroves",
             "label": "troveManagerHelpers",
-            "type": "t_contract(ITroveManagerHelpers)13642",
+            "type": "t_contract(ITroveManagerHelpers)13695",
             "src": "contracts\\SortedTroves.sol:59"
           },
           {
             "contract": "SortedTroves",
             "label": "data",
-            "type": "t_mapping(t_address,t_struct(Data)19467_storage)",
+            "type": "t_mapping(t_address,t_struct(Data)18494_storage)",
             "src": "contracts\\SortedTroves.sol:77"
           }
         ],
@@ -482,16 +402,16 @@
           "t_address": {
             "label": "address"
           },
-          "t_contract(ITroveManager)12862": {
+          "t_contract(ITroveManager)12915": {
             "label": "contract ITroveManager"
           },
-          "t_contract(ITroveManagerHelpers)13642": {
+          "t_contract(ITroveManagerHelpers)13695": {
             "label": "contract ITroveManagerHelpers"
           },
-          "t_mapping(t_address,t_struct(Data)19467_storage)": {
+          "t_mapping(t_address,t_struct(Data)18494_storage)": {
             "label": "mapping(address => struct SortedTroves.Data)"
           },
-          "t_struct(Data)19467_storage": {
+          "t_struct(Data)18494_storage": {
             "label": "struct SortedTroves.Data",
             "members": [
               {
@@ -512,17 +432,17 @@
               },
               {
                 "label": "nodes",
-                "type": "t_mapping(t_address,t_struct(Node)19453_storage)"
+                "type": "t_mapping(t_address,t_struct(Node)18480_storage)"
               }
             ]
           },
           "t_uint256": {
             "label": "uint256"
           },
-          "t_mapping(t_address,t_struct(Node)19453_storage)": {
+          "t_mapping(t_address,t_struct(Node)18480_storage)": {
             "label": "mapping(address => struct SortedTroves.Node)"
           },
-          "t_struct(Node)19453_storage": {
+          "t_struct(Node)18480_storage": {
             "label": "struct SortedTroves.Node",
             "members": [
               {
@@ -549,8 +469,8 @@
       }
     },
     "90ac11674c27fb6e2cbd88676d9f910bf7a4a1d2af03e6c8025d74e118694241": {
-      "address": "0x3598F2D61758c081D6D32d9de8510F3f41A8703D",
-      "txHash": "0x89f39969e410424c9dd54db5921621af0c25461a5833908226863d40ac3069bb",
+      "address": "0x10c01e55E7eab328e9989a60D3E6d42876a7246d",
+      "txHash": "0x0e3624afcb916b23c7354576eac61687ea64fad736c1879bafcfcd0067eba121",
       "layout": {
         "storage": [
           {
@@ -586,19 +506,19 @@
           {
             "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
+            "type": "t_contract(IDfrancParameters)11834",
             "src": "contracts\\Dependencies\\DfrancBase.sol:21"
           },
           {
             "contract": "TroveManager",
             "label": "troveManagerHelpers",
-            "type": "t_contract(ITroveManagerHelpers)13642",
+            "type": "t_contract(ITroveManagerHelpers)13695",
             "src": "contracts\\TroveManager.sol:16"
           },
           {
             "contract": "TroveManager",
             "label": "stabilityPoolManager",
-            "type": "t_contract(IStabilityPoolManager)12473",
+            "type": "t_contract(IStabilityPoolManager)12526",
             "src": "contracts\\TroveManager.sol:18"
           },
           {
@@ -610,25 +530,25 @@
           {
             "contract": "TroveManager",
             "label": "collSurplusPool",
-            "type": "t_contract(ICollSurplusPool)11330",
+            "type": "t_contract(ICollSurplusPool)11383",
             "src": "contracts\\TroveManager.sol:22"
           },
           {
             "contract": "TroveManager",
             "label": "dchfToken",
-            "type": "t_contract(IDCHFToken)11470",
+            "type": "t_contract(IDCHFToken)11523",
             "src": "contracts\\TroveManager.sol:24"
           },
           {
             "contract": "TroveManager",
             "label": "monStaking",
-            "type": "t_contract(IMONStaking)11934",
+            "type": "t_contract(IMONStaking)11987",
             "src": "contracts\\TroveManager.sol:26"
           },
           {
             "contract": "TroveManager",
             "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
+            "type": "t_contract(ISortedTroves)12285",
             "src": "contracts\\TroveManager.sol:29"
           },
           {
@@ -651,25 +571,25 @@
           }
         ],
         "types": {
-          "t_contract(ITroveManagerHelpers)13642": {
+          "t_contract(ITroveManagerHelpers)13695": {
             "label": "contract ITroveManagerHelpers"
           },
-          "t_contract(IStabilityPoolManager)12473": {
+          "t_contract(IStabilityPoolManager)12526": {
             "label": "contract IStabilityPoolManager"
           },
           "t_address": {
             "label": "address"
           },
-          "t_contract(ICollSurplusPool)11330": {
+          "t_contract(ICollSurplusPool)11383": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IDCHFToken)11470": {
+          "t_contract(IDCHFToken)11523": {
             "label": "contract IDCHFToken"
           },
-          "t_contract(IMONStaking)11934": {
+          "t_contract(IMONStaking)11987": {
             "label": "contract IMONStaking"
           },
-          "t_contract(ISortedTroves)12232": {
+          "t_contract(ISortedTroves)12285": {
             "label": "contract ISortedTroves"
           },
           "t_bool": {
@@ -678,7 +598,7 @@
           "t_mapping(t_address,t_bool)": {
             "label": "mapping(address => bool)"
           },
-          "t_contract(IDfrancParameters)11781": {
+          "t_contract(IDfrancParameters)11834": {
             "label": "contract IDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
@@ -693,9 +613,9 @@
         }
       }
     },
-    "1cb50dc62eab2222b3ce96bdf2b0c8e3df76cf2c8dfc779f1aa09e8f8157a07e": {
-      "address": "0x0E316CeE3795e7FCf026DCc6594e5fcC868cC45F",
-      "txHash": "0x42c6f2648d350325124072a8e27943bdd8987a43e070f52ab94357eb75216bac",
+    "5de56c3909ca445599336fff4701f0bad98c8b453daa9ab90240086cb68c1c2e": {
+      "address": "0xb292DaDDfc49bE4ce8Ae0a2A9B70486e4139ff41",
+      "txHash": "0xe1640c73962d08cd5a22ffaaf5097333460dc2a0e20b3f23b9aafa642cbd6060",
       "layout": {
         "storage": [
           {
@@ -731,7 +651,7 @@
           {
             "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
+            "type": "t_contract(IDfrancParameters)11834",
             "src": "contracts\\Dependencies\\DfrancBase.sol:21"
           },
           {
@@ -749,13 +669,13 @@
           {
             "contract": "TroveManagerHelpers",
             "label": "dchfToken",
-            "type": "t_contract(IDCHFToken)11470",
+            "type": "t_contract(IDCHFToken)11523",
             "src": "contracts\\TroveManagerHelpers.sol:19"
           },
           {
             "contract": "TroveManagerHelpers",
             "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
+            "type": "t_contract(ISortedTroves)12285",
             "src": "contracts\\TroveManagerHelpers.sol:22"
           },
           {
@@ -773,7 +693,7 @@
           {
             "contract": "TroveManagerHelpers",
             "label": "Troves",
-            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12895_storage))",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12948_storage))",
             "src": "contracts\\TroveManagerHelpers.sol:44"
           },
           {
@@ -809,7 +729,7 @@
           {
             "contract": "TroveManagerHelpers",
             "label": "rewardSnapshots",
-            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13023_storage))",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13076_storage))",
             "src": "contracts\\TroveManagerHelpers.sol:66"
           },
           {
@@ -841,10 +761,10 @@
           "t_address": {
             "label": "address"
           },
-          "t_contract(IDCHFToken)11470": {
+          "t_contract(IDCHFToken)11523": {
             "label": "contract IDCHFToken"
           },
-          "t_contract(ISortedTroves)12232": {
+          "t_contract(ISortedTroves)12285": {
             "label": "contract ISortedTroves"
           },
           "t_mapping(t_address,t_uint256)": {
@@ -853,13 +773,13 @@
           "t_uint256": {
             "label": "uint256"
           },
-          "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12895_storage))": {
+          "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12948_storage))": {
             "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.Trove))"
           },
-          "t_mapping(t_address,t_struct(Trove)12895_storage)": {
+          "t_mapping(t_address,t_struct(Trove)12948_storage)": {
             "label": "mapping(address => struct ITroveManagerHelpers.Trove)"
           },
-          "t_struct(Trove)12895_storage": {
+          "t_struct(Trove)12948_storage": {
             "label": "struct ITroveManagerHelpers.Trove",
             "members": [
               {
@@ -880,7 +800,7 @@
               },
               {
                 "label": "status",
-                "type": "t_enum(Status)12881"
+                "type": "t_enum(Status)12934"
               },
               {
                 "label": "arrayIndex",
@@ -888,7 +808,7 @@
               }
             ]
           },
-          "t_enum(Status)12881": {
+          "t_enum(Status)12934": {
             "label": "enum ITroveManagerHelpers.Status",
             "members": [
               "nonExistent",
@@ -901,13 +821,13 @@
           "t_uint128": {
             "label": "uint128"
           },
-          "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13023_storage))": {
+          "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13076_storage))": {
             "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.RewardSnapshot))"
           },
-          "t_mapping(t_address,t_struct(RewardSnapshot)13023_storage)": {
+          "t_mapping(t_address,t_struct(RewardSnapshot)13076_storage)": {
             "label": "mapping(address => struct ITroveManagerHelpers.RewardSnapshot)"
           },
-          "t_struct(RewardSnapshot)13023_storage": {
+          "t_struct(RewardSnapshot)13076_storage": {
             "label": "struct ITroveManagerHelpers.RewardSnapshot",
             "members": [
               {
@@ -929,7 +849,7 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IDfrancParameters)11781": {
+          "t_contract(IDfrancParameters)11834": {
             "label": "contract IDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
@@ -942,8 +862,8 @@
       }
     },
     "9f1ea53c2dc4ba95fb16ba5d0d2ba29ae582029574dcdd69238a06dc28797982": {
-      "address": "0xe7B2773929d13A77D97e27509d3f061A264612e4",
-      "txHash": "0x731e964d027e304f616a058d35c89debdf365cbe5c9055c6412076f43cf4ce5f",
+      "address": "0x1Aa6FA02468B3458848566d9b56EFCBda7D7e257",
+      "txHash": "0x8abd2279f2fd43c4b9785124405e2469d601a8c2483a1e944da18a9b159b1a07",
       "layout": {
         "storage": [
           {
@@ -1003,19 +923,19 @@
           {
             "contract": "ActivePool",
             "label": "defaultPool",
-            "type": "t_contract(IDefaultPool)11499",
+            "type": "t_contract(IDefaultPool)11552",
             "src": "contracts\\ActivePool.sol:39"
           },
           {
             "contract": "ActivePool",
             "label": "collSurplusPool",
-            "type": "t_contract(ICollSurplusPool)11330",
+            "type": "t_contract(ICollSurplusPool)11383",
             "src": "contracts\\ActivePool.sol:40"
           },
           {
             "contract": "ActivePool",
             "label": "stabilityPoolManager",
-            "type": "t_contract(IStabilityPoolManager)12473",
+            "type": "t_contract(IStabilityPoolManager)12526",
             "src": "contracts\\ActivePool.sol:42"
           },
           {
@@ -1041,13 +961,13 @@
           "t_address": {
             "label": "address"
           },
-          "t_contract(IDefaultPool)11499": {
+          "t_contract(IDefaultPool)11552": {
             "label": "contract IDefaultPool"
           },
-          "t_contract(ICollSurplusPool)11330": {
+          "t_contract(ICollSurplusPool)11383": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IStabilityPoolManager)12473": {
+          "t_contract(IStabilityPoolManager)12526": {
             "label": "contract IStabilityPoolManager"
           },
           "t_bool": {
@@ -1069,8 +989,8 @@
       }
     },
     "eec78ebb2a05622e6c18288f99770e20880493ceb0a87dd4bb3c8b2cf427a24c": {
-      "address": "0xE304c8953D66BB54908f90e339391509C677F6aE",
-      "txHash": "0x34f807ce4c0f1668d6dce00be42a6de6410a98f704d3e7e4573b581ee4c5d7e0",
+      "address": "0x28e3af56781133710299532D33F7D73C5002e5f0",
+      "txHash": "0xd403f94e68fb8e6fce4cf786620c7c87f56c850108c13994dc80cb463563b68a",
       "layout": {
         "storage": [
           {
@@ -1153,263 +1073,9 @@
         }
       }
     },
-    "551ff3edbd5a9dcba75d84c52eadde9a2391ee746e297290432071525d70f16c": {
-      "address": "0x8710aD2E51f4Be9656725a4A5615B16e2df3c6eD",
-      "txHash": "0x32e91f8a11e04f8b53112a41ce4cd3872fd0d985b06eef7668175b4e9e0db3b7",
-      "layout": {
-        "storage": [
-          {
-            "contract": "Initializable",
-            "label": "_initialized",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
-          },
-          {
-            "contract": "Initializable",
-            "label": "_initializing",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
-          },
-          {
-            "contract": "ContextUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "_owner",
-            "type": "t_address",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)49_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
-          },
-          {
-            "contract": "DfrancBase",
-            "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
-            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "borrowerOperations",
-            "type": "t_contract(IBorrowerOperations)11259",
-            "src": "contracts\\StabilityPool.sol:31"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "troveManager",
-            "type": "t_contract(ITroveManager)12862",
-            "src": "contracts\\StabilityPool.sol:33"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "troveManagerHelpers",
-            "type": "t_contract(ITroveManagerHelpers)13642",
-            "src": "contracts\\StabilityPool.sol:35"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "dchfToken",
-            "type": "t_contract(IDCHFToken)11470",
-            "src": "contracts\\StabilityPool.sol:37"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
-            "src": "contracts\\StabilityPool.sol:40"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "communityIssuance",
-            "type": "t_contract(ICommunityIssuance)11400",
-            "src": "contracts\\StabilityPool.sol:42"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "assetAddress",
-            "type": "t_address",
-            "src": "contracts\\StabilityPool.sol:44"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "assetBalance",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:46"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "totalDCHFDeposits",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:49"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "deposits",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\StabilityPool.sol:61"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "depositSnapshots",
-            "type": "t_mapping(t_address,t_struct(Snapshots)20904_storage)",
-            "src": "contracts\\StabilityPool.sol:62"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "totalStakes",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:64"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "systemSnapshots",
-            "type": "t_struct(Snapshots)20904_storage",
-            "src": "contracts\\StabilityPool.sol:65"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "P",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:73"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "currentScale",
-            "type": "t_uint128",
-            "src": "contracts\\StabilityPool.sol:78"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "currentEpoch",
-            "type": "t_uint128",
-            "src": "contracts\\StabilityPool.sol:81"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "epochToScaleToSum",
-            "type": "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))",
-            "src": "contracts\\StabilityPool.sol:91"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "epochToScaleToG",
-            "type": "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))",
-            "src": "contracts\\StabilityPool.sol:100"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "lastMONError",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:103"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "lastAssetError_Offset",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:105"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "lastDCHFLossError_Offset",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:106"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "isInitialized",
-            "type": "t_bool",
-            "src": "contracts\\StabilityPool.sol:108"
-          }
-        ],
-        "types": {
-          "t_contract(IBorrowerOperations)11259": {
-            "label": "contract IBorrowerOperations"
-          },
-          "t_contract(ITroveManager)12862": {
-            "label": "contract ITroveManager"
-          },
-          "t_contract(ITroveManagerHelpers)13642": {
-            "label": "contract ITroveManagerHelpers"
-          },
-          "t_contract(IDCHFToken)11470": {
-            "label": "contract IDCHFToken"
-          },
-          "t_contract(ISortedTroves)12232": {
-            "label": "contract ISortedTroves"
-          },
-          "t_contract(ICommunityIssuance)11400": {
-            "label": "contract ICommunityIssuance"
-          },
-          "t_address": {
-            "label": "address"
-          },
-          "t_uint256": {
-            "label": "uint256"
-          },
-          "t_mapping(t_address,t_uint256)": {
-            "label": "mapping(address => uint256)"
-          },
-          "t_mapping(t_address,t_struct(Snapshots)20904_storage)": {
-            "label": "mapping(address => struct StabilityPool.Snapshots)"
-          },
-          "t_struct(Snapshots)20904_storage": {
-            "label": "struct StabilityPool.Snapshots",
-            "members": [
-              {
-                "label": "S",
-                "type": "t_uint256"
-              },
-              {
-                "label": "P",
-                "type": "t_uint256"
-              },
-              {
-                "label": "G",
-                "type": "t_uint256"
-              },
-              {
-                "label": "scale",
-                "type": "t_uint128"
-              },
-              {
-                "label": "epoch",
-                "type": "t_uint128"
-              }
-            ]
-          },
-          "t_uint128": {
-            "label": "uint128"
-          },
-          "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))": {
-            "label": "mapping(uint128 => mapping(uint128 => uint256))"
-          },
-          "t_mapping(t_uint128,t_uint256)": {
-            "label": "mapping(uint128 => uint256)"
-          },
-          "t_bool": {
-            "label": "bool"
-          },
-          "t_contract(IDfrancParameters)11781": {
-            "label": "contract IDfrancParameters"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]"
-          }
-        }
-      }
-    },
     "22030c50912ee7819fe83aa62b639838f110c4bc156e48c8c874f4fa8a1df6ec": {
-      "address": "0xe362AE3C3CA335c640dd38E231EC1cBd7bcaf8Fc",
-      "txHash": "0x7f0862164d37183b8c953a1785531a5a8329dbc26c94db28072456c63a52ca2d",
+      "address": "0x486C4cf3f393E650cE8958f222Dc381f446f4307",
+      "txHash": "0xb501ba8307bd276a19f592857d421e712968b27cb3ca04d139b701b42c7ce7da",
       "layout": {
         "storage": [
           {
@@ -1496,8 +1162,8 @@
       }
     },
     "0e8961f098b77ca22a5931043dd2a8d1c80f2e5553e8a398f0db72191cd4adec": {
-      "address": "0x426042105FdB814155B92773e539ED864A41Cb57",
-      "txHash": "0x6f0a1020ce92957da3ee84805e85d06c28aea7e087f45e37a4ff369cbf8c2f81",
+      "address": "0xB338b180E41448f82A265D50C91BD1ABAB25FD11",
+      "txHash": "0x0b851fa574d5e36bbca6a3445a4febf2bc54cefca6711ae265721677a6e5abdf",
       "layout": {
         "storage": [
           {
@@ -1593,8 +1259,8 @@
       }
     },
     "82f6ba9e75609839b70673bbffc2febe21636961746ced206b7867e9bcf073e1": {
-      "address": "0xCA0B882a92ed7297ECbE47A400A5b734755AF89d",
-      "txHash": "0xf9a039072caa6e90152b2a01ec1549f91c5502faa78ac4ec2fb4b2beeef83be6",
+      "address": "0x08a587B26F1D0439ec30b89541E967a74AB5DeeD",
+      "txHash": "0xbcdceefd1fe13ebcecee474c2ec535f41c85dfc3faf2057ed7d5521340a5b0bd",
       "layout": {
         "storage": [
           {
@@ -1630,25 +1296,25 @@
           {
             "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
+            "type": "t_contract(IDfrancParameters)11834",
             "src": "contracts\\Dependencies\\DfrancBase.sol:21"
           },
           {
             "contract": "BorrowerOperations",
             "label": "troveManager",
-            "type": "t_contract(ITroveManager)12862",
+            "type": "t_contract(ITroveManager)12915",
             "src": "contracts\\BorrowerOperations.sol:27"
           },
           {
             "contract": "BorrowerOperations",
             "label": "troveManagerHelpers",
-            "type": "t_contract(ITroveManagerHelpers)13642",
+            "type": "t_contract(ITroveManagerHelpers)13695",
             "src": "contracts\\BorrowerOperations.sol:29"
           },
           {
             "contract": "BorrowerOperations",
             "label": "stabilityPoolManager",
-            "type": "t_contract(IStabilityPoolManager)12473",
+            "type": "t_contract(IStabilityPoolManager)12526",
             "src": "contracts\\BorrowerOperations.sol:31"
           },
           {
@@ -1660,13 +1326,13 @@
           {
             "contract": "BorrowerOperations",
             "label": "collSurplusPool",
-            "type": "t_contract(ICollSurplusPool)11330",
+            "type": "t_contract(ICollSurplusPool)11383",
             "src": "contracts\\BorrowerOperations.sol:35"
           },
           {
             "contract": "BorrowerOperations",
             "label": "MONStaking",
-            "type": "t_contract(IMONStaking)11934",
+            "type": "t_contract(IMONStaking)11987",
             "src": "contracts\\BorrowerOperations.sol:37"
           },
           {
@@ -1678,13 +1344,13 @@
           {
             "contract": "BorrowerOperations",
             "label": "DCHFToken",
-            "type": "t_contract(IDCHFToken)11470",
+            "type": "t_contract(IDCHFToken)11523",
             "src": "contracts\\BorrowerOperations.sol:40"
           },
           {
             "contract": "BorrowerOperations",
             "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
+            "type": "t_contract(ISortedTroves)12285",
             "src": "contracts\\BorrowerOperations.sol:43"
           },
           {
@@ -1695,34 +1361,34 @@
           }
         ],
         "types": {
-          "t_contract(ITroveManager)12862": {
+          "t_contract(ITroveManager)12915": {
             "label": "contract ITroveManager"
           },
-          "t_contract(ITroveManagerHelpers)13642": {
+          "t_contract(ITroveManagerHelpers)13695": {
             "label": "contract ITroveManagerHelpers"
           },
-          "t_contract(IStabilityPoolManager)12473": {
+          "t_contract(IStabilityPoolManager)12526": {
             "label": "contract IStabilityPoolManager"
           },
           "t_address": {
             "label": "address"
           },
-          "t_contract(ICollSurplusPool)11330": {
+          "t_contract(ICollSurplusPool)11383": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IMONStaking)11934": {
+          "t_contract(IMONStaking)11987": {
             "label": "contract IMONStaking"
           },
-          "t_contract(IDCHFToken)11470": {
+          "t_contract(IDCHFToken)11523": {
             "label": "contract IDCHFToken"
           },
-          "t_contract(ISortedTroves)12232": {
+          "t_contract(ISortedTroves)12285": {
             "label": "contract ISortedTroves"
           },
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IDfrancParameters)11781": {
+          "t_contract(IDfrancParameters)11834": {
             "label": "contract IDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
@@ -1738,8 +1404,8 @@
       }
     },
     "2e1fc7aed8a12a2122ac21ed4c5eea4d5d49ce977728a9a320a0fd9faa7e45f3": {
-      "address": "0xA2e4f3b1195F1100Fd8579468377D90683383685",
-      "txHash": "0x2a26d6fe1869d396cb64ecf7a91a4eadd5cd90b7231f61c6f3be009ddfd60e2b",
+      "address": "0x56554cc285E8473ABf982f9bf8ec1c24ed70eBD1",
+      "txHash": "0xbaaf5bc92e21fe6b2cdc34658addede66edc4837bc71c7dc9f63b3ef390c27f5",
       "layout": {
         "storage": [
           {
@@ -1775,25 +1441,25 @@
           {
             "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
+            "type": "t_contract(IDfrancParameters)11834",
             "src": "contracts\\Dependencies\\DfrancBase.sol:21"
           },
           {
             "contract": "HintHelpers",
             "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
+            "type": "t_contract(ISortedTroves)12285",
             "src": "contracts\\HintHelpers.sol:21"
           },
           {
             "contract": "HintHelpers",
             "label": "troveManager",
-            "type": "t_contract(ITroveManager)12862",
+            "type": "t_contract(ITroveManager)12915",
             "src": "contracts\\HintHelpers.sol:22"
           },
           {
             "contract": "HintHelpers",
             "label": "troveManagerHelpers",
-            "type": "t_contract(ITroveManagerHelpers)13642",
+            "type": "t_contract(ITroveManagerHelpers)13695",
             "src": "contracts\\HintHelpers.sol:23"
           },
           {
@@ -1804,19 +1470,19 @@
           }
         ],
         "types": {
-          "t_contract(ISortedTroves)12232": {
+          "t_contract(ISortedTroves)12285": {
             "label": "contract ISortedTroves"
           },
-          "t_contract(ITroveManager)12862": {
+          "t_contract(ITroveManager)12915": {
             "label": "contract ITroveManager"
           },
-          "t_contract(ITroveManagerHelpers)13642": {
+          "t_contract(ITroveManagerHelpers)13695": {
             "label": "contract ITroveManagerHelpers"
           },
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IDfrancParameters)11781": {
+          "t_contract(IDfrancParameters)11834": {
             "label": "contract IDfrancParameters"
           },
           "t_address": {
@@ -1835,8 +1501,8 @@
       }
     },
     "c0a405c5bc9c91494a3814779642b20d4d574b3f85a525c5668b1b569499869b": {
-      "address": "0x6DDfAe0C9874EE0C31eE7716D0B77AA7776AF49f",
-      "txHash": "0x967b2b2801d0e9e36c8d1f929217e3f2562965304d7ae235c51cd4ca9a3044d7",
+      "address": "0x65475c22680127ad2480B81C4CCBBa2e8389d944",
+      "txHash": "0x5f01c3e6cf67681f4c10fa0de1473d720c5e5ba31b7000ee1240cee7bc6d8c7b",
       "layout": {
         "storage": [
           {
@@ -1932,19 +1598,19 @@
           {
             "contract": "DfrancParameters",
             "label": "activePool",
-            "type": "t_contract(IActivePool)11065",
+            "type": "t_contract(IActivePool)11118",
             "src": "contracts\\DfrancParameters.sol:43"
           },
           {
             "contract": "DfrancParameters",
             "label": "defaultPool",
-            "type": "t_contract(IDefaultPool)11499",
+            "type": "t_contract(IDefaultPool)11552",
             "src": "contracts\\DfrancParameters.sol:44"
           },
           {
             "contract": "DfrancParameters",
             "label": "priceFeed",
-            "type": "t_contract(IPriceFeed)12068",
+            "type": "t_contract(IPriceFeed)12121",
             "src": "contracts\\DfrancParameters.sol:45"
           },
           {
@@ -1976,13 +1642,13 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IActivePool)11065": {
+          "t_contract(IActivePool)11118": {
             "label": "contract IActivePool"
           },
-          "t_contract(IDefaultPool)11499": {
+          "t_contract(IDefaultPool)11552": {
             "label": "contract IDefaultPool"
           },
-          "t_contract(IPriceFeed)12068": {
+          "t_contract(IPriceFeed)12121": {
             "label": "contract IPriceFeed"
           },
           "t_array(t_uint256)49_storage": {
@@ -1995,8 +1661,8 @@
       }
     },
     "2959a06eea64dcf30db0891b5bd7a880d90979e035c7a3110a736befda7aaee8": {
-      "address": "0xcf31bB9e0E3EBdb614AeC1ca0755cbf3d7ba1da3",
-      "txHash": "0x69b55eacb9ddc49068865a86646567977f74472ab2647e3be6a618e5343a10d7",
+      "address": "0x3317a02F945BC009208797190A0484e8d2CFf97d",
+      "txHash": "0xb4c6dc89eb4c693ae56d623de8fe45613b081686966528defa5cd39980458b90",
       "layout": {
         "storage": [
           {
@@ -2086,7 +1752,7 @@
           {
             "contract": "MONStaking",
             "label": "snapshots",
-            "type": "t_mapping(t_address,t_struct(Snapshot)14759_storage)",
+            "type": "t_mapping(t_address,t_struct(Snapshot)14812_storage)",
             "src": "contracts\\MON\\MONStaking.sol:41"
           },
           {
@@ -2110,13 +1776,13 @@
           {
             "contract": "MONStaking",
             "label": "monToken",
-            "type": "t_contract(IERC20Upgradeable)615",
+            "type": "t_contract(IERC20Upgradeable)574",
             "src": "contracts\\MON\\MONStaking.sol:52"
           },
           {
             "contract": "MONStaking",
             "label": "dchfToken",
-            "type": "t_contract(IERC20Upgradeable)615",
+            "type": "t_contract(IERC20Upgradeable)574",
             "src": "contracts\\MON\\MONStaking.sol:53"
           },
           {
@@ -2157,10 +1823,10 @@
           "t_uint256": {
             "label": "uint256"
           },
-          "t_mapping(t_address,t_struct(Snapshot)14759_storage)": {
+          "t_mapping(t_address,t_struct(Snapshot)14812_storage)": {
             "label": "mapping(address => struct MONStaking.Snapshot)"
           },
-          "t_struct(Snapshot)14759_storage": {
+          "t_struct(Snapshot)14812_storage": {
             "label": "struct MONStaking.Snapshot",
             "members": [
               {
@@ -2179,7 +1845,7 @@
           "t_mapping(t_address,t_bool)": {
             "label": "mapping(address => bool)"
           },
-          "t_contract(IERC20Upgradeable)615": {
+          "t_contract(IERC20Upgradeable)574": {
             "label": "contract IERC20Upgradeable"
           },
           "t_array(t_uint256)49_storage": {
@@ -2192,8 +1858,8 @@
       }
     },
     "123aa9f391550bb4e8c45976eaea50064186873ee1df251db1d7e710a4ebd0b7": {
-      "address": "0xc72AC80C2928129a800352674bC71da5F1A112cc",
-      "txHash": "0x102d975ecd4364dd1fa3f469b8fc4e0bde8f74453431131e33cddc1530038a61",
+      "address": "0x2b50ABD49152F10C68483F5a8920Cf2912A48145",
+      "txHash": "0x533b60b6ee7db573fb7a41cda56392111b1c5f6a01072271980dc820ccedfe32",
       "layout": {
         "storage": [
           {
@@ -2229,13 +1895,13 @@
           {
             "contract": "CommunityIssuance",
             "label": "monToken",
-            "type": "t_contract(IERC20Upgradeable)615",
+            "type": "t_contract(IERC20Upgradeable)574",
             "src": "contracts\\MON\\CommunityIssuance.sol:23"
           },
           {
             "contract": "CommunityIssuance",
             "label": "stabilityPoolManager",
-            "type": "t_contract(IStabilityPoolManager)12473",
+            "type": "t_contract(IStabilityPoolManager)12526",
             "src": "contracts\\MON\\CommunityIssuance.sol:24"
           },
           {
@@ -2276,10 +1942,10 @@
           }
         ],
         "types": {
-          "t_contract(IERC20Upgradeable)615": {
+          "t_contract(IERC20Upgradeable)574": {
             "label": "contract IERC20Upgradeable"
           },
-          "t_contract(IStabilityPoolManager)12473": {
+          "t_contract(IStabilityPoolManager)12526": {
             "label": "contract IStabilityPoolManager"
           },
           "t_mapping(t_address,t_uint256)": {
@@ -2303,243 +1969,249 @@
         }
       }
     },
-    "5de56c3909ca445599336fff4701f0bad98c8b453daa9ab90240086cb68c1c2e": {
-      "address": "0x7e27e6659d6a6B715dD8710Dd7c1730697531082",
-      "txHash": "0x70d39542b233393e2d5b1e8a83737892d20dacf25cac7be2c082c02f5a8f70be",
+    "551ff3edbd5a9dcba75d84c52eadde9a2391ee746e297290432071525d70f16c": {
+      "address": "0x765a6eb515D50D3Cd21DB31A88D146D09B22F0FD",
+      "txHash": "0xb77bd7d3fc5bcbc5a75c48c32210445384172708803e4dba942ab7a957e90b33",
       "layout": {
         "storage": [
           {
             "contract": "Initializable",
             "label": "_initialized",
             "type": "t_bool",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
           },
           {
             "contract": "Initializable",
             "label": "_initializing",
             "type": "t_bool",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
           },
           {
             "contract": "ContextUpgradeable",
             "label": "__gap",
             "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
           },
           {
             "contract": "OwnableUpgradeable",
             "label": "_owner",
             "type": "t_address",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
           },
           {
             "contract": "OwnableUpgradeable",
             "label": "__gap",
             "type": "t_array(t_uint256)49_storage",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
             "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
-            "src": "contracts/Dependencies/DfrancBase.sol:21"
+            "type": "t_contract(IDfrancParameters)11834",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "borrowerOperationsAddress",
-            "type": "t_address",
-            "src": "contracts/TroveManagerHelpers.sol:16"
+            "contract": "StabilityPool",
+            "label": "borrowerOperations",
+            "type": "t_contract(IBorrowerOperations)11312",
+            "src": "contracts\\StabilityPool.sol:31"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "troveManagerAddress",
-            "type": "t_address",
-            "src": "contracts/TroveManagerHelpers.sol:17"
+            "contract": "StabilityPool",
+            "label": "troveManager",
+            "type": "t_contract(ITroveManager)12915",
+            "src": "contracts\\StabilityPool.sol:33"
           },
           {
-            "contract": "TroveManagerHelpers",
+            "contract": "StabilityPool",
+            "label": "troveManagerHelpers",
+            "type": "t_contract(ITroveManagerHelpers)13695",
+            "src": "contracts\\StabilityPool.sol:35"
+          },
+          {
+            "contract": "StabilityPool",
             "label": "dchfToken",
-            "type": "t_contract(IDCHFToken)11470",
-            "src": "contracts/TroveManagerHelpers.sol:19"
+            "type": "t_contract(IDCHFToken)11523",
+            "src": "contracts\\StabilityPool.sol:37"
           },
           {
-            "contract": "TroveManagerHelpers",
+            "contract": "StabilityPool",
             "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
-            "src": "contracts/TroveManagerHelpers.sol:22"
+            "type": "t_contract(ISortedTroves)12285",
+            "src": "contracts\\StabilityPool.sol:40"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "baseRate",
+            "contract": "StabilityPool",
+            "label": "communityIssuance",
+            "type": "t_contract(ICommunityIssuance)11453",
+            "src": "contracts\\StabilityPool.sol:42"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "assetAddress",
+            "type": "t_address",
+            "src": "contracts\\StabilityPool.sol:44"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "assetBalance",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:46"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "totalDCHFDeposits",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:49"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "deposits",
             "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts/TroveManagerHelpers.sol:39"
+            "src": "contracts\\StabilityPool.sol:61"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "lastFeeOperationTime",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts/TroveManagerHelpers.sol:42"
+            "contract": "StabilityPool",
+            "label": "depositSnapshots",
+            "type": "t_mapping(t_address,t_struct(Snapshots)19931_storage)",
+            "src": "contracts\\StabilityPool.sol:62"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "Troves",
-            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12895_storage))",
-            "src": "contracts/TroveManagerHelpers.sol:44"
-          },
-          {
-            "contract": "TroveManagerHelpers",
+            "contract": "StabilityPool",
             "label": "totalStakes",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts/TroveManagerHelpers.sol:46"
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:64"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "totalStakesSnapshot",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts/TroveManagerHelpers.sol:49"
+            "contract": "StabilityPool",
+            "label": "systemSnapshots",
+            "type": "t_struct(Snapshots)19931_storage",
+            "src": "contracts\\StabilityPool.sol:65"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "totalCollateralSnapshot",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts/TroveManagerHelpers.sol:52"
+            "contract": "StabilityPool",
+            "label": "P",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:73"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "L_ASSETS",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts/TroveManagerHelpers.sol:62"
+            "contract": "StabilityPool",
+            "label": "currentScale",
+            "type": "t_uint128",
+            "src": "contracts\\StabilityPool.sol:78"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "L_DCHFDebts",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts/TroveManagerHelpers.sol:63"
+            "contract": "StabilityPool",
+            "label": "currentEpoch",
+            "type": "t_uint128",
+            "src": "contracts\\StabilityPool.sol:81"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "rewardSnapshots",
-            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13023_storage))",
-            "src": "contracts/TroveManagerHelpers.sol:66"
+            "contract": "StabilityPool",
+            "label": "epochToScaleToSum",
+            "type": "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))",
+            "src": "contracts\\StabilityPool.sol:91"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "TroveOwners",
-            "type": "t_mapping(t_address,t_array(t_address)dyn_storage)",
-            "src": "contracts/TroveManagerHelpers.sol:69"
+            "contract": "StabilityPool",
+            "label": "epochToScaleToG",
+            "type": "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))",
+            "src": "contracts\\StabilityPool.sol:100"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "lastETHError_Redistribution",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts/TroveManagerHelpers.sol:72"
+            "contract": "StabilityPool",
+            "label": "lastMONError",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:103"
           },
           {
-            "contract": "TroveManagerHelpers",
-            "label": "lastDCHFDebtError_Redistribution",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts/TroveManagerHelpers.sol:73"
+            "contract": "StabilityPool",
+            "label": "lastAssetError_Offset",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:105"
           },
           {
-            "contract": "TroveManagerHelpers",
+            "contract": "StabilityPool",
+            "label": "lastDCHFLossError_Offset",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:106"
+          },
+          {
+            "contract": "StabilityPool",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts/TroveManagerHelpers.sol:75"
+            "src": "contracts\\StabilityPool.sol:108"
           }
         ],
         "types": {
-          "t_address": {
-            "label": "address"
+          "t_contract(IBorrowerOperations)11312": {
+            "label": "contract IBorrowerOperations"
           },
-          "t_contract(IDCHFToken)11470": {
+          "t_contract(ITroveManager)12915": {
+            "label": "contract ITroveManager"
+          },
+          "t_contract(ITroveManagerHelpers)13695": {
+            "label": "contract ITroveManagerHelpers"
+          },
+          "t_contract(IDCHFToken)11523": {
             "label": "contract IDCHFToken"
           },
-          "t_contract(ISortedTroves)12232": {
+          "t_contract(ISortedTroves)12285": {
             "label": "contract ISortedTroves"
           },
-          "t_mapping(t_address,t_uint256)": {
-            "label": "mapping(address => uint256)"
+          "t_contract(ICommunityIssuance)11453": {
+            "label": "contract ICommunityIssuance"
+          },
+          "t_address": {
+            "label": "address"
           },
           "t_uint256": {
             "label": "uint256"
           },
-          "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12895_storage))": {
-            "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.Trove))"
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
           },
-          "t_mapping(t_address,t_struct(Trove)12895_storage)": {
-            "label": "mapping(address => struct ITroveManagerHelpers.Trove)"
+          "t_mapping(t_address,t_struct(Snapshots)19931_storage)": {
+            "label": "mapping(address => struct StabilityPool.Snapshots)"
           },
-          "t_struct(Trove)12895_storage": {
-            "label": "struct ITroveManagerHelpers.Trove",
+          "t_struct(Snapshots)19931_storage": {
+            "label": "struct StabilityPool.Snapshots",
             "members": [
               {
-                "label": "asset",
-                "type": "t_address"
-              },
-              {
-                "label": "debt",
+                "label": "S",
                 "type": "t_uint256"
               },
               {
-                "label": "coll",
+                "label": "P",
                 "type": "t_uint256"
               },
               {
-                "label": "stake",
+                "label": "G",
                 "type": "t_uint256"
               },
               {
-                "label": "status",
-                "type": "t_enum(Status)12881"
+                "label": "scale",
+                "type": "t_uint128"
               },
               {
-                "label": "arrayIndex",
+                "label": "epoch",
                 "type": "t_uint128"
               }
-            ]
-          },
-          "t_enum(Status)12881": {
-            "label": "enum ITroveManagerHelpers.Status",
-            "members": [
-              "nonExistent",
-              "active",
-              "closedByOwner",
-              "closedByLiquidation",
-              "closedByRedemption"
             ]
           },
           "t_uint128": {
             "label": "uint128"
           },
-          "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13023_storage))": {
-            "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.RewardSnapshot))"
+          "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))": {
+            "label": "mapping(uint128 => mapping(uint128 => uint256))"
           },
-          "t_mapping(t_address,t_struct(RewardSnapshot)13023_storage)": {
-            "label": "mapping(address => struct ITroveManagerHelpers.RewardSnapshot)"
-          },
-          "t_struct(RewardSnapshot)13023_storage": {
-            "label": "struct ITroveManagerHelpers.RewardSnapshot",
-            "members": [
-              {
-                "label": "asset",
-                "type": "t_uint256"
-              },
-              {
-                "label": "DCHFDebt",
-                "type": "t_uint256"
-              }
-            ]
-          },
-          "t_mapping(t_address,t_array(t_address)dyn_storage)": {
-            "label": "mapping(address => address[])"
-          },
-          "t_array(t_address)dyn_storage": {
-            "label": "address[]"
+          "t_mapping(t_uint128,t_uint256)": {
+            "label": "mapping(uint128 => uint256)"
           },
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IDfrancParameters)11781": {
+          "t_contract(IDfrancParameters)11834": {
             "label": "contract IDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {

@@ -75,7 +75,7 @@ module.exports = {
       ]
     },*/
     rinkeby: {
-      url: "https://rinkeby.infura.io/v3/cf9de047e0f54fac8d44b12783036bc8",
+      url: getSecret("RINKEBY_RPC_URL"),
       accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
     },
   },
