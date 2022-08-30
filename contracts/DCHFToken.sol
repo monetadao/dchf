@@ -3,6 +3,7 @@
 pragma solidity ^0.8.14;
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+
 import "./Dependencies/CheckContract.sol";
 import "./Interfaces/IDCHFToken.sol";
 
@@ -24,7 +25,7 @@ import "./Interfaces/IDCHFToken.sol";
  * functions removeTroveManager and removeBorrowerOps enable the removal of a contract
  * from both the mapping and the public array.
  *
- * Additional check in place in order to ensure that the addresses added are real
+ * Additional checks in place in order to ensure that the addresses added are real
  * TroveManager or BorrowerOps contracts.
  */
 
@@ -128,7 +129,7 @@ contract DCHFToken is CheckContract, IDCHFToken, Ownable {
 	}
 
 	function removeTroveManager(address _troveManager) external override onlyOwner {
-		require(validTroveManagers[_troveManager], "TroveManager does not exists");
+		require(validTroveManagers[_troveManager], "TroveManager does not exist");
 		delete validTroveManagers[_troveManager];
 		_removeElement(troveManagers, _troveManager);
 	}
