@@ -45,6 +45,38 @@ contract LockedMON is Ownable, CheckContract {
 		monToken = IERC20(_monAddress);
 	}
 
+	function addEntityVestingBatch(address[] memory _entities, uint256[] memory _totalSupplies)
+		external
+		onlyOwner
+	{
+		require(_entities.length == _totalSupplies.length, "Array length missmatch");
+
+		uint256 _sumTotalSupplies = 0;
+
+		for (uint256 i = 0; i < _entities.length; i++) {
+			address _entity = _entities[i];
+			uint256 _totalSupply = _totalSupplies[i];
+
+			require(address(0) != _entity, "Invalid Address");
+
+			require(entitiesVesting[_entity].createdDate == 0, "Entity already has a Vesting Rule");
+
+			assignedMONTokens += _totalSupply;
+
+			entitiesVesting[_entity] = Rule(
+				block.timestamp,
+				_totalSupply,
+				block.timestamp.add(ZERO_DAYS),
+				block.timestamp.add(ONE_YEAR),
+				0
+			);
+
+			_sumTotalSupplies += _totalSupply;
+		}
+
+		monToken.safeTransferFrom(msg.sender, address(this), _sumTotalSupplies);
+	}
+
 	function addEntityVesting(address _entity, uint256 _totalSupply) public onlyOwner {
 		require(address(0) != _entity, "Invalid Address");
 

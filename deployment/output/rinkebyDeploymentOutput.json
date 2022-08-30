@@ -1,0 +1,24 @@
+{
+  "lockedMON": {
+    "address": "0x634d4CE32532fA445117999A63c838B61D1767B3",
+    "txHash": "0x798fb8685e9a3f18dcc48c009604d862ae0b3f30a243336b76112002c0cec2fa",
+    "verification": "https://rinkeby.etherscan.io/address/0x634d4CE32532fA445117999A63c838B61D1767B3#code"
+  },
+  "MONToken": {
+    "address": "0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2",
+    "txHash": "0x67f001801857e4d7f13a136cc181a33f84744345172ea32ae405108c11d6ee50",
+    "verification": "https://rinkeby.etherscan.io/address/0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2#code"
+  },
+  "0x4F74e01855E79e4ec65ee67C51540144A698D972": {
+    "amount": "17000000000000000000000000",
+    "txHash": "0x5f81a9e258e6b3bfea59048856a73eab5f58be06f31aa2e5f180e999eb159a8d"
+  },
+  "0xA8FAc0eC4B8F63864C80B36cd74667cEa74D1193": {
+    "amount": "10000000000000000000000000",
+    "txHash": "0x5f81a9e258e6b3bfea59048856a73eab5f58be06f31aa2e5f180e999eb159a8d"
+  },
+  "0x085ad56B4CF061D67D0194e309e07e0F232C65f8": {
+    "amount": "15000000000000000000000000",
+    "txHash": "0x5f81a9e258e6b3bfea59048856a73eab5f58be06f31aa2e5f180e999eb159a8d"
+  }
+}
