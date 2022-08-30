@@ -132,6 +132,7 @@ contract DCHFToken is CheckContract, IDCHFToken, Ownable {
 		require(validTroveManagers[_troveManager], "TroveManager does not exist");
 		delete validTroveManagers[_troveManager];
 		_removeElement(troveManagers, _troveManager);
+		emit UpdateTroveManagers(troveManagers);
 	}
 
 	function addBorrowerOps(address _borrowerOps) external override onlyOwner {
@@ -147,6 +148,7 @@ contract DCHFToken is CheckContract, IDCHFToken, Ownable {
 		require(validBorrowerOps[_borrowerOps], "BorrowerOps does not exist");
 		delete validBorrowerOps[_borrowerOps];
 		_removeElement(borrowerOps, _borrowerOps);
+		emit UpdateBorrowerOps(borrowerOps);
 	}
 
 	// --- Internal functions ---
