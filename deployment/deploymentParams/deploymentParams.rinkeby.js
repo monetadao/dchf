@@ -15,7 +15,7 @@ const externalAddrs = {
 const dfrancAddresses = {
   ADMIN_MULTI: "0x00dCC22fD0DF66a07Be512AA617c78E703bDC550",
   MON_SAFE: "0x2bA480A4Ae70f172Ff73FcDb29A1909c9C9df785", // TODO
-  DEPLOYER: "0x4F74e01855E79e4ec65ee67C51540144A698D972"
+  DEPLOYER: "0x31c57298578f7508B5982062cfEc5ec8BD346247"
 }
 
 const monetaCommunityIssuanceParams = {
@@ -38,7 +38,9 @@ const beneficiaries = {
 }
 
 const REDEMPTION_SAFETY = 0;
-const MON_TOKEN_ONLY = false;
+const MON_TOKEN_ONLY = true;
+
+const MON_LOCK_BATCH_SIZE = 100;
 
 const OUTPUT_FILE = './deployment/output/rinkebyDeploymentOutput.json'
 
@@ -64,5 +66,6 @@ module.exports = {
   ETHERSCAN_BASE_URL,
   IsMainnet,
   REDEMPTION_SAFETY,
-  MON_TOKEN_ONLY
+  MON_TOKEN_ONLY,
+  MON_LOCK_BATCH_SIZE
 };

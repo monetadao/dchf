@@ -47,7 +47,36 @@ async function mainnetDeploy(configParams) {
     if ((await partialContracts.MONToken.allowance(deployerWallet.address, partialContracts.lockedMON.address)) == 0)
       await (await partialContracts.MONToken.approve(partialContracts.lockedMON.address, ethers.constants.MaxUint256)).wait();
 
-    for (const [wallet, amount] of Object.entries(config.beneficiaries)) {
+    const beneficiaries = Object.entries(config.beneficiaries);
+
+    const batchSize = config.MON_LOCK_BATCH_SIZE;
+
+    for (let i = 0; i < beneficiaries.length; i += batchSize) {
+
+      const currentBatchObj = beneficiaries.slice(i, i + batchSize);
+
+      const wallets = [];
+      const amounts = [];
+
+      for (const [key, value] of currentBatchObj) {
+        wallets.push(key);
+        amounts.push(dec(value, 18));
+      }
+
+      const txReceipt = await mdh.sendAndWaitForTransaction(partialContracts.lockedMON.addEntityVestingBatch(wallets, amounts));
+
+      for (let i = 0; i < amounts.length; i++) {
+        deploymentState[wallets[i]] = {
+          amount: amounts[i],
+          txHash: txReceipt.transactionHash
+        }
+
+        mdh.saveDeployment(deploymentState)
+      }
+
+    }
+
+    /*for (const [wallet, amount] of Object.entries(config.beneficiaries)) {
 
       if (amount == 0) continue
 
@@ -63,15 +92,14 @@ async function mainnetDeploy(configParams) {
 
         mdh.saveDeployment(deploymentState)
       }
-    }
+    }*/
 
     await transferOwnership(partialContracts.lockedMON, TREASURY_WALLET);
 
     /*
     const balance = await partialContracts.MONToken.balanceOf(deployerWallet.address);
     console.log(`Sending ${balance} MON to ${TREASURY_WALLET}`);
-    await partialContracts.MONToken.transfer(TREASURY_WALLET, balance)
-    */
+    await partialContracts.MONToken.transfer(TREASURY_WALLET, balance)*/
 
     console.log(`deployerETHBalance after: ${await ethers.provider.getBalance(deployerWallet.address)}`)
 
