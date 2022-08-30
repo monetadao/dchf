@@ -1,14 +1,14 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0x634d4CE32532fA445117999A63c838B61D1767B3",
-    "txHash": "0x72b4ffaa2eff449d761d1eaa508808f33ecc9ddb331ebe039ee07cceaf9709c1",
+    "address": "0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2",
+    "txHash": "0x8cd8624e35592a4bf887b9c58f804464d8fc2204ca6b33968598d6c81e023ecc",
     "deployTransaction": {
-      "hash": "0x72b4ffaa2eff449d761d1eaa508808f33ecc9ddb331ebe039ee07cceaf9709c1",
+      "hash": "0x8cd8624e35592a4bf887b9c58f804464d8fc2204ca6b33968598d6c81e023ecc",
       "type": 0,
       "accessList": null,
-      "blockHash": "0x3f99d267c713f166870362acdfc2f6f8b40673ce15699b77422c6946d5638b80",
-      "blockNumber": 11021435,
+      "blockHash": "0xffd6bd57d2ce5e1c78cf70f130be475d265132e04b2323406ed63f7825078eca",
+      "blockNumber": 11292141,
       "transactionIndex": 0,
       "confirmations": 1,
       "from": "0x31c57298578f7508B5982062cfEc5ec8BD346247",
@@ -25,186 +25,899 @@
         "type": "BigNumber",
         "hex": "0x00"
       },
-      "nonce": 16,
+      "nonce": 17,
       "data": "0x608060405234801561001057600080fd5b50600080546001600160a01b031916339081178255604051909182917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a350610759806100616000396000f3fe60806040526004361061007b5760003560e01c80639623609d1161004e5780639623609d1461011157806399a88ec414610124578063f2fde38b14610144578063f3b7dead146101645761007b565b8063204e1c7a14610080578063715018a6146100bc5780637eff275e146100d35780638da5cb5b146100f3575b600080fd5b34801561008c57600080fd5b506100a061009b366004610515565b610184565b6040516001600160a01b03909116815260200160405180910390f35b3480156100c857600080fd5b506100d1610215565b005b3480156100df57600080fd5b506100d16100ee366004610554565b610292565b3480156100ff57600080fd5b506000546001600160a01b03166100a0565b6100d161011f36600461058c565b61031c565b34801561013057600080fd5b506100d161013f366004610554565b6103ad565b34801561015057600080fd5b506100d161015f366004610515565b610405565b34801561017057600080fd5b506100a061017f366004610515565b6104ef565b6000806000836001600160a01b03166040516101aa90635c60da1b60e01b815260040190565b600060405180830381855afa9150503d80600081146101e5576040519150601f19603f3d011682016040523d82523d6000602084013e6101ea565b606091505b5091509150816101f957600080fd5b8080602001905181019061020d9190610538565b949350505050565b6000546001600160a01b031633146102485760405162461bcd60e51b815260040161023f906106c0565b60405180910390fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031633146102bc5760405162461bcd60e51b815260040161023f906106c0565b6040516308f2839760e41b81526001600160a01b038281166004830152831690638f283970906024015b600060405180830381600087803b15801561030057600080fd5b505af1158015610314573d6000803e3d6000fd5b505050505050565b6000546001600160a01b031633146103465760405162461bcd60e51b815260040161023f906106c0565b60405163278f794360e11b81526001600160a01b03841690634f1ef286903490610376908690869060040161065d565b6000604051808303818588803b15801561038f57600080fd5b505af11580156103a3573d6000803e3d6000fd5b5050505050505050565b6000546001600160a01b031633146103d75760405162461bcd60e51b815260040161023f906106c0565b604051631b2ce7f360e11b81526001600160a01b038281166004830152831690633659cfe6906024016102e6565b6000546001600160a01b0316331461042f5760405162461bcd60e51b815260040161023f906106c0565b6001600160a01b0381166104945760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b606482015260840161023f565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b6000806000836001600160a01b03166040516101aa906303e1469160e61b815260040190565b600060208284031215610526578081fd5b81356105318161070b565b9392505050565b600060208284031215610549578081fd5b81516105318161070b565b60008060408385031215610566578081fd5b82356105718161070b565b915060208301356105818161070b565b809150509250929050565b6000806000606084860312156105a0578081fd5b83356105ab8161070b565b925060208401356105bb8161070b565b9150604084013567ffffffffffffffff808211156105d7578283fd5b818601915086601f8301126105ea578283fd5b8135818111156105fc576105fc6106f5565b604051601f8201601f19908116603f01168101908382118183101715610624576106246106f5565b8160405282815289602084870101111561063c578586fd5b82602086016020830137856020848301015280955050505050509250925092565b600060018060a01b038416825260206040818401528351806040850152825b818110156106985785810183015185820160600152820161067c565b818111156106a95783606083870101525b50601f01601f191692909201606001949350505050565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b634e487b7160e01b600052604160045260246000fd5b6001600160a01b038116811461072057600080fd5b5056fea2646970667358221220d849f96f3086b9f82cdcf665adb8c697ace05638da1c7c16ab2d26293717af6764736f6c63430008020033",
-      "r": "0x1c242b099ffbee688989a348b524f551f4bc823ffbcefcb5ae7d5de2993ffef1",
-      "s": "0x3b083f61a73e192d0fc2b72db6f76557577827cd5a63b4f4220590506d73579b",
-      "v": 62710,
-      "creates": "0x634d4CE32532fA445117999A63c838B61D1767B3",
+      "r": "0x6c4ab177cd637690fdbab291afd05ecc0b353af5f2320c6a4cd4986b70974ab5",
+      "s": "0x1f643a4c97328b50363e226c8cfc0a3222e20f59acc8bde3b43f074ad5a52421",
+      "v": 62709,
+      "creates": "0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2",
       "chainId": 31337
     }
   },
   "proxies": [
     {
-      "address": "0x3DaD300A888CE2c31925079c1EBEb54feEE847B9",
-      "txHash": "0xa4526ee93275d30828bc2b99208e70b8d3f3678a58ffd0f5b13f0635327f1830",
+      "address": "0x6d722b5602fd62Ea41D0B2AB6eabd3Ae59709ea0",
+      "txHash": "0x9d266e1a64d8d8bafdbb5c173c43d74ee1b4c01046861ec666b2cfea85a63669",
       "kind": "transparent"
     },
     {
-      "address": "0xFE8ce62ef63a1e23F871830068614F93545fCBfA",
-      "txHash": "0x1a57c53b81a4f674d72f59fc357bb667cbffa922baf9647ee13892c781d5066c",
+      "address": "0x4A980b4E15Cf6fb6c7Bd1d259ec9843aa20292cC",
+      "txHash": "0x7c333605585e59c6970d62767ea17fa6c81a827579b9b36a022feaba3fe54b37",
       "kind": "transparent"
     },
     {
-      "address": "0xc581768f944F60c8D711a086Fb45339703090cb3",
-      "txHash": "0xd4dbb72189015ca0b6e18ee10d370f710b79fa443f59ab0a424134946ca4942c",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x1cd89D59208f8E16344eD2D4D98A99e1f208fbec",
-      "txHash": "0x103c86e54b070d89312dda8b2555f7a921549fa969d71501fda81629f291ea3c",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x092BcdA35Ef2e5CAcc6F4937e2135ac5dF32b33B",
-      "txHash": "0x7c0d176d07d75da2b479ded7a43ce3fcc806fe3c3870ec734f5e662079f55435",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x2f372E96721f305BC3E55D6c985dFe30dDDBBA6F",
-      "txHash": "0x4dac34bbe2c0d43bb27044f0d1c4795dc20a9ab72bec191ba1063600b761d68d",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xD48a181D6aA3F8303ec989d722AECB93eE61ED85",
-      "txHash": "0x4a120a6de2f6075f5cfa7560adbf2d01bcae8e5c914b8f501f02032c9790afbe",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x634d4CE32532fA445117999A63c838B61D1767B3",
-      "txHash": "0x7dfabd9d9f83dc8189f33eb515b7539470d5f29ce84f7e146bae703c14124a8b",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x19027dcD6026AA3251505dc7Af262370Fc26Aa89",
-      "txHash": "0x4e6a75ba4ab75c12f6125b2341954758a066b198b1bac26dca6cdaa4f5201c75",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x2ba4D45e58FfDA829403AE3803f734B36a3517fE",
-      "txHash": "0xd72781a11fc485bc7045bd4b8b36f0d018423ab6b93748a8b08542c507d1402d",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xB77Dc0B1D04E98E932c15D480a64E71691CF93B5",
-      "txHash": "0x8ead71d1f3ee4aa99ccd8c83866114bfda49cf271ba01e1114bcddb0bbab6876",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x6845beebdEc1B7EcB4e30Bc50467D9f7d66733Fd",
-      "txHash": "0xc371cc1355063648902466527ab0f8d8d814c4e959ea797a5e207e46b523abe6",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x61A4Ecb233477d93C45C54f83948B1FF89182B65",
-      "txHash": "0x0addb108b66a34aced2eb6a563684d17ee7f39801243d500ec0eb2861084d709",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xefaC809C80e25039799EB11b70E157752DC9869e",
-      "txHash": "0x5180204cb09ae82bf2f9dc560a91b2be0cd313e10331482e3f3cb0ee02128939",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xDA7a522E522382Fd000A150Eb0f9d57CD006a29F",
-      "txHash": "0xd90d424ed99eb91cd89d770ac3d84239b5e83509fb6f337dc14b81ef6b81833a",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xA1343BB009Bd60025C0A59503a30345e3475dB5f",
-      "txHash": "0x10ca1c5c6dda18d36ce8219a9dee1d3da020abf4d8b506edb3ed894d975e3109",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x461656561C180F43698E847e9C07ea2E70F912bb",
-      "txHash": "0x8c29ae8aa38b5ed78d1610cae158cdc3c6d2bbc3a0f9b24fa9594905c1711c87",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x213696b6F4d41178D3E7069BAc8fab6fAaD53BF2",
-      "txHash": "0xb52aa29e13e03820df10db5f72abb5c5d4154e13afc7ef9d2b906f98466d87e4",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xD0daE21bE8f11799a325f70400ba08D75f28eebB",
-      "txHash": "0x9b6fc2cc5226a1140b2c6291f71cd408d5474a85e409509f5fc72fd0d9bf4545",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x1D19b8b8b492bA72eA1Ff340D88FeF341C785A00",
-      "txHash": "0x5384a3afc4c3c2717af85c21c696dc33cca00d3357684ec7532508e2b7f56809",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x2eD4b013186B0c3315F99C7D54901D333DE48687",
-      "txHash": "0x4d51bfbf2b3f21728b97c8533cc8b43f69830cb74992995db40472f0d95b1786",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x8826968921217d6813Bbd82EfCE983c99aF70BFF",
-      "txHash": "0x8f0ff1f3c5dbcf836e669384c750cf3ca9066075b1f2549270663622fea1e7dc",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x9E5888347B021cd487Ad6FE7b82691AEb2eC11de",
-      "txHash": "0xe88e2275aa6ffb33c2061ae4c72d2c76677a52b53acb9fa8599ef55e98669825",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xCF389CE0CD7DfF99689eeB56029A28fa965Fe89E",
-      "txHash": "0xb4d81684c4fe8ec27afb1afd6982276a710c7fd91541f9d5a0ae40c09b356995",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xbEc2096Ef1FDfA8A5c876d900DDD9570d1471572",
-      "txHash": "0x4bf1fb6b3c900234ff42f571d4d01cdcc713730c46d8c6e5ea2da17e74ef2439",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x88400A8e74619127C301B3d8aC7BBd8A08b76f9f",
-      "txHash": "0x1cca440f3840c5a68ffa2ca392c7100abe7d76f6e4de922cca9156288f7b69c2",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xb0441e9262C2786db98a4A83bc5EF5Eb4A83aA17",
-      "txHash": "0xf5aa54e73a4592a9cd0fe06b18a7f071966abbebff27c248d37c0a7e2f30a786",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x3c6e2a88771c29F90D21EaC4933efF63f734c334",
-      "txHash": "0xf03bda41df98963e715aeee2e644ef00106bd8e9bdddf5bfc9023b8b3562d11b",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xcD70B0C5AAf47177961d04eBc3a7eBbC9FAC290E",
-      "txHash": "0xf966affb890577155ac609202ffcdd2af60938ca6795f3301c044b5aa49bfe8a",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x1B272086cf6B0e73e6c597D6f907FBE8F935C8A9",
-      "txHash": "0xdd3b8149290c44d05f48c0fb078ba9a070265a0c96ab2f75631a3b79cc1f58a9",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x5ba0F4093789F775B770fd03BD149b008443767A",
-      "txHash": "0xa59b2c9b279e5e243b6ad1326c657ebd08f949a9f09f9091cccb8df9e6e65d4e",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x4A6db8549bA2B81439Bb4De3AAF67F67D492Fa45",
-      "txHash": "0x78f8b7aa795659ec983d15c2c7ff99425b33a17a62a86598727d717274b0c119",
+      "address": "0x3dc930324Ad8C08746A5FF0cEF9877398Cb47e60",
+      "txHash": "0x4ad6d344240b16a7d527d2987c4527a9bd8e77bae72d388ac0be17c3306019de",
       "kind": "transparent"
     },
     {
       "address": "0x0cC0F1C64D78b27Fde55009B60914C378492068f",
-      "txHash": "0x16782852c224dc53062fff895654c09bec64362c2330c6833b0bbf6adab560c3",
+      "txHash": "0x3fca6a8c56f5ce1c1a975edbae9f74bc9597de1c0faf1229c51d056a58114c11",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x19027dcD6026AA3251505dc7Af262370Fc26Aa89",
+      "txHash": "0x82b8802a2c38cb8292d985a2be6b45d6dc41de774f16b1145b62f6bffe14b953",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x2ba4D45e58FfDA829403AE3803f734B36a3517fE",
+      "txHash": "0x9d02ca8ee058a8aab0a7eebc1fce2b99a235ed369fdfd9e3716e979b52fb9050",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xB77Dc0B1D04E98E932c15D480a64E71691CF93B5",
+      "txHash": "0xc70c452f8b777f8b4e8c5d12cfdcff2fb1ed890dd6cc05eaddce3f13d9a2a6cd",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x6845beebdEc1B7EcB4e30Bc50467D9f7d66733Fd",
+      "txHash": "0xd063ddd39ee4111644f1c6d0b721cd2580cc96e225b9819b8e5cfc664d629c8b",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x88b1d679771F0cD0bF80234e00073012F3a40f08",
+      "txHash": "0xc0fd764ecd4c5c7340e9e5f30c6e96c678150eddabc4c2c398083ac3a10b737b",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xC01B2841FAA908D2793676e71a6Bbb7D2838aeDa",
+      "txHash": "0x28f89c1c9535744d57c61926439f931d7d5f1b04802f4bc98b279c415a496f0c",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x61A4Ecb233477d93C45C54f83948B1FF89182B65",
+      "txHash": "0x323e1f8bb274c6d49b9e32d6c7b17c3c2aa12e045396b85d7a604a217dc030f9",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xefaC809C80e25039799EB11b70E157752DC9869e",
+      "txHash": "0x82b5257988e4de1f12a078da7ff65b5c3fd4244aa5d8147db6fa52fc115988f2",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x84A85A35AF520fC2884167Fc62Fb7605a454A102",
+      "txHash": "0xab3cba3948a37c2f0cb16eb4d31db02b1e4430c5e79e3b0e42c832d7a2f9a38d",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x4B2E75cCdB46FEB86b474b49C8Cee7B430b310D4",
+      "txHash": "0xb3712eb6ed75a92a1f47a223ef19465f95f9520880f810e9fac84502f356fe00",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x895dA3734ac753B92075573A7654cA881408F4dB",
+      "txHash": "0x7c46ce10d39dee2425c9d62bc481db9d571df95705b67873dceca61814599ef4",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xF2a76cE35356010A5e4681aA016E9d4245cE621c",
+      "txHash": "0x586d772faa57b1deeae498554073c86358e534267239f92a98fa2b7186430adc",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xC38C20690a3D04a097524Ad99790b2383472ac81",
+      "txHash": "0x39b9b7186ad373910da02a1e2bbceb52b9ed391b28cf4a6e0a8cdc5f680e0eb4",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x4A6db8549bA2B81439Bb4De3AAF67F67D492Fa45",
+      "txHash": "0x6574c1716bb4ff26fd80977892bb1bc7813ae5c0f476621334ccc11bb7776e90",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x461656561C180F43698E847e9C07ea2E70F912bb",
+      "txHash": "0x892d4265d418b4f2896a6674e768095b2c0147eba99932239e5020bfbd4ac105",
       "kind": "transparent"
     }
   ],
   "impls": {
+    "09b848383c3c1ffa1f6a049a1bbb6e6f18e5f80e2427fd12b407d0bd4160df6e": {
+      "address": "0x634d4CE32532fA445117999A63c838B61D1767B3",
+      "txHash": "0xbd85f7a680d4da71bab47565f51dbfaa0e041b29b47d545fb6c3c5296269fd9f",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts\\PriceFeed.sol:27"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "adminContract",
+            "type": "t_address",
+            "src": "contracts\\PriceFeed.sol:29"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "status",
+            "type": "t_enum(Status)12079",
+            "src": "contracts\\PriceFeed.sol:31"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "registeredOracles",
+            "type": "t_mapping(t_address,t_struct(RegisterOracle)12076_storage)",
+            "src": "contracts\\PriceFeed.sol:32"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "lastGoodPrice",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\PriceFeed.sol:33"
+          },
+          {
+            "contract": "PriceFeed",
+            "label": "lastGoodIndex",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\PriceFeed.sol:34"
+          }
+        ],
+        "types": {
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_enum(Status)12079": {
+            "label": "enum IPriceFeed.Status",
+            "members": [
+              "chainlinkWorking",
+              "chainlinkUntrusted"
+            ]
+          },
+          "t_mapping(t_address,t_struct(RegisterOracle)12076_storage)": {
+            "label": "mapping(address => struct IPriceFeed.RegisterOracle)"
+          },
+          "t_struct(RegisterOracle)12076_storage": {
+            "label": "struct IPriceFeed.RegisterOracle",
+            "members": [
+              {
+                "label": "chainLinkOracle",
+                "type": "t_contract(AggregatorV3Interface)45"
+              },
+              {
+                "label": "chainLinkIndex",
+                "type": "t_contract(AggregatorV3Interface)45"
+              },
+              {
+                "label": "isRegistered",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_contract(AggregatorV3Interface)45": {
+            "label": "contract AggregatorV3Interface"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "e1e64ba0c2d91d59baf843cfe675049853722707537f1cdf80f189a02cb4f2c0": {
+      "address": "0xD0daE21bE8f11799a325f70400ba08D75f28eebB",
+      "txHash": "0xf3faf15bd143bb274f6d1c2a80fa510d3c3e1471f1f2e291217efd25b48f2fe7",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "SortedTroves",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts\\SortedTroves.sol:48"
+          },
+          {
+            "contract": "SortedTroves",
+            "label": "borrowerOperationsAddress",
+            "type": "t_address",
+            "src": "contracts\\SortedTroves.sol:56"
+          },
+          {
+            "contract": "SortedTroves",
+            "label": "troveManager",
+            "type": "t_contract(ITroveManager)12915",
+            "src": "contracts\\SortedTroves.sol:58"
+          },
+          {
+            "contract": "SortedTroves",
+            "label": "troveManagerHelpers",
+            "type": "t_contract(ITroveManagerHelpers)13695",
+            "src": "contracts\\SortedTroves.sol:59"
+          },
+          {
+            "contract": "SortedTroves",
+            "label": "data",
+            "type": "t_mapping(t_address,t_struct(Data)18494_storage)",
+            "src": "contracts\\SortedTroves.sol:77"
+          }
+        ],
+        "types": {
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_contract(ITroveManager)12915": {
+            "label": "contract ITroveManager"
+          },
+          "t_contract(ITroveManagerHelpers)13695": {
+            "label": "contract ITroveManagerHelpers"
+          },
+          "t_mapping(t_address,t_struct(Data)18494_storage)": {
+            "label": "mapping(address => struct SortedTroves.Data)"
+          },
+          "t_struct(Data)18494_storage": {
+            "label": "struct SortedTroves.Data",
+            "members": [
+              {
+                "label": "head",
+                "type": "t_address"
+              },
+              {
+                "label": "tail",
+                "type": "t_address"
+              },
+              {
+                "label": "maxSize",
+                "type": "t_uint256"
+              },
+              {
+                "label": "size",
+                "type": "t_uint256"
+              },
+              {
+                "label": "nodes",
+                "type": "t_mapping(t_address,t_struct(Node)18480_storage)"
+              }
+            ]
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_struct(Node)18480_storage)": {
+            "label": "mapping(address => struct SortedTroves.Node)"
+          },
+          "t_struct(Node)18480_storage": {
+            "label": "struct SortedTroves.Node",
+            "members": [
+              {
+                "label": "exists",
+                "type": "t_bool"
+              },
+              {
+                "label": "nextId",
+                "type": "t_address"
+              },
+              {
+                "label": "prevId",
+                "type": "t_address"
+              }
+            ]
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "90ac11674c27fb6e2cbd88676d9f910bf7a4a1d2af03e6c8025d74e118694241": {
+      "address": "0x1D19b8b8b492bA72eA1Ff340D88FeF341C785A00",
+      "txHash": "0x1705ef1c4072c6c8d8f289c359ea03ae55933042a881650cddc5ec8241866752",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "DfrancBase",
+            "label": "vestaParams",
+            "type": "t_contract(IDfrancParameters)11834",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
+          },
+          {
+            "contract": "TroveManager",
+            "label": "troveManagerHelpers",
+            "type": "t_contract(ITroveManagerHelpers)13695",
+            "src": "contracts\\TroveManager.sol:16"
+          },
+          {
+            "contract": "TroveManager",
+            "label": "stabilityPoolManager",
+            "type": "t_contract(IStabilityPoolManager)12526",
+            "src": "contracts\\TroveManager.sol:18"
+          },
+          {
+            "contract": "TroveManager",
+            "label": "gasPoolAddress",
+            "type": "t_address",
+            "src": "contracts\\TroveManager.sol:20"
+          },
+          {
+            "contract": "TroveManager",
+            "label": "collSurplusPool",
+            "type": "t_contract(ICollSurplusPool)11383",
+            "src": "contracts\\TroveManager.sol:22"
+          },
+          {
+            "contract": "TroveManager",
+            "label": "dchfToken",
+            "type": "t_contract(IDCHFToken)11523",
+            "src": "contracts\\TroveManager.sol:24"
+          },
+          {
+            "contract": "TroveManager",
+            "label": "monStaking",
+            "type": "t_contract(IMONStaking)11987",
+            "src": "contracts\\TroveManager.sol:26"
+          },
+          {
+            "contract": "TroveManager",
+            "label": "sortedTroves",
+            "type": "t_contract(ISortedTroves)12285",
+            "src": "contracts\\TroveManager.sol:29"
+          },
+          {
+            "contract": "TroveManager",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts\\TroveManager.sol:33"
+          },
+          {
+            "contract": "TroveManager",
+            "label": "redemptionWhitelist",
+            "type": "t_mapping(t_address,t_bool)",
+            "src": "contracts\\TroveManager.sol:35"
+          },
+          {
+            "contract": "TroveManager",
+            "label": "isRedemptionWhitelisted",
+            "type": "t_bool",
+            "src": "contracts\\TroveManager.sol:36"
+          }
+        ],
+        "types": {
+          "t_contract(ITroveManagerHelpers)13695": {
+            "label": "contract ITroveManagerHelpers"
+          },
+          "t_contract(IStabilityPoolManager)12526": {
+            "label": "contract IStabilityPoolManager"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_contract(ICollSurplusPool)11383": {
+            "label": "contract ICollSurplusPool"
+          },
+          "t_contract(IDCHFToken)11523": {
+            "label": "contract IDCHFToken"
+          },
+          "t_contract(IMONStaking)11987": {
+            "label": "contract IMONStaking"
+          },
+          "t_contract(ISortedTroves)12285": {
+            "label": "contract ISortedTroves"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)"
+          },
+          "t_contract(IDfrancParameters)11834": {
+            "label": "contract IDfrancParameters"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "5de56c3909ca445599336fff4701f0bad98c8b453daa9ab90240086cb68c1c2e": {
+      "address": "0x2eD4b013186B0c3315F99C7D54901D333DE48687",
+      "txHash": "0x5b9f4f07293aa843cf5fae09700487c6c50f90a34d2809cfdcd10a23f2ec416a",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "DfrancBase",
+            "label": "vestaParams",
+            "type": "t_contract(IDfrancParameters)11834",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "borrowerOperationsAddress",
+            "type": "t_address",
+            "src": "contracts\\TroveManagerHelpers.sol:16"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "troveManagerAddress",
+            "type": "t_address",
+            "src": "contracts\\TroveManagerHelpers.sol:17"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "dchfToken",
+            "type": "t_contract(IDCHFToken)11523",
+            "src": "contracts\\TroveManagerHelpers.sol:19"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "sortedTroves",
+            "type": "t_contract(ISortedTroves)12285",
+            "src": "contracts\\TroveManagerHelpers.sol:22"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "baseRate",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:39"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "lastFeeOperationTime",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:42"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "Troves",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12948_storage))",
+            "src": "contracts\\TroveManagerHelpers.sol:44"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "totalStakes",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:46"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "totalStakesSnapshot",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:49"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "totalCollateralSnapshot",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:52"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "L_ASSETS",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:62"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "L_DCHFDebts",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:63"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "rewardSnapshots",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13076_storage))",
+            "src": "contracts\\TroveManagerHelpers.sol:66"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "TroveOwners",
+            "type": "t_mapping(t_address,t_array(t_address)dyn_storage)",
+            "src": "contracts\\TroveManagerHelpers.sol:69"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "lastETHError_Redistribution",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:72"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "lastDCHFDebtError_Redistribution",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\TroveManagerHelpers.sol:73"
+          },
+          {
+            "contract": "TroveManagerHelpers",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts\\TroveManagerHelpers.sol:75"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_contract(IDCHFToken)11523": {
+            "label": "contract IDCHFToken"
+          },
+          "t_contract(ISortedTroves)12285": {
+            "label": "contract ISortedTroves"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12948_storage))": {
+            "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.Trove))"
+          },
+          "t_mapping(t_address,t_struct(Trove)12948_storage)": {
+            "label": "mapping(address => struct ITroveManagerHelpers.Trove)"
+          },
+          "t_struct(Trove)12948_storage": {
+            "label": "struct ITroveManagerHelpers.Trove",
+            "members": [
+              {
+                "label": "asset",
+                "type": "t_address"
+              },
+              {
+                "label": "debt",
+                "type": "t_uint256"
+              },
+              {
+                "label": "coll",
+                "type": "t_uint256"
+              },
+              {
+                "label": "stake",
+                "type": "t_uint256"
+              },
+              {
+                "label": "status",
+                "type": "t_enum(Status)12934"
+              },
+              {
+                "label": "arrayIndex",
+                "type": "t_uint128"
+              }
+            ]
+          },
+          "t_enum(Status)12934": {
+            "label": "enum ITroveManagerHelpers.Status",
+            "members": [
+              "nonExistent",
+              "active",
+              "closedByOwner",
+              "closedByLiquidation",
+              "closedByRedemption"
+            ]
+          },
+          "t_uint128": {
+            "label": "uint128"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13076_storage))": {
+            "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.RewardSnapshot))"
+          },
+          "t_mapping(t_address,t_struct(RewardSnapshot)13076_storage)": {
+            "label": "mapping(address => struct ITroveManagerHelpers.RewardSnapshot)"
+          },
+          "t_struct(RewardSnapshot)13076_storage": {
+            "label": "struct ITroveManagerHelpers.RewardSnapshot",
+            "members": [
+              {
+                "label": "asset",
+                "type": "t_uint256"
+              },
+              {
+                "label": "DCHFDebt",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_mapping(t_address,t_array(t_address)dyn_storage)": {
+            "label": "mapping(address => address[])"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_contract(IDfrancParameters)11834": {
+            "label": "contract IDfrancParameters"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
+    "9f1ea53c2dc4ba95fb16ba5d0d2ba29ae582029574dcdd69238a06dc28797982": {
+      "address": "0x8826968921217d6813Bbd82EfCE983c99aF70BFF",
+      "txHash": "0x1e6d23a8f2c2738855dc8afca53e33630bc502ecb787e2a8a7156b9a6d4112f3",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "_status",
+            "type": "t_uint256",
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "contract": "ReentrancyGuardUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:68"
+          },
+          {
+            "contract": "ActivePool",
+            "label": "borrowerOperationsAddress",
+            "type": "t_address",
+            "src": "contracts\\ActivePool.sol:37"
+          },
+          {
+            "contract": "ActivePool",
+            "label": "troveManagerAddress",
+            "type": "t_address",
+            "src": "contracts\\ActivePool.sol:38"
+          },
+          {
+            "contract": "ActivePool",
+            "label": "defaultPool",
+            "type": "t_contract(IDefaultPool)11552",
+            "src": "contracts\\ActivePool.sol:39"
+          },
+          {
+            "contract": "ActivePool",
+            "label": "collSurplusPool",
+            "type": "t_contract(ICollSurplusPool)11383",
+            "src": "contracts\\ActivePool.sol:40"
+          },
+          {
+            "contract": "ActivePool",
+            "label": "stabilityPoolManager",
+            "type": "t_contract(IStabilityPoolManager)12526",
+            "src": "contracts\\ActivePool.sol:42"
+          },
+          {
+            "contract": "ActivePool",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts\\ActivePool.sol:44"
+          },
+          {
+            "contract": "ActivePool",
+            "label": "assetsBalance",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\ActivePool.sol:46"
+          },
+          {
+            "contract": "ActivePool",
+            "label": "DCHFDebts",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\ActivePool.sol:47"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_contract(IDefaultPool)11552": {
+            "label": "contract IDefaultPool"
+          },
+          "t_contract(ICollSurplusPool)11383": {
+            "label": "contract ICollSurplusPool"
+          },
+          "t_contract(IStabilityPoolManager)12526": {
+            "label": "contract IStabilityPoolManager"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
     "eec78ebb2a05622e6c18288f99770e20880493ceb0a87dd4bb3c8b2cf427a24c": {
-      "address": "0x88b1d679771F0cD0bF80234e00073012F3a40f08",
-      "txHash": "0x345b6fa26b71f422da9b812d8c470330105234b210e4fdf8a1d432bb3a3a802f",
+      "address": "0x9E5888347B021cd487Ad6FE7b82691AEb2eC11de",
+      "txHash": "0xea6fc349af07adba94bbd5406f8b56468e4b86b37af90067ee82ca1d975d4cca",
       "layout": {
         "storage": [
           {
@@ -287,9 +1000,97 @@
         }
       }
     },
+    "22030c50912ee7819fe83aa62b639838f110c4bc156e48c8c874f4fa8a1df6ec": {
+      "address": "0xCF389CE0CD7DfF99689eeB56029A28fa965Fe89E",
+      "txHash": "0xdcc47d81fc296f5cc0ee0fe1e4a628a6aa497f7683a8f9d804c1568fad857b16",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "DefaultPool",
+            "label": "troveManagerAddress",
+            "type": "t_address",
+            "src": "contracts\\DefaultPool.sol:27"
+          },
+          {
+            "contract": "DefaultPool",
+            "label": "activePoolAddress",
+            "type": "t_address",
+            "src": "contracts\\DefaultPool.sol:28"
+          },
+          {
+            "contract": "DefaultPool",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts\\DefaultPool.sol:30"
+          },
+          {
+            "contract": "DefaultPool",
+            "label": "assetsBalance",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\DefaultPool.sol:32"
+          },
+          {
+            "contract": "DefaultPool",
+            "label": "DCHFDebts",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\DefaultPool.sol:33"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
+    },
     "0e8961f098b77ca22a5931043dd2a8d1c80f2e5553e8a398f0db72191cd4adec": {
-      "address": "0xefaC809C80e25039799EB11b70E157752DC9869e",
-      "txHash": "0x38850e3374ed102541f5135065871e07ae509690f335b8bf76acc1fbdba28b52",
+      "address": "0xbEc2096Ef1FDfA8A5c876d900DDD9570d1471572",
+      "txHash": "0xe3b29659f4a0249a0b2c64add867ee4537d88e4e97f01e2ac77e57ee0b1c0999",
       "layout": {
         "storage": [
           {
@@ -384,1010 +1185,9 @@
         }
       }
     },
-    "e1e64ba0c2d91d59baf843cfe675049853722707537f1cdf80f189a02cb4f2c0": {
-      "address": "0x19027dcD6026AA3251505dc7Af262370Fc26Aa89",
-      "txHash": "0x70c69e2a92d97e6e095a8be861b1accb10bb8a5dcc7f46364685e16a418b1c7f",
-      "layout": {
-        "storage": [
-          {
-            "contract": "Initializable",
-            "label": "_initialized",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
-          },
-          {
-            "contract": "Initializable",
-            "label": "_initializing",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
-          },
-          {
-            "contract": "ContextUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "_owner",
-            "type": "t_address",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)49_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
-          },
-          {
-            "contract": "SortedTroves",
-            "label": "isInitialized",
-            "type": "t_bool",
-            "src": "contracts\\SortedTroves.sol:48"
-          },
-          {
-            "contract": "SortedTroves",
-            "label": "borrowerOperationsAddress",
-            "type": "t_address",
-            "src": "contracts\\SortedTroves.sol:56"
-          },
-          {
-            "contract": "SortedTroves",
-            "label": "troveManager",
-            "type": "t_contract(ITroveManager)12862",
-            "src": "contracts\\SortedTroves.sol:58"
-          },
-          {
-            "contract": "SortedTroves",
-            "label": "troveManagerHelpers",
-            "type": "t_contract(ITroveManagerHelpers)13642",
-            "src": "contracts\\SortedTroves.sol:59"
-          },
-          {
-            "contract": "SortedTroves",
-            "label": "data",
-            "type": "t_mapping(t_address,t_struct(Data)19480_storage)",
-            "src": "contracts\\SortedTroves.sol:77"
-          }
-        ],
-        "types": {
-          "t_bool": {
-            "label": "bool"
-          },
-          "t_address": {
-            "label": "address"
-          },
-          "t_contract(ITroveManager)12862": {
-            "label": "contract ITroveManager"
-          },
-          "t_contract(ITroveManagerHelpers)13642": {
-            "label": "contract ITroveManagerHelpers"
-          },
-          "t_mapping(t_address,t_struct(Data)19480_storage)": {
-            "label": "mapping(address => struct SortedTroves.Data)"
-          },
-          "t_struct(Data)19480_storage": {
-            "label": "struct SortedTroves.Data",
-            "members": [
-              {
-                "label": "head",
-                "type": "t_address"
-              },
-              {
-                "label": "tail",
-                "type": "t_address"
-              },
-              {
-                "label": "maxSize",
-                "type": "t_uint256"
-              },
-              {
-                "label": "size",
-                "type": "t_uint256"
-              },
-              {
-                "label": "nodes",
-                "type": "t_mapping(t_address,t_struct(Node)19466_storage)"
-              }
-            ]
-          },
-          "t_uint256": {
-            "label": "uint256"
-          },
-          "t_mapping(t_address,t_struct(Node)19466_storage)": {
-            "label": "mapping(address => struct SortedTroves.Node)"
-          },
-          "t_struct(Node)19466_storage": {
-            "label": "struct SortedTroves.Node",
-            "members": [
-              {
-                "label": "exists",
-                "type": "t_bool"
-              },
-              {
-                "label": "nextId",
-                "type": "t_address"
-              },
-              {
-                "label": "prevId",
-                "type": "t_address"
-              }
-            ]
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]"
-          }
-        }
-      }
-    },
-    "90ac11674c27fb6e2cbd88676d9f910bf7a4a1d2af03e6c8025d74e118694241": {
-      "address": "0x2ba4D45e58FfDA829403AE3803f734B36a3517fE",
-      "txHash": "0xdd4ffa266b5d1176219d8eab497c51a3acf8f4db497104094e1cce8144c5ded7",
-      "layout": {
-        "storage": [
-          {
-            "contract": "Initializable",
-            "label": "_initialized",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
-          },
-          {
-            "contract": "Initializable",
-            "label": "_initializing",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
-          },
-          {
-            "contract": "ContextUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "_owner",
-            "type": "t_address",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)49_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
-          },
-          {
-            "contract": "DfrancBase",
-            "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
-            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
-          },
-          {
-            "contract": "TroveManager",
-            "label": "troveManagerHelpers",
-            "type": "t_contract(ITroveManagerHelpers)13642",
-            "src": "contracts\\TroveManager.sol:16"
-          },
-          {
-            "contract": "TroveManager",
-            "label": "stabilityPoolManager",
-            "type": "t_contract(IStabilityPoolManager)12473",
-            "src": "contracts\\TroveManager.sol:18"
-          },
-          {
-            "contract": "TroveManager",
-            "label": "gasPoolAddress",
-            "type": "t_address",
-            "src": "contracts\\TroveManager.sol:20"
-          },
-          {
-            "contract": "TroveManager",
-            "label": "collSurplusPool",
-            "type": "t_contract(ICollSurplusPool)11330",
-            "src": "contracts\\TroveManager.sol:22"
-          },
-          {
-            "contract": "TroveManager",
-            "label": "dchfToken",
-            "type": "t_contract(IDCHFToken)11470",
-            "src": "contracts\\TroveManager.sol:24"
-          },
-          {
-            "contract": "TroveManager",
-            "label": "monStaking",
-            "type": "t_contract(IMONStaking)11934",
-            "src": "contracts\\TroveManager.sol:26"
-          },
-          {
-            "contract": "TroveManager",
-            "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
-            "src": "contracts\\TroveManager.sol:29"
-          },
-          {
-            "contract": "TroveManager",
-            "label": "isInitialized",
-            "type": "t_bool",
-            "src": "contracts\\TroveManager.sol:33"
-          },
-          {
-            "contract": "TroveManager",
-            "label": "redemptionWhitelist",
-            "type": "t_mapping(t_address,t_bool)",
-            "src": "contracts\\TroveManager.sol:35"
-          },
-          {
-            "contract": "TroveManager",
-            "label": "isRedemptionWhitelisted",
-            "type": "t_bool",
-            "src": "contracts\\TroveManager.sol:36"
-          }
-        ],
-        "types": {
-          "t_contract(ITroveManagerHelpers)13642": {
-            "label": "contract ITroveManagerHelpers"
-          },
-          "t_contract(IStabilityPoolManager)12473": {
-            "label": "contract IStabilityPoolManager"
-          },
-          "t_address": {
-            "label": "address"
-          },
-          "t_contract(ICollSurplusPool)11330": {
-            "label": "contract ICollSurplusPool"
-          },
-          "t_contract(IDCHFToken)11470": {
-            "label": "contract IDCHFToken"
-          },
-          "t_contract(IMONStaking)11934": {
-            "label": "contract IMONStaking"
-          },
-          "t_contract(ISortedTroves)12232": {
-            "label": "contract ISortedTroves"
-          },
-          "t_bool": {
-            "label": "bool"
-          },
-          "t_mapping(t_address,t_bool)": {
-            "label": "mapping(address => bool)"
-          },
-          "t_contract(IDfrancParameters)11781": {
-            "label": "contract IDfrancParameters"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]"
-          },
-          "t_uint256": {
-            "label": "uint256"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]"
-          }
-        }
-      }
-    },
-    "1cb50dc62eab2222b3ce96bdf2b0c8e3df76cf2c8dfc779f1aa09e8f8157a07e": {
-      "address": "0xB77Dc0B1D04E98E932c15D480a64E71691CF93B5",
-      "txHash": "0xba8dd1862150aaf2d48d785c1e436b090dcf8a25cfaed3fd0dd0e108a31d4074",
-      "layout": {
-        "storage": [
-          {
-            "contract": "Initializable",
-            "label": "_initialized",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
-          },
-          {
-            "contract": "Initializable",
-            "label": "_initializing",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
-          },
-          {
-            "contract": "ContextUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "_owner",
-            "type": "t_address",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)49_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
-          },
-          {
-            "contract": "DfrancBase",
-            "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
-            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "borrowerOperationsAddress",
-            "type": "t_address",
-            "src": "contracts\\TroveManagerHelpers.sol:16"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "troveManagerAddress",
-            "type": "t_address",
-            "src": "contracts\\TroveManagerHelpers.sol:17"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "dchfToken",
-            "type": "t_contract(IDCHFToken)11470",
-            "src": "contracts\\TroveManagerHelpers.sol:19"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
-            "src": "contracts\\TroveManagerHelpers.sol:22"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "baseRate",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\TroveManagerHelpers.sol:39"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "lastFeeOperationTime",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\TroveManagerHelpers.sol:42"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "Troves",
-            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12895_storage))",
-            "src": "contracts\\TroveManagerHelpers.sol:44"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "totalStakes",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\TroveManagerHelpers.sol:46"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "totalStakesSnapshot",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\TroveManagerHelpers.sol:49"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "totalCollateralSnapshot",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\TroveManagerHelpers.sol:52"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "L_ASSETS",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\TroveManagerHelpers.sol:62"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "L_DCHFDebts",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\TroveManagerHelpers.sol:63"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "rewardSnapshots",
-            "type": "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13023_storage))",
-            "src": "contracts\\TroveManagerHelpers.sol:66"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "TroveOwners",
-            "type": "t_mapping(t_address,t_array(t_address)dyn_storage)",
-            "src": "contracts\\TroveManagerHelpers.sol:69"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "lastETHError_Redistribution",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\TroveManagerHelpers.sol:72"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "lastDCHFDebtError_Redistribution",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\TroveManagerHelpers.sol:73"
-          },
-          {
-            "contract": "TroveManagerHelpers",
-            "label": "isInitialized",
-            "type": "t_bool",
-            "src": "contracts\\TroveManagerHelpers.sol:75"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address"
-          },
-          "t_contract(IDCHFToken)11470": {
-            "label": "contract IDCHFToken"
-          },
-          "t_contract(ISortedTroves)12232": {
-            "label": "contract ISortedTroves"
-          },
-          "t_mapping(t_address,t_uint256)": {
-            "label": "mapping(address => uint256)"
-          },
-          "t_uint256": {
-            "label": "uint256"
-          },
-          "t_mapping(t_address,t_mapping(t_address,t_struct(Trove)12895_storage))": {
-            "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.Trove))"
-          },
-          "t_mapping(t_address,t_struct(Trove)12895_storage)": {
-            "label": "mapping(address => struct ITroveManagerHelpers.Trove)"
-          },
-          "t_struct(Trove)12895_storage": {
-            "label": "struct ITroveManagerHelpers.Trove",
-            "members": [
-              {
-                "label": "asset",
-                "type": "t_address"
-              },
-              {
-                "label": "debt",
-                "type": "t_uint256"
-              },
-              {
-                "label": "coll",
-                "type": "t_uint256"
-              },
-              {
-                "label": "stake",
-                "type": "t_uint256"
-              },
-              {
-                "label": "status",
-                "type": "t_enum(Status)12881"
-              },
-              {
-                "label": "arrayIndex",
-                "type": "t_uint128"
-              }
-            ]
-          },
-          "t_enum(Status)12881": {
-            "label": "enum ITroveManagerHelpers.Status",
-            "members": [
-              "nonExistent",
-              "active",
-              "closedByOwner",
-              "closedByLiquidation",
-              "closedByRedemption"
-            ]
-          },
-          "t_uint128": {
-            "label": "uint128"
-          },
-          "t_mapping(t_address,t_mapping(t_address,t_struct(RewardSnapshot)13023_storage))": {
-            "label": "mapping(address => mapping(address => struct ITroveManagerHelpers.RewardSnapshot))"
-          },
-          "t_mapping(t_address,t_struct(RewardSnapshot)13023_storage)": {
-            "label": "mapping(address => struct ITroveManagerHelpers.RewardSnapshot)"
-          },
-          "t_struct(RewardSnapshot)13023_storage": {
-            "label": "struct ITroveManagerHelpers.RewardSnapshot",
-            "members": [
-              {
-                "label": "asset",
-                "type": "t_uint256"
-              },
-              {
-                "label": "DCHFDebt",
-                "type": "t_uint256"
-              }
-            ]
-          },
-          "t_mapping(t_address,t_array(t_address)dyn_storage)": {
-            "label": "mapping(address => address[])"
-          },
-          "t_array(t_address)dyn_storage": {
-            "label": "address[]"
-          },
-          "t_bool": {
-            "label": "bool"
-          },
-          "t_contract(IDfrancParameters)11781": {
-            "label": "contract IDfrancParameters"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]"
-          }
-        }
-      }
-    },
-    "9f1ea53c2dc4ba95fb16ba5d0d2ba29ae582029574dcdd69238a06dc28797982": {
-      "address": "0x6845beebdEc1B7EcB4e30Bc50467D9f7d66733Fd",
-      "txHash": "0x4e0b7cf511fd60d2403f4c470ad84fcbd34e40a66756fb0dbb7f3afebded8ee3",
-      "layout": {
-        "storage": [
-          {
-            "contract": "Initializable",
-            "label": "_initialized",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
-          },
-          {
-            "contract": "Initializable",
-            "label": "_initializing",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
-          },
-          {
-            "contract": "ContextUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "_owner",
-            "type": "t_address",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)49_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
-          },
-          {
-            "contract": "ReentrancyGuardUpgradeable",
-            "label": "_status",
-            "type": "t_uint256",
-            "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:38"
-          },
-          {
-            "contract": "ReentrancyGuardUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)49_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\security\\ReentrancyGuardUpgradeable.sol:68"
-          },
-          {
-            "contract": "ActivePool",
-            "label": "borrowerOperationsAddress",
-            "type": "t_address",
-            "src": "contracts\\ActivePool.sol:37"
-          },
-          {
-            "contract": "ActivePool",
-            "label": "troveManagerAddress",
-            "type": "t_address",
-            "src": "contracts\\ActivePool.sol:38"
-          },
-          {
-            "contract": "ActivePool",
-            "label": "defaultPool",
-            "type": "t_contract(IDefaultPool)11499",
-            "src": "contracts\\ActivePool.sol:39"
-          },
-          {
-            "contract": "ActivePool",
-            "label": "collSurplusPool",
-            "type": "t_contract(ICollSurplusPool)11330",
-            "src": "contracts\\ActivePool.sol:40"
-          },
-          {
-            "contract": "ActivePool",
-            "label": "stabilityPoolManager",
-            "type": "t_contract(IStabilityPoolManager)12473",
-            "src": "contracts\\ActivePool.sol:42"
-          },
-          {
-            "contract": "ActivePool",
-            "label": "isInitialized",
-            "type": "t_bool",
-            "src": "contracts\\ActivePool.sol:44"
-          },
-          {
-            "contract": "ActivePool",
-            "label": "assetsBalance",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\ActivePool.sol:46"
-          },
-          {
-            "contract": "ActivePool",
-            "label": "DCHFDebts",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\ActivePool.sol:47"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address"
-          },
-          "t_contract(IDefaultPool)11499": {
-            "label": "contract IDefaultPool"
-          },
-          "t_contract(ICollSurplusPool)11330": {
-            "label": "contract ICollSurplusPool"
-          },
-          "t_contract(IStabilityPoolManager)12473": {
-            "label": "contract IStabilityPoolManager"
-          },
-          "t_bool": {
-            "label": "bool"
-          },
-          "t_mapping(t_address,t_uint256)": {
-            "label": "mapping(address => uint256)"
-          },
-          "t_uint256": {
-            "label": "uint256"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]"
-          }
-        }
-      }
-    },
-    "551ff3edbd5a9dcba75d84c52eadde9a2391ee746e297290432071525d70f16c": {
-      "address": "0xC01B2841FAA908D2793676e71a6Bbb7D2838aeDa",
-      "txHash": "0x212b1c0930919e9026ec7f0df95b79f6b57461817aa64e49dc40de610a83739b",
-      "layout": {
-        "storage": [
-          {
-            "contract": "Initializable",
-            "label": "_initialized",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
-          },
-          {
-            "contract": "Initializable",
-            "label": "_initializing",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
-          },
-          {
-            "contract": "ContextUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "_owner",
-            "type": "t_address",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)49_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
-          },
-          {
-            "contract": "DfrancBase",
-            "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
-            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "borrowerOperations",
-            "type": "t_contract(IBorrowerOperations)11259",
-            "src": "contracts\\StabilityPool.sol:31"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "troveManager",
-            "type": "t_contract(ITroveManager)12862",
-            "src": "contracts\\StabilityPool.sol:33"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "troveManagerHelpers",
-            "type": "t_contract(ITroveManagerHelpers)13642",
-            "src": "contracts\\StabilityPool.sol:35"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "dchfToken",
-            "type": "t_contract(IDCHFToken)11470",
-            "src": "contracts\\StabilityPool.sol:37"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
-            "src": "contracts\\StabilityPool.sol:40"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "communityIssuance",
-            "type": "t_contract(ICommunityIssuance)11400",
-            "src": "contracts\\StabilityPool.sol:42"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "assetAddress",
-            "type": "t_address",
-            "src": "contracts\\StabilityPool.sol:44"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "assetBalance",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:46"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "totalDCHFDeposits",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:49"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "deposits",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\StabilityPool.sol:61"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "depositSnapshots",
-            "type": "t_mapping(t_address,t_struct(Snapshots)20917_storage)",
-            "src": "contracts\\StabilityPool.sol:62"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "totalStakes",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:64"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "systemSnapshots",
-            "type": "t_struct(Snapshots)20917_storage",
-            "src": "contracts\\StabilityPool.sol:65"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "P",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:73"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "currentScale",
-            "type": "t_uint128",
-            "src": "contracts\\StabilityPool.sol:78"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "currentEpoch",
-            "type": "t_uint128",
-            "src": "contracts\\StabilityPool.sol:81"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "epochToScaleToSum",
-            "type": "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))",
-            "src": "contracts\\StabilityPool.sol:91"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "epochToScaleToG",
-            "type": "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))",
-            "src": "contracts\\StabilityPool.sol:100"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "lastMONError",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:103"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "lastAssetError_Offset",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:105"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "lastDCHFLossError_Offset",
-            "type": "t_uint256",
-            "src": "contracts\\StabilityPool.sol:106"
-          },
-          {
-            "contract": "StabilityPool",
-            "label": "isInitialized",
-            "type": "t_bool",
-            "src": "contracts\\StabilityPool.sol:108"
-          }
-        ],
-        "types": {
-          "t_contract(IBorrowerOperations)11259": {
-            "label": "contract IBorrowerOperations"
-          },
-          "t_contract(ITroveManager)12862": {
-            "label": "contract ITroveManager"
-          },
-          "t_contract(ITroveManagerHelpers)13642": {
-            "label": "contract ITroveManagerHelpers"
-          },
-          "t_contract(IDCHFToken)11470": {
-            "label": "contract IDCHFToken"
-          },
-          "t_contract(ISortedTroves)12232": {
-            "label": "contract ISortedTroves"
-          },
-          "t_contract(ICommunityIssuance)11400": {
-            "label": "contract ICommunityIssuance"
-          },
-          "t_address": {
-            "label": "address"
-          },
-          "t_uint256": {
-            "label": "uint256"
-          },
-          "t_mapping(t_address,t_uint256)": {
-            "label": "mapping(address => uint256)"
-          },
-          "t_mapping(t_address,t_struct(Snapshots)20917_storage)": {
-            "label": "mapping(address => struct StabilityPool.Snapshots)"
-          },
-          "t_struct(Snapshots)20917_storage": {
-            "label": "struct StabilityPool.Snapshots",
-            "members": [
-              {
-                "label": "S",
-                "type": "t_uint256"
-              },
-              {
-                "label": "P",
-                "type": "t_uint256"
-              },
-              {
-                "label": "G",
-                "type": "t_uint256"
-              },
-              {
-                "label": "scale",
-                "type": "t_uint128"
-              },
-              {
-                "label": "epoch",
-                "type": "t_uint128"
-              }
-            ]
-          },
-          "t_uint128": {
-            "label": "uint128"
-          },
-          "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))": {
-            "label": "mapping(uint128 => mapping(uint128 => uint256))"
-          },
-          "t_mapping(t_uint128,t_uint256)": {
-            "label": "mapping(uint128 => uint256)"
-          },
-          "t_bool": {
-            "label": "bool"
-          },
-          "t_contract(IDfrancParameters)11781": {
-            "label": "contract IDfrancParameters"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]"
-          }
-        }
-      }
-    },
-    "22030c50912ee7819fe83aa62b639838f110c4bc156e48c8c874f4fa8a1df6ec": {
-      "address": "0x61A4Ecb233477d93C45C54f83948B1FF89182B65",
-      "txHash": "0x369014da0bb4e7b2b2a5cf26bd51243a5954a6db036f14dd53e8294c9dfc5c4c",
-      "layout": {
-        "storage": [
-          {
-            "contract": "Initializable",
-            "label": "_initialized",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:39"
-          },
-          {
-            "contract": "Initializable",
-            "label": "_initializing",
-            "type": "t_bool",
-            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:44"
-          },
-          {
-            "contract": "ContextUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)50_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:31"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "_owner",
-            "type": "t_address",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
-          },
-          {
-            "contract": "OwnableUpgradeable",
-            "label": "__gap",
-            "type": "t_array(t_uint256)49_storage",
-            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
-          },
-          {
-            "contract": "DefaultPool",
-            "label": "troveManagerAddress",
-            "type": "t_address",
-            "src": "contracts\\DefaultPool.sol:27"
-          },
-          {
-            "contract": "DefaultPool",
-            "label": "activePoolAddress",
-            "type": "t_address",
-            "src": "contracts\\DefaultPool.sol:28"
-          },
-          {
-            "contract": "DefaultPool",
-            "label": "isInitialized",
-            "type": "t_bool",
-            "src": "contracts\\DefaultPool.sol:30"
-          },
-          {
-            "contract": "DefaultPool",
-            "label": "assetsBalance",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\DefaultPool.sol:32"
-          },
-          {
-            "contract": "DefaultPool",
-            "label": "DCHFDebts",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\DefaultPool.sol:33"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address"
-          },
-          "t_bool": {
-            "label": "bool"
-          },
-          "t_mapping(t_address,t_uint256)": {
-            "label": "mapping(address => uint256)"
-          },
-          "t_uint256": {
-            "label": "uint256"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]"
-          }
-        }
-      }
-    },
     "82f6ba9e75609839b70673bbffc2febe21636961746ced206b7867e9bcf073e1": {
-      "address": "0x84A85A35AF520fC2884167Fc62Fb7605a454A102",
-      "txHash": "0xf923ec46c521f8ae043e49e75c42bd9d87d2c4d1fa825461a770bdd87d821bb0",
+      "address": "0x88400A8e74619127C301B3d8aC7BBd8A08b76f9f",
+      "txHash": "0xb5a48518a4c7d088fbbe643c822f57ab63a37db18bb56ec94e880cc2a91e5770",
       "layout": {
         "storage": [
           {
@@ -1423,25 +1223,25 @@
           {
             "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
+            "type": "t_contract(IDfrancParameters)11834",
             "src": "contracts\\Dependencies\\DfrancBase.sol:21"
           },
           {
             "contract": "BorrowerOperations",
             "label": "troveManager",
-            "type": "t_contract(ITroveManager)12862",
+            "type": "t_contract(ITroveManager)12915",
             "src": "contracts\\BorrowerOperations.sol:27"
           },
           {
             "contract": "BorrowerOperations",
             "label": "troveManagerHelpers",
-            "type": "t_contract(ITroveManagerHelpers)13642",
+            "type": "t_contract(ITroveManagerHelpers)13695",
             "src": "contracts\\BorrowerOperations.sol:29"
           },
           {
             "contract": "BorrowerOperations",
             "label": "stabilityPoolManager",
-            "type": "t_contract(IStabilityPoolManager)12473",
+            "type": "t_contract(IStabilityPoolManager)12526",
             "src": "contracts\\BorrowerOperations.sol:31"
           },
           {
@@ -1453,13 +1253,13 @@
           {
             "contract": "BorrowerOperations",
             "label": "collSurplusPool",
-            "type": "t_contract(ICollSurplusPool)11330",
+            "type": "t_contract(ICollSurplusPool)11383",
             "src": "contracts\\BorrowerOperations.sol:35"
           },
           {
             "contract": "BorrowerOperations",
             "label": "MONStaking",
-            "type": "t_contract(IMONStaking)11934",
+            "type": "t_contract(IMONStaking)11987",
             "src": "contracts\\BorrowerOperations.sol:37"
           },
           {
@@ -1471,13 +1271,13 @@
           {
             "contract": "BorrowerOperations",
             "label": "DCHFToken",
-            "type": "t_contract(IDCHFToken)11470",
+            "type": "t_contract(IDCHFToken)11523",
             "src": "contracts\\BorrowerOperations.sol:40"
           },
           {
             "contract": "BorrowerOperations",
             "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
+            "type": "t_contract(ISortedTroves)12285",
             "src": "contracts\\BorrowerOperations.sol:43"
           },
           {
@@ -1488,34 +1288,34 @@
           }
         ],
         "types": {
-          "t_contract(ITroveManager)12862": {
+          "t_contract(ITroveManager)12915": {
             "label": "contract ITroveManager"
           },
-          "t_contract(ITroveManagerHelpers)13642": {
+          "t_contract(ITroveManagerHelpers)13695": {
             "label": "contract ITroveManagerHelpers"
           },
-          "t_contract(IStabilityPoolManager)12473": {
+          "t_contract(IStabilityPoolManager)12526": {
             "label": "contract IStabilityPoolManager"
           },
           "t_address": {
             "label": "address"
           },
-          "t_contract(ICollSurplusPool)11330": {
+          "t_contract(ICollSurplusPool)11383": {
             "label": "contract ICollSurplusPool"
           },
-          "t_contract(IMONStaking)11934": {
+          "t_contract(IMONStaking)11987": {
             "label": "contract IMONStaking"
           },
-          "t_contract(IDCHFToken)11470": {
+          "t_contract(IDCHFToken)11523": {
             "label": "contract IDCHFToken"
           },
-          "t_contract(ISortedTroves)12232": {
+          "t_contract(ISortedTroves)12285": {
             "label": "contract ISortedTroves"
           },
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IDfrancParameters)11781": {
+          "t_contract(IDfrancParameters)11834": {
             "label": "contract IDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
@@ -1531,8 +1331,8 @@
       }
     },
     "2e1fc7aed8a12a2122ac21ed4c5eea4d5d49ce977728a9a320a0fd9faa7e45f3": {
-      "address": "0x4B2E75cCdB46FEB86b474b49C8Cee7B430b310D4",
-      "txHash": "0x78a6c689f0d3f00d7451d6ee651cf901602a587132852184bee42a6f5e8c279e",
+      "address": "0xb0441e9262C2786db98a4A83bc5EF5Eb4A83aA17",
+      "txHash": "0x4b524b7b3334f3159f36e209e91ea4bfebd9b2c85591a371246cb69b92dc7a6c",
       "layout": {
         "storage": [
           {
@@ -1568,25 +1368,25 @@
           {
             "contract": "DfrancBase",
             "label": "vestaParams",
-            "type": "t_contract(IDfrancParameters)11781",
+            "type": "t_contract(IDfrancParameters)11834",
             "src": "contracts\\Dependencies\\DfrancBase.sol:21"
           },
           {
             "contract": "HintHelpers",
             "label": "sortedTroves",
-            "type": "t_contract(ISortedTroves)12232",
+            "type": "t_contract(ISortedTroves)12285",
             "src": "contracts\\HintHelpers.sol:21"
           },
           {
             "contract": "HintHelpers",
             "label": "troveManager",
-            "type": "t_contract(ITroveManager)12862",
+            "type": "t_contract(ITroveManager)12915",
             "src": "contracts\\HintHelpers.sol:22"
           },
           {
             "contract": "HintHelpers",
             "label": "troveManagerHelpers",
-            "type": "t_contract(ITroveManagerHelpers)13642",
+            "type": "t_contract(ITroveManagerHelpers)13695",
             "src": "contracts\\HintHelpers.sol:23"
           },
           {
@@ -1597,19 +1397,19 @@
           }
         ],
         "types": {
-          "t_contract(ISortedTroves)12232": {
+          "t_contract(ISortedTroves)12285": {
             "label": "contract ISortedTroves"
           },
-          "t_contract(ITroveManager)12862": {
+          "t_contract(ITroveManager)12915": {
             "label": "contract ITroveManager"
           },
-          "t_contract(ITroveManagerHelpers)13642": {
+          "t_contract(ITroveManagerHelpers)13695": {
             "label": "contract ITroveManagerHelpers"
           },
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IDfrancParameters)11781": {
+          "t_contract(IDfrancParameters)11834": {
             "label": "contract IDfrancParameters"
           },
           "t_address": {
@@ -1628,8 +1428,8 @@
       }
     },
     "c0a405c5bc9c91494a3814779642b20d4d574b3f85a525c5668b1b569499869b": {
-      "address": "0x895dA3734ac753B92075573A7654cA881408F4dB",
-      "txHash": "0x1b11f8d0923414a0332ac16accdeca761ac99f76a6cba3869c8fd791a2236b2d",
+      "address": "0x3c6e2a88771c29F90D21EaC4933efF63f734c334",
+      "txHash": "0x59d3c7c25415e7a6c9c4196206fd6dbcda06a80e9d0cf712381079e8cf119c88",
       "layout": {
         "storage": [
           {
@@ -1725,19 +1525,19 @@
           {
             "contract": "DfrancParameters",
             "label": "activePool",
-            "type": "t_contract(IActivePool)11065",
+            "type": "t_contract(IActivePool)11118",
             "src": "contracts\\DfrancParameters.sol:43"
           },
           {
             "contract": "DfrancParameters",
             "label": "defaultPool",
-            "type": "t_contract(IDefaultPool)11499",
+            "type": "t_contract(IDefaultPool)11552",
             "src": "contracts\\DfrancParameters.sol:44"
           },
           {
             "contract": "DfrancParameters",
             "label": "priceFeed",
-            "type": "t_contract(IPriceFeed)12068",
+            "type": "t_contract(IPriceFeed)12121",
             "src": "contracts\\DfrancParameters.sol:45"
           },
           {
@@ -1769,13 +1569,13 @@
           "t_bool": {
             "label": "bool"
           },
-          "t_contract(IActivePool)11065": {
+          "t_contract(IActivePool)11118": {
             "label": "contract IActivePool"
           },
-          "t_contract(IDefaultPool)11499": {
+          "t_contract(IDefaultPool)11552": {
             "label": "contract IDefaultPool"
           },
-          "t_contract(IPriceFeed)12068": {
+          "t_contract(IPriceFeed)12121": {
             "label": "contract IPriceFeed"
           },
           "t_array(t_uint256)49_storage": {
@@ -1788,8 +1588,8 @@
       }
     },
     "2959a06eea64dcf30db0891b5bd7a880d90979e035c7a3110a736befda7aaee8": {
-      "address": "0xF2a76cE35356010A5e4681aA016E9d4245cE621c",
-      "txHash": "0x655230536769dd12759ed969e24ed036df66f8aa6c9d961f29394f94fe2c7139",
+      "address": "0xFD60Dd5A3E60ABBECD7D7834476B1C0B64bDd5a7",
+      "txHash": "0xcd13ca4c5123601d30f3e9e80a8b9e4782c7d34c09e8e1324ef7bcafce44bc31",
       "layout": {
         "storage": [
           {
@@ -1879,7 +1679,7 @@
           {
             "contract": "MONStaking",
             "label": "snapshots",
-            "type": "t_mapping(t_address,t_struct(Snapshot)14759_storage)",
+            "type": "t_mapping(t_address,t_struct(Snapshot)14812_storage)",
             "src": "contracts\\MON\\MONStaking.sol:41"
           },
           {
@@ -1903,13 +1703,13 @@
           {
             "contract": "MONStaking",
             "label": "monToken",
-            "type": "t_contract(IERC20Upgradeable)615",
+            "type": "t_contract(IERC20Upgradeable)574",
             "src": "contracts\\MON\\MONStaking.sol:52"
           },
           {
             "contract": "MONStaking",
             "label": "dchfToken",
-            "type": "t_contract(IERC20Upgradeable)615",
+            "type": "t_contract(IERC20Upgradeable)574",
             "src": "contracts\\MON\\MONStaking.sol:53"
           },
           {
@@ -1950,10 +1750,10 @@
           "t_uint256": {
             "label": "uint256"
           },
-          "t_mapping(t_address,t_struct(Snapshot)14759_storage)": {
+          "t_mapping(t_address,t_struct(Snapshot)14812_storage)": {
             "label": "mapping(address => struct MONStaking.Snapshot)"
           },
-          "t_struct(Snapshot)14759_storage": {
+          "t_struct(Snapshot)14812_storage": {
             "label": "struct MONStaking.Snapshot",
             "members": [
               {
@@ -1972,7 +1772,7 @@
           "t_mapping(t_address,t_bool)": {
             "label": "mapping(address => bool)"
           },
-          "t_contract(IERC20Upgradeable)615": {
+          "t_contract(IERC20Upgradeable)574": {
             "label": "contract IERC20Upgradeable"
           },
           "t_array(t_uint256)49_storage": {
@@ -1985,8 +1785,8 @@
       }
     },
     "123aa9f391550bb4e8c45976eaea50064186873ee1df251db1d7e710a4ebd0b7": {
-      "address": "0xC38C20690a3D04a097524Ad99790b2383472ac81",
-      "txHash": "0xec01e3c96b9fbd53396f3177b9fc4d06e71d8f81dc3bf6614b37f8549d383491",
+      "address": "0x1B272086cf6B0e73e6c597D6f907FBE8F935C8A9",
+      "txHash": "0x52ca6df7752ad1314f3bfa20cd90aeea46443afc1f311f708647a46e78d09289",
       "layout": {
         "storage": [
           {
@@ -2022,13 +1822,13 @@
           {
             "contract": "CommunityIssuance",
             "label": "monToken",
-            "type": "t_contract(IERC20Upgradeable)615",
+            "type": "t_contract(IERC20Upgradeable)574",
             "src": "contracts\\MON\\CommunityIssuance.sol:23"
           },
           {
             "contract": "CommunityIssuance",
             "label": "stabilityPoolManager",
-            "type": "t_contract(IStabilityPoolManager)12473",
+            "type": "t_contract(IStabilityPoolManager)12526",
             "src": "contracts\\MON\\CommunityIssuance.sol:24"
           },
           {
@@ -2069,10 +1869,10 @@
           }
         ],
         "types": {
-          "t_contract(IERC20Upgradeable)615": {
+          "t_contract(IERC20Upgradeable)574": {
             "label": "contract IERC20Upgradeable"
           },
-          "t_contract(IStabilityPoolManager)12473": {
+          "t_contract(IStabilityPoolManager)12526": {
             "label": "contract IStabilityPoolManager"
           },
           "t_mapping(t_address,t_uint256)": {
@@ -2096,9 +1896,9 @@
         }
       }
     },
-    "0bfc0234f3961ead61f0987f848fd4eaa79037e1b3efd849e6b3c42e656deb04": {
-      "address": "0x69C735ce75B3Dec7c1Cdf21306628A6eb1b81346",
-      "txHash": "0x21527669b152647b40b5234599b593a9498cd6c07faaf719f473daf4fda9e4ab",
+    "551ff3edbd5a9dcba75d84c52eadde9a2391ee746e297290432071525d70f16c": {
+      "address": "0xe89d8FA4529A9Fc46eEA7d3dF3AB62702a732d72",
+      "txHash": "0x48ae1f550f0b882f425b21efda5538dad32b3805b42935f6feaa2a6fd6e25028",
       "layout": {
         "storage": [
           {
@@ -2132,84 +1932,214 @@
             "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:82"
           },
           {
-            "contract": "PriceFeed",
+            "contract": "DfrancBase",
+            "label": "vestaParams",
+            "type": "t_contract(IDfrancParameters)11834",
+            "src": "contracts\\Dependencies\\DfrancBase.sol:21"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "borrowerOperations",
+            "type": "t_contract(IBorrowerOperations)11312",
+            "src": "contracts\\StabilityPool.sol:31"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "troveManager",
+            "type": "t_contract(ITroveManager)12915",
+            "src": "contracts\\StabilityPool.sol:33"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "troveManagerHelpers",
+            "type": "t_contract(ITroveManagerHelpers)13695",
+            "src": "contracts\\StabilityPool.sol:35"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "dchfToken",
+            "type": "t_contract(IDCHFToken)11523",
+            "src": "contracts\\StabilityPool.sol:37"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "sortedTroves",
+            "type": "t_contract(ISortedTroves)12285",
+            "src": "contracts\\StabilityPool.sol:40"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "communityIssuance",
+            "type": "t_contract(ICommunityIssuance)11453",
+            "src": "contracts\\StabilityPool.sol:42"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "assetAddress",
+            "type": "t_address",
+            "src": "contracts\\StabilityPool.sol:44"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "assetBalance",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:46"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "totalDCHFDeposits",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:49"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "deposits",
+            "type": "t_mapping(t_address,t_uint256)",
+            "src": "contracts\\StabilityPool.sol:61"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "depositSnapshots",
+            "type": "t_mapping(t_address,t_struct(Snapshots)19931_storage)",
+            "src": "contracts\\StabilityPool.sol:62"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "totalStakes",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:64"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "systemSnapshots",
+            "type": "t_struct(Snapshots)19931_storage",
+            "src": "contracts\\StabilityPool.sol:65"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "P",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:73"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "currentScale",
+            "type": "t_uint128",
+            "src": "contracts\\StabilityPool.sol:78"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "currentEpoch",
+            "type": "t_uint128",
+            "src": "contracts\\StabilityPool.sol:81"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "epochToScaleToSum",
+            "type": "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))",
+            "src": "contracts\\StabilityPool.sol:91"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "epochToScaleToG",
+            "type": "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))",
+            "src": "contracts\\StabilityPool.sol:100"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "lastMONError",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:103"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "lastAssetError_Offset",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:105"
+          },
+          {
+            "contract": "StabilityPool",
+            "label": "lastDCHFLossError_Offset",
+            "type": "t_uint256",
+            "src": "contracts\\StabilityPool.sol:106"
+          },
+          {
+            "contract": "StabilityPool",
             "label": "isInitialized",
             "type": "t_bool",
-            "src": "contracts\\PriceFeedV2.sol:29"
-          },
-          {
-            "contract": "PriceFeed",
-            "label": "adminContract",
-            "type": "t_address",
-            "src": "contracts\\PriceFeedV2.sol:31"
-          },
-          {
-            "contract": "PriceFeed",
-            "label": "status",
-            "type": "t_enum(Status)12026",
-            "src": "contracts\\PriceFeedV2.sol:33"
-          },
-          {
-            "contract": "PriceFeed",
-            "label": "registeredOracles",
-            "type": "t_mapping(t_address,t_struct(RegisterOracle)12023_storage)",
-            "src": "contracts\\PriceFeedV2.sol:34"
-          },
-          {
-            "contract": "PriceFeed",
-            "label": "lastGoodPrice",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\PriceFeedV2.sol:35"
-          },
-          {
-            "contract": "PriceFeed",
-            "label": "lastGoodIndex",
-            "type": "t_mapping(t_address,t_uint256)",
-            "src": "contracts\\PriceFeedV2.sol:36"
+            "src": "contracts\\StabilityPool.sol:108"
           }
         ],
         "types": {
-          "t_bool": {
-            "label": "bool"
+          "t_contract(IBorrowerOperations)11312": {
+            "label": "contract IBorrowerOperations"
+          },
+          "t_contract(ITroveManager)12915": {
+            "label": "contract ITroveManager"
+          },
+          "t_contract(ITroveManagerHelpers)13695": {
+            "label": "contract ITroveManagerHelpers"
+          },
+          "t_contract(IDCHFToken)11523": {
+            "label": "contract IDCHFToken"
+          },
+          "t_contract(ISortedTroves)12285": {
+            "label": "contract ISortedTroves"
+          },
+          "t_contract(ICommunityIssuance)11453": {
+            "label": "contract ICommunityIssuance"
           },
           "t_address": {
             "label": "address"
           },
-          "t_enum(Status)12026": {
-            "label": "enum IPriceFeed.Status",
-            "members": [
-              "chainlinkWorking",
-              "chainlinkUntrusted"
-            ]
-          },
-          "t_mapping(t_address,t_struct(RegisterOracle)12023_storage)": {
-            "label": "mapping(address => struct IPriceFeed.RegisterOracle)"
-          },
-          "t_struct(RegisterOracle)12023_storage": {
-            "label": "struct IPriceFeed.RegisterOracle",
-            "members": [
-              {
-                "label": "chainLinkOracle",
-                "type": "t_contract(AggregatorV3Interface)45"
-              },
-              {
-                "label": "chainLinkIndex",
-                "type": "t_contract(AggregatorV3Interface)45"
-              },
-              {
-                "label": "isRegistered",
-                "type": "t_bool"
-              }
-            ]
-          },
-          "t_contract(AggregatorV3Interface)45": {
-            "label": "contract AggregatorV3Interface"
+          "t_uint256": {
+            "label": "uint256"
           },
           "t_mapping(t_address,t_uint256)": {
             "label": "mapping(address => uint256)"
           },
-          "t_uint256": {
-            "label": "uint256"
+          "t_mapping(t_address,t_struct(Snapshots)19931_storage)": {
+            "label": "mapping(address => struct StabilityPool.Snapshots)"
+          },
+          "t_struct(Snapshots)19931_storage": {
+            "label": "struct StabilityPool.Snapshots",
+            "members": [
+              {
+                "label": "S",
+                "type": "t_uint256"
+              },
+              {
+                "label": "P",
+                "type": "t_uint256"
+              },
+              {
+                "label": "G",
+                "type": "t_uint256"
+              },
+              {
+                "label": "scale",
+                "type": "t_uint128"
+              },
+              {
+                "label": "epoch",
+                "type": "t_uint128"
+              }
+            ]
+          },
+          "t_uint128": {
+            "label": "uint128"
+          },
+          "t_mapping(t_uint128,t_mapping(t_uint128,t_uint256))": {
+            "label": "mapping(uint128 => mapping(uint128 => uint256))"
+          },
+          "t_mapping(t_uint128,t_uint256)": {
+            "label": "mapping(uint128 => uint256)"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_contract(IDfrancParameters)11834": {
+            "label": "contract IDfrancParameters"
           },
           "t_array(t_uint256)49_storage": {
             "label": "uint256[49]"

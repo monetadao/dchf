@@ -2,21 +2,18 @@
 
 pragma solidity ^0.8.14;
 import "./Interfaces/IPriceFeed.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/FlagsInterface.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/BaseMath.sol";
 import "./Dependencies/DfrancMath.sol";
 
-contract PriceFeedOld is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
+contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
 	using SafeMathUpgradeable for uint256;
 
 	string public constant NAME = "PriceFeed";
 	address public constant FLAG_ARBITRUM_SEQ_OFFLINE =
 		0xa438451D6458044c3c8CD2f6f31c91ac882A6d91;
-
-	FlagsInterface public chainlinkFlags;
 
 	// Use to convert a price answer to an 18-digit precision uint
 	uint256 public constant TARGET_DIGITS = 18;
@@ -41,16 +38,14 @@ contract PriceFeedOld is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed
 		_;
 	}
 
-	function setAddresses(address _chainlinkFlag, address _adminContract) external initializer {
+	function setAddresses(address _adminContract) external initializer {
 		require(!isInitialized);
-		checkContract(_chainlinkFlag);
 		checkContract(_adminContract);
 		isInitialized = true;
 
 		__Ownable_init();
 
 		adminContract = _adminContract;
-		chainlinkFlags = FlagsInterface(_chainlinkFlag);
 		status = Status.chainlinkWorking;
 	}
 
@@ -82,8 +77,7 @@ contract PriceFeedOld is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed
 			"PriceFeed: Chainlink must be working and current"
 		);
 		require(
-			!_chainlinkIsBroken(chainlinkIndexResponse, prevChainlinkIndexResponse) &&
-				!_chainlinkIsFrozen(chainlinkIndexResponse),
+			!_chainlinkIsBroken(chainlinkIndexResponse, prevChainlinkIndexResponse),
 			"PriceFeed: Chainlink must be working and current"
 		);
 
@@ -115,7 +109,7 @@ contract PriceFeedOld is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed
 		bool isChainlinkIndexBroken = _chainlinkIsBroken(
 			chainlinkIndexResponse,
 			prevChainlinkIndexResponse
-		) || _chainlinkIsFrozen(chainlinkIndexResponse);
+		);
 
 		if (status == Status.chainlinkWorking) {
 			if (isChainlinkOracleBroken || isChainlinkIndexBroken) {
@@ -162,7 +156,7 @@ contract PriceFeedOld is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed
 	}
 
 	function _getIndexedPrice(uint256 _price, uint256 _index) internal pure returns (uint256) {
-		return _price.mul(_index).div(1 ether);
+		return _price.mul(1 ether).div(_index);
 	}
 
 	function _getChainlinkResponses(
@@ -328,10 +322,6 @@ contract PriceFeedOld is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed
 		view
 		returns (ChainlinkResponse memory chainlinkResponse)
 	{
-		if (chainlinkFlags.getFlag(FLAG_ARBITRUM_SEQ_OFFLINE)) {
-			return chainlinkResponse;
-		}
-
 		try _priceAggregator.decimals() returns (uint8 decimals) {
 			chainlinkResponse.decimals = decimals;
 		} catch {
