@@ -15,7 +15,11 @@ abstract contract IDCHFToken is ERC20Permit {
 
 	function addTroveManager(address _troveManager) external virtual;
 
+	function removeTroveManager(address _troveManager) external virtual;
+
 	function addBorrowerOps(address _borrowerOps) external virtual;
+
+	function removeBorrowerOps(address _borrowerOps) external virtual;
 
 	function mint(
 		address _asset,

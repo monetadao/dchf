@@ -7,20 +7,34 @@ import "./Dependencies/CheckContract.sol";
 import "./Interfaces/IDCHFToken.sol";
 
 /*
-Alternative DCHFToken contract valid for both V1 and V2:
+ * DCHFToken contract valid for both V1 and V2:
+ *
+ * It allows to have 2 or more TroveManagers registered that can mint and burn.
+ * It allows to have 2 or more BorrowerOperations registered that can mint and burn.
+ *
+ * Two public arrays record the TroveManager and BorrowerOps addresses registered.
+ *
+ * Two events are logged when modifying the array of troveManagers and borrowerOps.
+ *
+ * The different modifiers are updated and check if either one of the TroveManagers
+ * or BorrowerOperations are making the call with mapping(address => bool).
+ *
+ * functions addTroveManager and addBorrowerOps register new contracts into the array.
+ *
+ * functions removeTroveManager and removeBorrowerOps enable the removal of a contract
+ * from both the mapping and the public array.
+ *
+ * Additional check in place in order to ensure that the addresses added are real
+ * TroveManager or BorrowerOps contracts.
+ */
 
-It allows to have 2 or more TroveManagers registered that can mint and burn.
-It allows to have 2 or more BorrowerOperations registered that can mint and burn.
+interface ITroveManager {
+	function isContractTroveManager() external pure returns (bool);
+}
 
-Two public arrays record the TroveManager and BorrowerOps addresses registered.
-
-Two events are logged when modifying the array of troveManagers and borrowerOps.
-
-The different modifiers are updated and check if either one of the TroveManagers
-or BorrowerOperations are making the call with mapping(address => bool). 
-
-functions addTroveManager and addBorrowerOps register new contracts into the array.
-*/
+interface IBorrowerOps {
+	function isContractBorrowerOps() external pure returns (bool);
+}
 
 contract DCHFToken is CheckContract, IDCHFToken, Ownable {
 	using SafeMath for uint256;
@@ -106,18 +120,44 @@ contract DCHFToken is CheckContract, IDCHFToken, Ownable {
 
 	function addTroveManager(address _troveManager) external override onlyOwner {
 		CheckContract(_troveManager);
+		assert(ITroveManager(_troveManager).isContractTroveManager());
 		require(!validTroveManagers[_troveManager], "TroveManager already exists");
 		validTroveManagers[_troveManager] = true;
 		troveManagers.push(_troveManager);
 		emit UpdateTroveManagers(troveManagers);
 	}
 
+	function removeTroveManager(address _troveManager) external override onlyOwner {
+		require(validTroveManagers[_troveManager], "TroveManager does not exists");
+		delete validTroveManagers[_troveManager];
+		_removeElement(troveManagers, _troveManager);
+	}
+
 	function addBorrowerOps(address _borrowerOps) external override onlyOwner {
 		CheckContract(_borrowerOps);
+		assert(IBorrowerOps(_borrowerOps).isContractBorrowerOps());
 		require(!validBorrowerOps[_borrowerOps], "BorrowerOps already exists");
 		validBorrowerOps[_borrowerOps] = true;
 		borrowerOps.push(_borrowerOps);
 		emit UpdateBorrowerOps(borrowerOps);
+	}
+
+	function removeBorrowerOps(address _borrowerOps) external override onlyOwner {
+		require(validBorrowerOps[_borrowerOps], "BorrowerOps does not exist");
+		delete validBorrowerOps[_borrowerOps];
+		_removeElement(borrowerOps, _borrowerOps);
+	}
+
+	// --- Internal functions ---
+
+	function _removeElement(address[] storage _array, address _contract) internal {
+		for (uint256 i; i < _array.length; i++) {
+			if (_array[i] == _contract) {
+				_array[i] = _array[_array.length - 1];
+				_array.pop();
+				break;
+			}
+		}
 	}
 
 	// --- 'require' functions ---
