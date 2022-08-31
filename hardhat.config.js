@@ -74,10 +74,13 @@ module.exports = {
         getSecret('DEPLOYER_PRIVATEKEY', '0x0')
       ]
     },*/
-    // rinkeby: {
-    //   url: getSecret("RINKEBY_RPC_URL"),
-    //   accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
-    // },
+    rinkeby: {
+      url: getSecret("RINKEBY_RPC_URL"),
+      accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
+    },
+    fork: {
+      url: "http://localhost:7545"
+    }
   },
   etherscan: {
     apiKey: getSecret("ETHERSCAN_API_KEY")

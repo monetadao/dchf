@@ -77,6 +77,26 @@ class DeploymentHelper {
     return erc20Mock.address
   }
 
+  async deployMONToken(treasurySigAddress, deploymentState) {
+    const MONTokenFactory = await this.getFactory("MONToken")
+
+    const MONToken = await this.loadOrDeploy(
+      MONTokenFactory,
+      'MONToken',
+      deploymentState,
+      false,
+      [treasurySigAddress]
+    )
+
+    if (!this.configParams.ETHERSCAN_BASE_URL) {
+      console.log('No Etherscan Url defined, skipping verification')
+    } else {
+      await this.verifyContract('MONToken', deploymentState, [treasurySigAddress])
+    }
+
+    return MONToken;
+  }
+
   async deployPartially(treasurySigAddress, deploymentState) {
     const MONTokenFactory = await this.getFactory("MONToken")
     const lockedMONFactory = await this.getFactory("LockedMON")

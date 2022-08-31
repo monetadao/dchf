@@ -13,9 +13,9 @@ const externalAddrs = {
 
 
 const dfrancAddresses = {
-  ADMIN_MULTI: "0x00dCC22fD0DF66a07Be512AA617c78E703bDC550",
-  MON_SAFE: "0x2bA480A4Ae70f172Ff73FcDb29A1909c9C9df785", // TODO
-  DEPLOYER: "0x31c57298578f7508B5982062cfEc5ec8BD346247"
+  ADMIN_MULTI: "0x010cB76dD45A00Da96429a24587872d2dB46904E",
+  MON_SAFE: "0x010cB76dD45A00Da96429a24587872d2dB46904E", // TODO
+  DEPLOYER: "0x4F74e01855E79e4ec65ee67C51540144A698D972"
 }
 
 const monetaCommunityIssuanceParams = {
@@ -38,7 +38,9 @@ const beneficiaries = {
 }
 
 const REDEMPTION_SAFETY = 0;
-const MON_TOKEN_ONLY = true;
+
+// 1 = Deploy Moneta token, 2 = Set up Moneta vesting, 3 = Deploy DCHF Core contracts
+const DEPLOYMENT_PHASE = 3;
 
 const MON_LOCK_BATCH_SIZE = 100;
 
@@ -66,6 +68,6 @@ module.exports = {
   ETHERSCAN_BASE_URL,
   IsMainnet,
   REDEMPTION_SAFETY,
-  MON_TOKEN_ONLY,
+  DEPLOYMENT_PHASE,
   MON_LOCK_BATCH_SIZE
 };
