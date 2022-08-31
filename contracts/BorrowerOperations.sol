@@ -148,6 +148,12 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		emit MONStakingAddressChanged(_MONStakingAddress);
 	}
 
+	// --- Borrower Trove Operations Getter functions ---
+
+	function isContractBorrowerOps() public pure returns (bool) {
+		return true;
+	}
+
 	// --- Borrower Trove Operations ---
 
 	function openTrove(
@@ -425,7 +431,9 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		// Confirm the operation is either a borrower adjusting their own trove, or a pure ETH transfer from the Stability Pool to a trove
 		assert(
 			msg.sender == _borrower ||
-				(stabilityPoolManager.isStabilityPool(msg.sender) && _assetSent > 0 && _DCHFChange == 0)
+				(stabilityPoolManager.isStabilityPool(msg.sender) &&
+					_assetSent > 0 &&
+					_DCHFChange == 0)
 		);
 
 		contractsCache.troveManagerHelpers.applyPendingRewards(vars.asset, _borrower);

@@ -188,6 +188,7 @@ interface ITroveManager is IDfrancBase {
 	}
 
 	// --- Functions ---
+	function isContractTroveManager() external pure returns (bool);
 
 	function troveManagerHelpers() external view returns (ITroveManagerHelpers);
 

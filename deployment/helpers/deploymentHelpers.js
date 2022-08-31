@@ -153,10 +153,7 @@ class DeploymentHelper {
     const adminContract = await this.loadOrDeploy(adminContractFactory, 'adminContract', deploymentState)
 
     const DCHFTokenParams = [
-      troveManager.address,
-      troveManagerHelpers.address,
-      stabilityPoolManager.address,
-      borrowerOperations.address
+      stabilityPoolManager.address
     ]
     const dchfToken = await this.loadOrDeploy(
       DCHFTokenFactory,
@@ -165,6 +162,13 @@ class DeploymentHelper {
       false,
       DCHFTokenParams
     )
+    // add borrower operations and trove manager to dchf
+    if (!(await dchfToken.validTroveManagers(troveManager.address))) {
+      await this.sendAndWaitForTransaction(dchfToken.addTroveManager(troveManager.address));
+    }
+    if (!(await dchfToken.validBorrowerOps(borrowerOperations.address))) {
+      await this.sendAndWaitForTransaction(dchfToken.addBorrowerOps(borrowerOperations.address));
+    }
 
     if (!this.configParams.ETHERSCAN_BASE_URL) {
       console.log('No Etherscan Url defined, skipping verification')

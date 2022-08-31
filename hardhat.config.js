@@ -46,7 +46,7 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 5,
+        runs: 200,
       },
     },
   },
@@ -74,10 +74,10 @@ module.exports = {
         getSecret('DEPLOYER_PRIVATEKEY', '0x0')
       ]
     },*/
-    rinkeby: {
-      url: getSecret("RINKEBY_RPC_URL"),
-      accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
-    },
+    // rinkeby: {
+    //   url: getSecret("RINKEBY_RPC_URL"),
+    //   accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
+    // },
   },
   etherscan: {
     apiKey: getSecret("ETHERSCAN_API_KEY")
@@ -88,6 +88,6 @@ module.exports = {
     port: 8545
   },
   gasReporter: {
-    enabled: true
+    enabled: false
   }
 };

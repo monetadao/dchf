@@ -7,14 +7,19 @@ import "../Interfaces/IStabilityPoolManager.sol";
 abstract contract IDCHFToken is ERC20Permit {
 	// --- Events ---
 
-	event TroveManagerAddressChanged(address _troveManagerAddress);
-	event TroveManagerHelpersAddressChanged(address _troveManagerHelpersAddress);
 	event StabilityPoolAddressChanged(address _newStabilityPoolAddress);
-	event BorrowerOperationsAddressChanged(address _newBorrowerOperationsAddress);
 
 	event DCHFTokenBalanceUpdated(address _user, uint256 _amount);
 
 	function emergencyStopMinting(address _asset, bool status) external virtual;
+
+	function addTroveManager(address _troveManager) external virtual;
+
+	function removeTroveManager(address _troveManager) external virtual;
+
+	function addBorrowerOps(address _borrowerOps) external virtual;
+
+	function removeBorrowerOps(address _borrowerOps) external virtual;
 
 	function mint(
 		address _asset,

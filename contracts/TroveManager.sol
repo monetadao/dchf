@@ -79,6 +79,12 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 		setDfrancParameters(_vestaParamsAddress);
 	}
 
+	// --- Trove Getter functions ---
+
+	function isContractTroveManager() public pure returns (bool) {
+		return true;
+	}
+
 	// --- Trove Liquidation functions ---
 
 	// Single liquidation function. Closes the trove if its ICR is lower than the minimum collateral ratio.
