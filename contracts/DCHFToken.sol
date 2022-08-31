@@ -47,8 +47,8 @@ contract DCHFToken is CheckContract, IDCHFToken, Ownable {
 
 	mapping(address => bool) public emergencyStopMintingCollateral;
 
-	mapping(address => bool) validTroveManagers;
-	mapping(address => bool) validBorrowerOps;
+	mapping(address => bool) public validTroveManagers;
+	mapping(address => bool) public validBorrowerOps;
 
 	event EmergencyStopMintingCollateral(address _asset, bool state);
 	event UpdateTroveManagers(address[] troveManagers);
