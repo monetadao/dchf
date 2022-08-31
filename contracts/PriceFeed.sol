@@ -12,8 +12,6 @@ contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
 	using SafeMathUpgradeable for uint256;
 
 	string public constant NAME = "PriceFeed";
-	address public constant FLAG_ARBITRUM_SEQ_OFFLINE =
-		0xa438451D6458044c3c8CD2f6f31c91ac882A6d91;
 
 	// Use to convert a price answer to an 18-digit precision uint
 	uint256 public constant TARGET_DIGITS = 18;
@@ -85,6 +83,28 @@ contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
 		_storeChainlinkIndex(_token, chainlinkIndexResponse);
 
 		emit RegisteredNewOracle(_token, _chainlinkOracle, _chainlinkIndexOracle);
+	}
+
+	function getDirectPrice(address _asset) public view returns (uint256 _priceAssetInDCHF) {
+		RegisterOracle memory oracle = registeredOracles[_asset];
+		(
+			ChainlinkResponse memory chainlinkResponse,
+			,
+			ChainlinkResponse memory chainlinkIndexResponse,
+
+		) = _getChainlinkResponses(oracle.chainLinkOracle, oracle.chainLinkIndex);
+
+		uint256 scaledChainlinkPrice = _scaleChainlinkPriceByDigits(
+			uint256(chainlinkResponse.answer),
+			chainlinkResponse.decimals
+		);
+
+		uint256 scaledChainlinkIndexPrice = _scaleChainlinkPriceByDigits(
+			uint256(chainlinkIndexResponse.answer),
+			chainlinkIndexResponse.decimals
+		);
+
+		_priceAssetInDCHF = scaledChainlinkPrice.mul(1 ether).div(scaledChainlinkIndexPrice);
 	}
 
 	function fetchPrice(address _token) external override returns (uint256) {
