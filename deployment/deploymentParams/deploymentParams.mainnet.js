@@ -7,17 +7,18 @@ const externalAddrs = {
   CHAINLINK_FLAG_HEALTH: "0x491B1dDA0A8fa069bbC1125133A975BF4e85a91b",
   CHAINLINK_USDCHF_PROXY: "0x449d117117838ffa61263b61da6301aa2a88b13a",
 
-  WETH_ERC20: "0x6E241846Fd7af0e89d59f6949D53f06A5b317231",
-  REN_BTC: "0x8d71481ce0Af52199C7986DFbDD86Ca8782dfc3A",
+  WETH_ERC20: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  REN_BTC: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
 }
 
 
 const dfrancAddresses = {
-  ADMIN_MULTI: "0x4dB881B55865c8f5fb507f08a25bAE6AFd021B2a",
-  MON_SAFE: "0x4dB881B55865c8f5fb507f08a25bAE6AFd021B2a", // TODO
-  DEPLOYER: "0xc1156b71f682C18AA2345447FE212b5aA7FB03a4"
+  ADMIN_MULTI: "0x4dB881B55865c8f5fb507f08a25bAE6AFd021B2a", // Gnosis Multisig on ETH
+  MON_SAFE: "0x4dB881B55865c8f5fb507f08a25bAE6AFd021B2a", // Gnosis Multisig on ETH
+  DEPLOYER: "0xc1156b71f682C18AA2345447FE212b5aA7FB03a4" // Change that for deployer
 }
 
+// change for real values
 const monetaCommunityIssuanceParams = {
   ETH_STABILITY_POOL_FUNDING: 100_000,
   BTC_STABILITY_POOL_FUNDING: 100_000,
@@ -26,6 +27,7 @@ const monetaCommunityIssuanceParams = {
 
 }
 
+// change for real values
 const beneficiaries = {
   //MARKETING GROWTH
   "0x4F74e01855E79e4ec65ee67C51540144A698D972": 17_000_000,
@@ -40,7 +42,7 @@ const beneficiaries = {
 const REDEMPTION_SAFETY = 0;
 
 // 1 = Deploy Moneta token, 2 = Set up Moneta vesting, 3 = Deploy DCHF Core contracts
-const DEPLOYMENT_PHASE = 3;
+const DEPLOYMENT_PHASE = 1;
 
 const MON_LOCK_BATCH_SIZE = 100;
 
