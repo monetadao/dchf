@@ -53,7 +53,7 @@ const waitFunction = async () => {
   return delay(90000) // wait 90s
 }
 
-const GAS_PRICE = 25000000000
+const GAS_PRICE = 20000000000
 const TX_CONFIRMATIONS = 1
 
 const ETHERSCAN_BASE_URL = 'https://etherscan.io/address'
