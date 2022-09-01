@@ -13,9 +13,9 @@ const externalAddrs = {
 
 
 const dfrancAddresses = {
-  ADMIN_MULTI: "0x4dB881B55865c8f5fb507f08a25bAE6AFd021B2a", // Gnosis Multisig on ETH
-  MON_SAFE: "0x4dB881B55865c8f5fb507f08a25bAE6AFd021B2a", // Gnosis Multisig on ETH
-  DEPLOYER: "0xc1156b71f682C18AA2345447FE212b5aA7FB03a4" // Change that for deployer
+  ADMIN_MULTI: "0x0893665BE05c2F1A548045Facc75BF6965d8eC65", // Gnosis Multisig on ETH
+  MON_SAFE: "0x0893665BE05c2F1A548045Facc75BF6965d8eC65", // Gnosis Multisig on ETH
+  DEPLOYER: "0xfe136C80C898d4268c441Fa003d637893783d1bC" // Change that for deployer
 }
 
 // change for real values
