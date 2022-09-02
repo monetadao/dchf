@@ -54,9 +54,7 @@ contract DCHFToken is CheckContract, IDCHFToken, Ownable {
 	event UpdateTroveManagers(address[] troveManagers);
 	event UpdateBorrowerOps(address[] borrowerOps);
 
-	constructor(address _stabilityPoolManagerAddress)
-		ERC20("Decentralized Swiss Franc", "DCHF")
-	{
+	constructor(address _stabilityPoolManagerAddress) ERC20("Defi Franc", "DCHF") {
 		checkContract(_stabilityPoolManagerAddress);
 
 		stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);

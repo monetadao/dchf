@@ -67,17 +67,19 @@ module.exports = {
     localhost: {
       url: "http://localhost:7545"
     },
-    /*mainnet: {
-      url: "https://arb1.arbitrum.io/rpc",
-      gasPrice: process.env.GAS_PRICE ? parseInt(process.env.GAS_PRICE) : 20000000000,
+    mainnet: {
+      url: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       accounts: [
-        getSecret('DEPLOYER_PRIVATEKEY', '0x0')
+        getSecret('DEPLOYER_PRIVATEKEY')
       ]
-    },*/
-    // rinkeby: {
-    //   url: getSecret("RINKEBY_RPC_URL"),
-    //   accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
-    // },
+    },
+    rinkeby: {
+      url: getSecret("RINKEBY_RPC_URL"),
+      accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
+    },
+    fork: {
+      url: "http://localhost:7545"
+    }
   },
   etherscan: {
     apiKey: getSecret("ETHERSCAN_API_KEY")

@@ -37,8 +37,23 @@ async function mainnetDeploy(configParams) {
 
   console.log(`deployerETHBalance before: ${await ethers.provider.getBalance(deployerWallet.address)}`)
 
-  if (config.MON_TOKEN_ONLY) {
-    console.log("INIT MON ONLY");
+  // Deployment Phase 1
+  if (config.DEPLOYMENT_PHASE == 1) {
+    console.log("Only Deploy MON token");
+
+    const MONToken = await mdh.deployMONToken(TREASURY_WALLET, deploymentState);
+
+    mdh.saveDeployment(deploymentState)
+
+    console.log(`deployerETHBalance after: ${await ethers.provider.getBalance(deployerWallet.address)}`)
+
+    return;
+  }
+
+  // Deployment Phase 2
+  if (config.DEPLOYMENT_PHASE == 2) {
+    console.log("Deploy MON token if not deployed and LockMON");
+
     const partialContracts = await mdh.deployPartially(TREASURY_WALLET, deploymentState);
 
     // create vesting rule to beneficiaries
@@ -76,75 +91,56 @@ async function mainnetDeploy(configParams) {
 
     }
 
-    /*for (const [wallet, amount] of Object.entries(config.beneficiaries)) {
-
-      if (amount == 0) continue
-
-      if (!(await partialContracts.lockedMON.isEntityExits(wallet))) {
-        console.log("Beneficiary: %s for %s", wallet, amount)
-
-        const txReceipt = await mdh.sendAndWaitForTransaction(partialContracts.lockedMON.addEntityVesting(wallet, dec(amount, 18)))
-
-        deploymentState[wallet] = {
-          amount: amount,
-          txHash: txReceipt.transactionHash
-        }
-
-        mdh.saveDeployment(deploymentState)
-      }
-    }*/
-
     await transferOwnership(partialContracts.lockedMON, TREASURY_WALLET);
-
-    /*
-    const balance = await partialContracts.MONToken.balanceOf(deployerWallet.address);
-    console.log(`Sending ${balance} MON to ${TREASURY_WALLET}`);
-    await partialContracts.MONToken.transfer(TREASURY_WALLET, balance)*/
 
     console.log(`deployerETHBalance after: ${await ethers.provider.getBalance(deployerWallet.address)}`)
 
     return;
+
   }
 
-  // Deploy core logic contracts
-  vestaCore = await mdh.deployLiquityCoreMainnet(deploymentState, ADMIN_WALLET)
+  // Deployment Phase 3
+  if (config.DEPLOYMENT_PHASE == 3) {
+    // Deploy core logic contracts
+    vestaCore = await mdh.deployLiquityCoreMainnet(deploymentState, ADMIN_WALLET)
 
-  await mdh.logContractObjects(vestaCore)
+    await mdh.logContractObjects(vestaCore)
 
-  // Deploy MON Contracts
-  MONContracts = await mdh.deployMONContractsMainnet(
-    TREASURY_WALLET, // multisig MON endowment address
-    deploymentState,
-  )
+    // Deploy MON Contracts
+    MONContracts = await mdh.deployMONContractsMainnet(
+      TREASURY_WALLET, // multisig MON endowment address
+      deploymentState,
+    )
 
-  // Connect all core contracts up
-  console.log("Connect Core Contracts up");
-
-
-  await mdh.connectCoreContractsMainnet(
-    vestaCore,
-    MONContracts
-  )
-
-  console.log("Connect MON Contract to Core");
-  await mdh.connectMONContractsToCoreMainnet(MONContracts, vestaCore, TREASURY_WALLET)
+    // Connect all core contracts up
+    console.log("Connect Core Contracts up");
 
 
-  console.log("Adding Collaterals");
-  const allowance = (await MONContracts.MONToken.allowance(deployerWallet.address, MONContracts.communityIssuance.address));
-  if (allowance == 0)
-    await MONContracts.MONToken.approve(MONContracts.communityIssuance.address, ethers.constants.MaxUint256)
+    await mdh.connectCoreContractsMainnet(
+      vestaCore,
+      MONContracts
+    )
+
+    console.log("Connect MON Contract to Core");
+    await mdh.connectMONContractsToCoreMainnet(MONContracts, vestaCore, TREASURY_WALLET)
 
 
-  await addETHCollaterals();
-  await addBTCCollaterals();
+    console.log("Adding Collaterals");
+    const allowance = (await MONContracts.MONToken.allowance(deployerWallet.address, MONContracts.communityIssuance.address));
+    if (allowance == 0)
+      await MONContracts.MONToken.approve(MONContracts.communityIssuance.address, ethers.constants.MaxUint256)
 
-  mdh.saveDeployment(deploymentState)
 
-  await mdh.deployMultiTroveGetterMainnet(vestaCore, deploymentState)
-  await mdh.logContractObjects(MONContracts)
+    await addETHCollaterals();
+    await addBTCCollaterals();
 
-  await giveContractsOwnerships();
+    mdh.saveDeployment(deploymentState)
+
+    await mdh.deployMultiTroveGetterMainnet(vestaCore, deploymentState)
+    await mdh.logContractObjects(MONContracts)
+
+    await giveContractsOwnerships();
+  }
 
 }
 
