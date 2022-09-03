@@ -85,6 +85,7 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 	) external override initializer {
 		require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
+		checkContract(_troveManagerHelpersAddress);
 		checkContract(_borrowerOperationsAddress);
 		isInitialized = true;
 
