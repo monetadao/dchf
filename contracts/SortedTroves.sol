@@ -85,6 +85,7 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 	) external override initializer {
 		require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
+		checkContract(_troveManagerHelpersAddress);
 		checkContract(_borrowerOperationsAddress);
 		isInitialized = true;
 
@@ -93,7 +94,7 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 		data[ETH_REF_ADDRESS].maxSize = MAX_UINT256;
 
 		troveManager = ITroveManager(_troveManagerAddress);
-		troveManagerHelpers = ITroveManagerHelpers(_troveManagerAddress);
+		troveManagerHelpers = ITroveManagerHelpers(_troveManagerHelpersAddress);
 		borrowerOperationsAddress = _borrowerOperationsAddress;
 
 		emit TroveManagerAddressChanged(_troveManagerAddress);
