@@ -182,10 +182,15 @@ async function addETHCollaterals() {
         gasPrice,
       })
 
-    deploymentState["ProxyStabilityPoolETH"] = {
+
+    const name = "ProxyStabilityPoolETH";
+
+    deploymentState[name] = {
       address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(ETHAddress),
       txHash: txReceiptProxyETH.transactionHash
     }
+
+    await mdh.verifyContract(name, deploymentState, [], true);
   }
 }
 
@@ -226,10 +231,14 @@ async function addBTCCollaterals() {
         gasPrice,
       });
 
-    deploymentState["ProxyStabilityPoolRenBTC"] = {
+    const name = "ProxyStabilityPoolRenBTC";
+
+    deploymentState[name] = {
       address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(BTCAddress),
       txHash: txReceiptProxyBTC.transactionHash
     }
+
+    await mdh.verifyContract(name, deploymentState, [], true);
   }
 }
 

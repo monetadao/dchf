@@ -193,19 +193,19 @@ class DeploymentHelper {
     if (!this.configParams.ETHERSCAN_BASE_URL) {
       console.log('No Etherscan Url defined, skipping verification')
     } else {
-      await this.verifyContract('priceFeed', deploymentState)
-      await this.verifyContract('sortedTroves', deploymentState)
-      await this.verifyContract('troveManager', deploymentState)
-      await this.verifyContract('troveManagerHelpers', deploymentState)
-      await this.verifyContract('activePool', deploymentState)
-      await this.verifyContract('stabilityPoolManager', deploymentState)
+      await this.verifyContract('priceFeed', deploymentState, [], true)
+      await this.verifyContract('sortedTroves', deploymentState, [], true)
+      await this.verifyContract('troveManager', deploymentState, [], true)
+      await this.verifyContract('troveManagerHelpers', deploymentState, [], true)
+      await this.verifyContract('activePool', deploymentState, [], true)
+      await this.verifyContract('stabilityPoolManager', deploymentState, [], true)
       await this.verifyContract('gasPool', deploymentState)
-      await this.verifyContract('defaultPool', deploymentState)
-      await this.verifyContract('collSurplusPool', deploymentState)
-      await this.verifyContract('borrowerOperations', deploymentState)
-      await this.verifyContract('hintHelpers', deploymentState)
+      await this.verifyContract('defaultPool', deploymentState, [], true)
+      await this.verifyContract('collSurplusPool', deploymentState, [], true)
+      await this.verifyContract('borrowerOperations', deploymentState, [], true)
+      await this.verifyContract('hintHelpers', deploymentState, [], true)
       await this.verifyContract('DCHFToken', deploymentState, DCHFTokenParams)
-      await this.verifyContract('dfrancParameters', deploymentState)
+      await this.verifyContract('dfrancParameters', deploymentState, [], true)
       await this.verifyContract('lockedMON', deploymentState)
       await this.verifyContract('adminContract', deploymentState)
     }
@@ -252,8 +252,8 @@ class DeploymentHelper {
     if (!this.configParams.ETHERSCAN_BASE_URL) {
       console.log('No Etherscan Url defined, skipping verification')
     } else {
-      await this.verifyContract('MONStaking', deploymentState)
-      await this.verifyContract('communityIssuance', deploymentState)
+      await this.verifyContract('MONStaking', deploymentState, [], true)
+      await this.verifyContract('communityIssuance', deploymentState, [], true)
       await this.verifyContract('MONToken', deploymentState, [treasurySigAddress])
     }
 
@@ -443,31 +443,53 @@ class DeploymentHelper {
   }
 
   // --- Verify on Ethrescan ---
-  async verifyContract(name, deploymentState, constructorArguments = []) {
+  async verifyContract(name, deploymentState, constructorArguments = [], proxy = false) {
     if (!deploymentState[name] || !deploymentState[name].address) {
       console.error(`  --> No deployment state for contract ${name}!!`)
       return
     }
-    if (deploymentState[name].verification) {
+    if (deploymentState[name].verification && deploymentState[name].verificationImplementation) {
       console.log(`Contract ${name} already verified`)
       return
     }
 
-    try {
-      await this.hre.run("verify:verify", {
-        address: deploymentState[name].address,
-        constructorArguments,
-      })
-    } catch (error) {
-      // if it was already verified, it’s like a success, so let’s move forward and save it
-      if (error.name != 'NomicLabsHardhatPluginError') {
-        console.error(`Error verifying: ${error.name}`)
-        console.error(error)
-        return
+    if (!deploymentState[name].verification) {
+      try {
+        await this.hre.run("verify:verify", {
+          address: deploymentState[name].address,
+          constructorArguments,
+        })
+      } catch (error) {
+        // if it was already verified, it’s like a success, so let’s move forward and save it
+        if (error.name != 'NomicLabsHardhatPluginError') {
+          console.error(`Error verifying: ${error.name}`)
+          console.error(error)
+          return
+        }
       }
+
+      deploymentState[name].verification = `${this.configParams.ETHERSCAN_BASE_URL}/${deploymentState[name].address}#code`
     }
 
-    deploymentState[name].verification = `${this.configParams.ETHERSCAN_BASE_URL}/${deploymentState[name].address}#code`
+    if (proxy && !deploymentState[name].verificationImplementation) {
+      const implementationAddress = await upgrades.erc1967.getImplementationAddress(deploymentState[name].address);
+      try {
+        await this.hre.run("verify:verify", {
+          address: implementationAddress,
+          constructorArguments: [],
+        })
+      } catch (error) {
+        // if it was already verified, it’s like a success, so let’s move forward and save it
+        if (error.name != 'NomicLabsHardhatPluginError') {
+          console.error(`Error verifying: ${error.name}`)
+          console.error(error)
+          return
+        }
+      }
+
+      deploymentState[name].verificationImplementation = `${this.configParams.ETHERSCAN_BASE_URL}/${implementationAddress}#code`
+
+    }
 
     this.saveDeployment(deploymentState)
   }
