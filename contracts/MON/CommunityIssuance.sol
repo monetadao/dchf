@@ -225,7 +225,7 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 		monToken.transfer(_account, safeAmount);
 	}
 
-	function setWeeklyVstaDistribution(address _stabilityPool, uint256 _weeklyReward)
+	function setWeeklyDfrancDistribution(address _stabilityPool, uint256 _weeklyReward)
 		external
 		isController
 		isStabilityPool(_stabilityPool)

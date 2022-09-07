@@ -47,7 +47,7 @@ interface IStabilityPool is IDeposit {
 		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress,
-		address _vestaParamsAddress
+		address _dfrancParamsAddress
 	) external;
 
 	/*

@@ -199,7 +199,7 @@ interface ITroveManager is IDfrancBase {
 		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _monStakingAddress,
-		address _vestaParamsAddress,
+		address _dfrancParamsAddress,
 		address _troveManagerHelpersAddress
 	) external;
 

@@ -12,7 +12,7 @@ import "./Interfaces/IDfrancParameters.sol";
 import "./Interfaces/IStabilityPool.sol";
 import "./Interfaces/ICommunityIssuance.sol";
 
-contract AdminContract is ProxyAdmin {
+contract AdminContractV2 is ProxyAdmin {
 	string public constant NAME = "AdminContract";
 
 	bytes32 public constant STABILITY_POOL_NAME_BYTES =
@@ -38,7 +38,7 @@ contract AdminContract is ProxyAdmin {
 		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress
-	) external {
+	) external onlyOwner {
 		require(!isInitialized);
 		CheckContract(_paramaters);
 		CheckContract(_stabilityPoolManager);
@@ -91,4 +91,10 @@ contract AdminContract is ProxyAdmin {
 			_tokenPerWeekDistributed
 		);
 	}
+
+    function mockAddedFunction(uint256 _value) external pure returns(uint) {
+        uint value = _value;
+
+        return value;
+    }
 }

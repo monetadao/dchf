@@ -47,3 +47,5 @@ build/
 reports/
 tests/simulation.csv
 git.secrets.js
+
+.openzeppelin/.session

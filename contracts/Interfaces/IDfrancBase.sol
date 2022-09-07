@@ -6,5 +6,5 @@ import "./IDfrancParameters.sol";
 interface IDfrancBase {
 	event VaultParametersBaseChanged(address indexed newAddress);
 
-	function vestaParams() external view returns (IDfrancParameters);
+	function dfrancParams() external view returns (IDfrancParameters);
 }

@@ -125,7 +125,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress,
-		address _vestaParamsAddress
+		address _dfrancParamsAddress
 	) external initializer {
 		require(!isInitialized, "Already initialized");
 		checkContract(_borrowerOperationsAddress);
@@ -134,7 +134,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 		checkContract(_dchfTokenAddress);
 		checkContract(_sortedTrovesAddress);
 		checkContract(_communityIssuanceAddress);
-		checkContract(_vestaParamsAddress);
+		checkContract(_dfrancParamsAddress);
 
 		isInitialized = true;
 		__Ownable_init();
@@ -150,7 +150,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 		dchfToken = IDCHFToken(_dchfTokenAddress);
 		sortedTroves = ISortedTroves(_sortedTrovesAddress);
 		communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
-		setDfrancParameters(_vestaParamsAddress);
+		setDfrancParameters(_dfrancParamsAddress);
 
 		P = DECIMAL_PRECISION;
 
@@ -482,7 +482,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 	}
 
 	function _moveOffsetCollAndDebt(uint256 _collToAdd, uint256 _debtToOffset) internal {
-		IActivePool activePoolCached = vestaParams.activePool();
+		IActivePool activePoolCached = dfrancParams.activePool();
 
 		// Cancel the liquidated DCHF debt with the DCHF in the stability pool
 		activePoolCached.decreaseDCHFDebt(assetAddress, _debtToOffset);
@@ -783,7 +783,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 
 	function _requireCallerIsActivePool() internal view {
 		require(
-			msg.sender == address(vestaParams.activePool()),
+			msg.sender == address(dfrancParams.activePool()),
 			"StabilityPool: Caller is not ActivePool"
 		);
 	}
@@ -796,11 +796,11 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 	}
 
 	function _requireNoUnderCollateralizedTroves() public {
-		uint256 price = vestaParams.priceFeed().fetchPrice(assetAddress);
+		uint256 price = dfrancParams.priceFeed().fetchPrice(assetAddress);
 		address lowestTrove = sortedTroves.getLast(assetAddress);
 		uint256 ICR = troveManagerHelpers.getCurrentICR(assetAddress, lowestTrove, price);
 		require(
-			ICR >= vestaParams.MCR(assetAddress),
+			ICR >= dfrancParams.MCR(assetAddress),
 			"StabilityPool: Cannot withdraw while there are troves with ICR < MCR"
 		);
 	}

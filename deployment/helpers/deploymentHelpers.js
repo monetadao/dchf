@@ -134,7 +134,7 @@ class DeploymentHelper {
   }
 
 
-  async deployLiquityCoreMainnet(deploymentState, multisig) {
+  async deployDchfCoreMainnet(deploymentState, multisig) {
     // Get contract factories
     const priceFeedFactory = await this.getFactory("PriceFeed")
     const sortedTrovesFactory = await this.getFactory("SortedTroves")
@@ -166,11 +166,12 @@ class DeploymentHelper {
     const borrowerOperations = await this.loadOrDeploy(borrowerOperationsFactory, 'borrowerOperations', deploymentState, true)
     const hintHelpers = await this.loadOrDeploy(hintHelpersFactory, 'hintHelpers', deploymentState, true)
     const dfrancParameters = await this.loadOrDeploy(vaultParametersFactory, 'dfrancParameters', deploymentState, true)
+    const adminContract = await this.loadOrDeploy(adminContractFactory, 'adminContract', deploymentState, true)
 
     //// NO PROXY
     const gasPool = await this.loadOrDeploy(gasPoolFactory, 'gasPool', deploymentState)
     const lockedMON = await this.loadOrDeploy(lockedMONFactory, 'lockedMON', deploymentState)
-    const adminContract = await this.loadOrDeploy(adminContractFactory, 'adminContract', deploymentState)
+    
 
     const DCHFTokenParams = [
       stabilityPoolManager.address
@@ -207,7 +208,7 @@ class DeploymentHelper {
       await this.verifyContract('DCHFToken', deploymentState, DCHFTokenParams)
       await this.verifyContract('dfrancParameters', deploymentState, [], true)
       await this.verifyContract('lockedMON', deploymentState)
-      await this.verifyContract('adminContract', deploymentState)
+      await this.verifyContract('adminContract', deploymentState, [], true)
     }
 
     const coreContracts = {
@@ -265,12 +266,12 @@ class DeploymentHelper {
     return MONContracts
   }
 
-  async deployMultiTroveGetterMainnet(liquityCore, deploymentState) {
+  async deployMultiTroveGetterMainnet(dchfCore, deploymentState) {
     const multiTroveGetterFactory = await this.getFactory("MultiTroveGetter")
     const multiTroveGetterParams = [
-      liquityCore.troveManager.address,
-      liquityCore.troveManagerHelpers.address,
-      liquityCore.sortedTroves.address
+      dchfCore.troveManager.address,
+      dchfCore.troveManagerHelpers.address,
+      dchfCore.sortedTroves.address
     ]
     const multiTroveGetter = await this.loadOrDeploy(
       multiTroveGetterFactory,
