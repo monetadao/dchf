@@ -168,6 +168,7 @@ async function addETHCollaterals() {
       dfrancCore.dfrancParameters.address
     ], { initializer: 'setAddresses' });
 
+    console.log("Deploying ETH Stability Pool");
     await stabilityPoolETHProxy.deployed();
 
     const txReceiptProxyETH = await mdh
@@ -216,7 +217,7 @@ async function addBTCCollaterals() {
       dfrancCore.dfrancParameters.address
     ], { initializer: 'setAddresses' });
 
-
+    console.log("Deploying BTC Stability Pool");
     await stabilityPoolBTCProxy.deployed();
 
     const txReceiptProxyBTC = await mdh

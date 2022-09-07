@@ -38,7 +38,7 @@ contract AdminContract is ProxyAdmin {
 		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress
-	) external {
+	) external initializer {
 		require(!isInitialized);
 		CheckContract(_paramaters);
 		CheckContract(_stabilityPoolManager);
@@ -48,6 +48,7 @@ contract AdminContract is ProxyAdmin {
 		CheckContract(_dchfTokenAddress);
 		CheckContract(_sortedTrovesAddress);
 		CheckContract(_communityIssuanceAddress);
+		__Ownable_init();
 		isInitialized = true;
 
 		borrowerOperationsAddress = _borrowerOperationsAddress;
