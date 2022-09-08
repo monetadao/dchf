@@ -5,6 +5,7 @@ require("solidity-coverage");
 require("hardhat-gas-reporter");
 require('@openzeppelin/hardhat-upgrades');
 require('hardhat-contract-sizer');
+require('@openzeppelin/hardhat-defender');
 
 const accounts = require("./hardhatAccountsList2k.js");
 const accountsList = accounts.accountsList
@@ -91,5 +92,9 @@ module.exports = {
   },
   gasReporter: {
     enabled: false
+  },
+  defender: {
+    apiKey: "2FQk3211G3dhkAUmt9ANFgnxDzrMYeew",
+    apiSecret: "3NsWEgMmAFEp1RX7Si9soi9hD4SG76gCy1UXJmZxXTwyCtKHQtVqWHTns9BDMMHo",
   }
 };
