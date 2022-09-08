@@ -17,7 +17,7 @@ async function main(configParams) {
     console.log(`deployer address: ${deployerWallet.address}`)
     console.log(`deployerETHBalance before: ${await ethers.provider.getBalance(deployerWallet.address)}`)
   
-    const proxyAddress = '0x73D93eE2DdeED64ff421596F30128fa3101139b1';
+    const proxyAddress = '0xD45cF22Dd552280CDDd54700f8ab4a5BE5f78fB8';
  
     const AdminContractV2 = await ethers.getContractFactory("AdminContractV2");
     console.log("Preparing upgrade...");

@@ -2260,6 +2260,124 @@
           }
         }
       }
+    },
+    "e65e68f2c030339365c5e74bcd218dbe06349c95ec0959a578618d11393aeee3": {
+      "address": "0x33Bb3e6EB9FB21D5aea76f1be7BB463271621447",
+      "txHash": "0xc54fbbe3c446659ea4a098a038f782fb7ab1109d1ecdcd0edc1029323cf8ff97",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "_owner",
+            "type": "t_address",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:82"
+          },
+          {
+            "contract": "AdminContractV2",
+            "label": "isInitialized",
+            "type": "t_bool",
+            "src": "contracts/AdminContractV2.sol:20"
+          },
+          {
+            "contract": "AdminContractV2",
+            "label": "dfrancParameters",
+            "type": "t_contract(IDfrancParameters)12517",
+            "src": "contracts/AdminContractV2.sol:22"
+          },
+          {
+            "contract": "AdminContractV2",
+            "label": "stabilityPoolManager",
+            "type": "t_contract(IStabilityPoolManager)13216",
+            "src": "contracts/AdminContractV2.sol:23"
+          },
+          {
+            "contract": "AdminContractV2",
+            "label": "communityIssuance",
+            "type": "t_contract(ICommunityIssuance)12128",
+            "src": "contracts/AdminContractV2.sol:24"
+          },
+          {
+            "contract": "AdminContractV2",
+            "label": "borrowerOperationsAddress",
+            "type": "t_address",
+            "src": "contracts/AdminContractV2.sol:26"
+          },
+          {
+            "contract": "AdminContractV2",
+            "label": "troveManagerAddress",
+            "type": "t_address",
+            "src": "contracts/AdminContractV2.sol:27"
+          },
+          {
+            "contract": "AdminContractV2",
+            "label": "troveManagerHelpersAddress",
+            "type": "t_address",
+            "src": "contracts/AdminContractV2.sol:28"
+          },
+          {
+            "contract": "AdminContractV2",
+            "label": "dchfTokenAddress",
+            "type": "t_address",
+            "src": "contracts/AdminContractV2.sol:29"
+          },
+          {
+            "contract": "AdminContractV2",
+            "label": "sortedTrovesAddress",
+            "type": "t_address",
+            "src": "contracts/AdminContractV2.sol:30"
+          }
+        ],
+        "types": {
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_contract(IDfrancParameters)12517": {
+            "label": "contract IDfrancParameters"
+          },
+          "t_contract(IStabilityPoolManager)13216": {
+            "label": "contract IStabilityPoolManager"
+          },
+          "t_contract(ICommunityIssuance)12128": {
+            "label": "contract ICommunityIssuance"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          }
+        }
+      }
     }
   }
 }
