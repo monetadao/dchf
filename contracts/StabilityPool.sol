@@ -5,6 +5,7 @@ pragma solidity ^0.8.14;
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Interfaces/IStabilityPool.sol";
@@ -19,7 +20,7 @@ import "./Dependencies/DfrancSafeMath128.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
-contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
+contract StabilityPool is DfrancBase, CheckContract, ReentrancyGuardUpgradeable, IStabilityPool {
 	using SafeMathUpgradeable for uint256;
 	using DfrancSafeMath128 for uint128;
 	using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -179,7 +180,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 	 * - Sends depositor's accumulated gains (MON, ETH) to depositor
 	 * - Increases deposit and system stake, and takes new snapshots for each.
 	 */
-	function provideToSP(uint256 _amount) external override {
+	function provideToSP(uint256 _amount) external override nonReentrant {
 		_requireNonZeroAmount(_amount);
 
 		uint256 initialDeposit = deposits[msg.sender];
@@ -221,7 +222,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 	 *
 	 * If _amount > userDeposit, the user withdraws all of their compounded deposit.
 	 */
-	function withdrawFromSP(uint256 _amount) external override {
+	function withdrawFromSP(uint256 _amount) external override nonReentrant {
 		if (_amount != 0) {
 			_requireNoUnderCollateralizedTroves();
 		}
