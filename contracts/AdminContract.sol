@@ -1,7 +1,7 @@
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
-import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
 
 import "./Dependencies/CheckContract.sol";
@@ -11,7 +11,7 @@ import "./Interfaces/IDfrancParameters.sol";
 import "./Interfaces/IStabilityPool.sol";
 import "./Interfaces/ICommunityIssuance.sol";
 
-contract AdminContract is ProxyAdmin {
+contract AdminContract is OwnableUpgradeable {
 	string public constant NAME = "AdminContract";
 
 	bytes32 public constant STABILITY_POOL_NAME_BYTES =
@@ -37,7 +37,7 @@ contract AdminContract is ProxyAdmin {
 		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress
-	) external onlyOwner {
+	) external initializer {
 		require(!isInitialized);
 		CheckContract(_paramaters);
 		CheckContract(_stabilityPoolManager);
@@ -47,6 +47,7 @@ contract AdminContract is ProxyAdmin {
 		CheckContract(_dchfTokenAddress);
 		CheckContract(_sortedTrovesAddress);
 		CheckContract(_communityIssuanceAddress);
+		__Ownable_init();
 		isInitialized = true;
 
 		borrowerOperationsAddress = _borrowerOperationsAddress;
@@ -85,7 +86,7 @@ contract AdminContract is ProxyAdmin {
 			assignedToken,
 			msg.sender
 		);
-		communityIssuance.setWeeklyVstaDistribution(
+		communityIssuance.setWeeklyDfrancDistribution(
 			_stabilityPoolProxyAddress,
 			_tokenPerWeekDistributed
 		);

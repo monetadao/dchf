@@ -1162,14 +1162,14 @@
 <path fill="none" stroke="white" stroke-width="2" d="M4843.82,-7708.82C5634.02,-7668.3 13341.15,-7273.06 14311.3,-7223.31" style=""/>
 <polygon fill="white" stroke="white" stroke-width="2" points="14311.58,-7226.8 14321.38,-7222.79 14311.22,-7219.81 14311.58,-7226.8" style=""/>
 </g>
-<!-- ITroveManager.vestaParams -->
-<g id="node523" class="node" pointer-events="visible" data-name="ITroveManager.vestaParams">
+<!-- ITroveManager.dfrancParams -->
+<g id="node523" class="node" pointer-events="visible" data-name="ITroveManager.dfrancParams">
 
 <ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="14412.47" cy="-7164.17" rx="59.11" ry="18" style=""/>
-<text text-anchor="middle" x="14412.47" y="-7159.97" font-family="Times,serif" font-size="14.00" style="">vestaParams</text>
+<text text-anchor="middle" x="14412.47" y="-7159.97" font-family="Times,serif" font-size="14.00" style="">dfrancParams</text>
 </g>
-<!-- MONStakingScript.&lt;Constructor&gt;&#45;&gt;ITroveManager.vestaParams -->
-<g id="edge20" class="edge" data-name="MONStakingScript.&lt;Constructor&gt;-&gt;ITroveManager.vestaParams">
+<!-- MONStakingScript.&lt;Constructor&gt;&#45;&gt;ITroveManager.dfrancParams -->
+<g id="edge20" class="edge" data-name="MONStakingScript.&lt;Constructor&gt;-&gt;ITroveManager.dfrancParams">
 
 <path fill="none" stroke="white" stroke-width="2" d="M4843.82,-7708.46C5643.69,-7662.95 13530.84,-7214.27 14343.87,-7168.02" style=""/>
 <polygon fill="white" stroke="white" stroke-width="2" points="14344.16,-7171.51 14353.94,-7167.45 14343.76,-7164.52 14344.16,-7171.51" style=""/>
@@ -7760,11 +7760,11 @@
 <ellipse fill="#ffbdb9" stroke="#ffbdb9" stroke-width="3" cx="50537.47" cy="-13546.17" rx="153.39" ry="18" style=""/>
 <text text-anchor="middle" x="50537.47" y="-13541.97" font-family="Times,serif" font-size="14.00" style="">transferFundToAnotherStabilityPool</text>
 </g>
-<!-- ICommunityIssuance.setWeeklyVstaDistribution -->
-<g id="node341" class="node" pointer-events="visible" data-name="ICommunityIssuance.setWeeklyVstaDistribution">
+<!-- ICommunityIssuance.setWeeklyDfrancDistribution -->
+<g id="node341" class="node" pointer-events="visible" data-name="ICommunityIssuance.setWeeklyDfrancDistribution">
 
 <ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="50537.47" cy="-13492.17" rx="116.34" ry="18" style=""/>
-<text text-anchor="middle" x="50537.47" y="-13487.97" font-family="Times,serif" font-size="14.00" style="">setWeeklyVstaDistribution</text>
+<text text-anchor="middle" x="50537.47" y="-13487.97" font-family="Times,serif" font-size="14.00" style="">setWeeklyDfrancDistribution</text>
 </g>
 <!-- MONToken.&lt;Constructor&gt; -->
 <g id="node342" class="node" pointer-events="visible" data-name="MONToken.&lt;Constructor&gt;">
@@ -9418,11 +9418,11 @@
 <path fill="none" stroke="white" stroke-width="2" d="M61857.12,-13537.95C61892.88,-13533.79 61940.41,-13526.86 61981.47,-13516.17 66920.23,-12230.28 67870.27,-11034.75 72729.23,-9474.17 72788.48,-9455.14 72858.77,-9437.31 72899.82,-9427.36" style=""/>
 <polygon fill="white" stroke="white" stroke-width="2" points="72900.7,-9430.75 72909.6,-9425 72899.06,-9423.94 72900.7,-9430.75" style=""/>
 </g>
-<!-- CommunityIssuance.setWeeklyVstaDistribution -->
-<g id="node452" class="node" pointer-events="visible" data-name="CommunityIssuance.setWeeklyVstaDistribution">
+<!-- CommunityIssuance.setWeeklyDfrancDistribution -->
+<g id="node452" class="node" pointer-events="visible" data-name="CommunityIssuance.setWeeklyDfrancDistribution">
 
 <ellipse fill="#ffbdb9" stroke="#ffbdb9" stroke-width="3" cx="61801.47" cy="-13489.17" rx="116.34" ry="18" style=""/>
-<text text-anchor="middle" x="61801.47" y="-13484.97" font-family="Times,serif" font-size="14.00" style="">setWeeklyVstaDistribution</text>
+<text text-anchor="middle" x="61801.47" y="-13484.97" font-family="Times,serif" font-size="14.00" style="">setWeeklyDfrancDistribution</text>
 </g>
 <!-- _weeklyReward.div -->
 <g id="node954" class="node" pointer-events="visible" data-name="_weeklyReward.div">
@@ -9430,8 +9430,8 @@
 <ellipse fill="#edad56" stroke="#edad56" stroke-width="3" cx="72935.47" cy="-9334.17" rx="27" ry="18" style=""/>
 <text text-anchor="middle" x="72935.47" y="-9329.97" font-family="Times,serif" font-size="14.00" style="">div</text>
 </g>
-<!-- CommunityIssuance.setWeeklyVstaDistribution&#45;&gt;_weeklyReward.div -->
-<g id="edge760" class="edge" data-name="CommunityIssuance.setWeeklyVstaDistribution-&gt;_weeklyReward.div">
+<!-- CommunityIssuance.setWeeklyDfrancDistribution&#45;&gt;_weeklyReward.div -->
+<g id="edge760" class="edge" data-name="CommunityIssuance.setWeeklyDfrancDistribution-&gt;_weeklyReward.div">
 
 <path fill="none" stroke="white" stroke-width="2" d="M61891.53,-13477.77C61920.47,-13473.13 61952.57,-13466.99 61981.47,-13459.17 66912.28,-12126.2 67867.87,-10956.64 72729.23,-9389.17 72788.46,-9370.08 72858.76,-9352.26 72899.81,-9342.34" style=""/>
 <polygon fill="white" stroke="white" stroke-width="2" points="72900.69,-9345.73 72909.59,-9339.99 72899.05,-9338.92 72900.69,-9345.73" style=""/>
@@ -9694,11 +9694,11 @@
 <ellipse fill="#ff9797" stroke="#ff9797" stroke-width="3" cx="4777.47" cy="-24804.17" rx="45.22" ry="18" style=""/>
 <text text-anchor="middle" x="4777.47" y="-24799.97" font-family="Times,serif" font-size="14.00" style="">decimals</text>
 </g>
-<!-- IDfrancBase.vestaParams -->
-<g id="node487" class="node" pointer-events="visible" data-name="IDfrancBase.vestaParams">
+<!-- IDfrancBase.dfrancParams -->
+<g id="node487" class="node" pointer-events="visible" data-name="IDfrancBase.dfrancParams">
 
 <ellipse fill="#ffbdb9" stroke="#ffbdb9" stroke-width="3" cx="4777.47" cy="-25159.17" rx="59.11" ry="18" style=""/>
-<text text-anchor="middle" x="4777.47" y="-25154.97" font-family="Times,serif" font-size="14.00" style="">vestaParams</text>
+<text text-anchor="middle" x="4777.47" y="-25154.97" font-family="Times,serif" font-size="14.00" style="">dfrancParams</text>
 </g>
 <!-- Destructible.&lt;Receive Ether&gt; -->
 <g id="node488" class="node" pointer-events="visible" data-name="Destructible.&lt;Receive Ether&gt;">
@@ -12699,8 +12699,8 @@
 <path fill="none" stroke="white" stroke-width="2" d="M38864.71,-746.59C38902.16,-748.91 38946.2,-756.2 38981.71,-775.17 45688.28,-4357.61 43622.09,-10001.52 50334.4,-13573.17 50354.97,-13584.12 50378.33,-13591.22 50401.68,-13595.73" style=""/>
 <polygon fill="white" stroke="white" stroke-width="2" points="50401.22,-13599.21 50411.68,-13597.51 50402.44,-13592.32 50401.22,-13599.21" style=""/>
 </g>
-<!-- AdminContract.addNewCollateral&#45;&gt;ICommunityIssuance.setWeeklyVstaDistribution -->
-<g id="edge1022" class="edge" data-name="AdminContract.addNewCollateral-&gt;ICommunityIssuance.setWeeklyVstaDistribution">
+<!-- AdminContract.addNewCollateral&#45;&gt;ICommunityIssuance.setWeeklyDfrancDistribution -->
+<g id="edge1022" class="edge" data-name="AdminContract.addNewCollateral-&gt;ICommunityIssuance.setWeeklyDfrancDistribution">
 
 <path fill="none" stroke="white" stroke-width="2" d="M38864.61,-746.78C38902.04,-749.14 38946.09,-756.41 38981.71,-775.17 45523.86,-4219.79 50229.13,-12914.88 50521.99,-13464.82" style=""/>
 <polygon fill="white" stroke="white" stroke-width="2" points="50519.1,-13466.84 50526.88,-13474.03 50525.28,-13463.56 50519.1,-13466.84" style=""/>

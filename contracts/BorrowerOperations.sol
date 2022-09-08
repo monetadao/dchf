@@ -111,7 +111,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		address _sortedTrovesAddress,
 		address _dchfTokenAddress,
 		address _MONStakingAddress,
-		address _vestaParamsAddress
+		address _dfrancParamsAddress
 	) external override initializer {
 		require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
@@ -122,7 +122,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		checkContract(_sortedTrovesAddress);
 		checkContract(_dchfTokenAddress);
 		checkContract(_MONStakingAddress);
-		checkContract(_vestaParamsAddress);
+		checkContract(_dfrancParamsAddress);
 		isInitialized = true;
 
 		__Ownable_init();
@@ -137,7 +137,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		MONStakingAddress = _MONStakingAddress;
 		MONStaking = IMONStaking(_MONStakingAddress);
 
-		setDfrancParameters(_vestaParamsAddress);
+		setDfrancParameters(_dfrancParamsAddress);
 
 		emit TroveManagerAddressChanged(_troveManagerAddress);
 		emit StabilityPoolAddressChanged(_stabilityPoolManagerAddress);
@@ -164,19 +164,19 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		address _upperHint,
 		address _lowerHint
 	) external payable override {
-		vestaParams.sanitizeParameters(_asset);
+		dfrancParams.sanitizeParameters(_asset);
 
 		ContractsCache memory contractsCache = ContractsCache(
 			troveManager,
 			troveManagerHelpers,
-			vestaParams.activePool(),
+			dfrancParams.activePool(),
 			DCHFToken
 		);
 		LocalVariables_openTrove memory vars;
 		vars.asset = _asset;
 
 		_tokenAmount = getMethodValue(vars.asset, _tokenAmount, false);
-		vars.price = vestaParams.priceFeed().fetchPrice(vars.asset);
+		vars.price = dfrancParams.priceFeed().fetchPrice(vars.asset);
 
 		bool isRecoveryMode = _checkRecoveryMode(vars.asset, vars.price);
 
@@ -264,8 +264,8 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 			contractsCache.activePool,
 			contractsCache.DCHFToken,
 			gasPoolAddress,
-			vestaParams.DCHF_GAS_COMPENSATION(vars.asset),
-			vestaParams.DCHF_GAS_COMPENSATION(vars.asset)
+			dfrancParams.DCHF_GAS_COMPENSATION(vars.asset),
+			dfrancParams.DCHF_GAS_COMPENSATION(vars.asset)
 		);
 
 		emit TroveUpdated(
@@ -406,7 +406,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		ContractsCache memory contractsCache = ContractsCache(
 			troveManager,
 			troveManagerHelpers,
-			vestaParams.activePool(),
+			dfrancParams.activePool(),
 			DCHFToken
 		);
 		LocalVariables_adjustTrove memory vars;
@@ -417,7 +417,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 			"BorrowerOp: _AssetSent and Msg.value aren't the same!"
 		);
 
-		vars.price = vestaParams.priceFeed().fetchPrice(vars.asset);
+		vars.price = dfrancParams.priceFeed().fetchPrice(vars.asset);
 		bool isRecoveryMode = _checkRecoveryMode(vars.asset, vars.price);
 
 		if (_isDebtIncrease) {
@@ -546,11 +546,11 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 
 	function closeTrove(address _asset) external override {
 		ITroveManagerHelpers troveManagerHelpersCached = troveManagerHelpers;
-		IActivePool activePoolCached = vestaParams.activePool();
+		IActivePool activePoolCached = dfrancParams.activePool();
 		IDCHFToken DCHFTokenCached = DCHFToken;
 
 		_requireTroveisActive(_asset, troveManagerHelpersCached, msg.sender);
-		uint256 price = vestaParams.priceFeed().fetchPrice(_asset);
+		uint256 price = dfrancParams.priceFeed().fetchPrice(_asset);
 		_requireNotInRecoveryMode(_asset, price);
 
 		troveManagerHelpersCached.applyPendingRewards(_asset, msg.sender);
@@ -561,7 +561,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		_requireSufficientDCHFBalance(
 			DCHFTokenCached,
 			msg.sender,
-			debt.sub(vestaParams.DCHF_GAS_COMPENSATION(_asset))
+			debt.sub(dfrancParams.DCHF_GAS_COMPENSATION(_asset))
 		);
 
 		uint256 newTCR = _getNewTCRFromTroveChange(_asset, coll, false, debt, false, price);
@@ -578,7 +578,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 			activePoolCached,
 			DCHFTokenCached,
 			msg.sender,
-			debt.sub(vestaParams.DCHF_GAS_COMPENSATION(_asset))
+			debt.sub(dfrancParams.DCHF_GAS_COMPENSATION(_asset))
 		);
 
 		_repayDCHF(
@@ -586,7 +586,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 			activePoolCached,
 			DCHFTokenCached,
 			gasPoolAddress,
-			vestaParams.DCHF_GAS_COMPENSATION(_asset)
+			dfrancParams.DCHF_GAS_COMPENSATION(_asset)
 		);
 
 		// Send the collateral back to the user
@@ -842,14 +842,14 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 
 	function _requireICRisAboveMCR(address _asset, uint256 _newICR) internal view {
 		require(
-			_newICR >= vestaParams.MCR(_asset),
+			_newICR >= dfrancParams.MCR(_asset),
 			"BorrowerOps: An operation that would result in ICR < MCR is not permitted"
 		);
 	}
 
 	function _requireICRisAboveCCR(address _asset, uint256 _newICR) internal view {
 		require(
-			_newICR >= vestaParams.CCR(_asset),
+			_newICR >= dfrancParams.CCR(_asset),
 			"BorrowerOps: Operation must leave trove with ICR >= CCR"
 		);
 	}
@@ -863,14 +863,14 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 
 	function _requireNewTCRisAboveCCR(address _asset, uint256 _newTCR) internal view {
 		require(
-			_newTCR >= vestaParams.CCR(_asset),
+			_newTCR >= dfrancParams.CCR(_asset),
 			"BorrowerOps: An operation that would result in TCR < CCR is not permitted"
 		);
 	}
 
 	function _requireAtLeastMinNetDebt(address _asset, uint256 _netDebt) internal view {
 		require(
-			_netDebt >= vestaParams.MIN_NET_DEBT(_asset),
+			_netDebt >= dfrancParams.MIN_NET_DEBT(_asset),
 			"BorrowerOps: Trove's net debt must be greater than minimum"
 		);
 	}
@@ -881,7 +881,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		uint256 _debtRepayment
 	) internal view {
 		require(
-			_debtRepayment <= _currentDebt.sub(vestaParams.DCHF_GAS_COMPENSATION(_asset)),
+			_debtRepayment <= _currentDebt.sub(dfrancParams.DCHF_GAS_COMPENSATION(_asset)),
 			"BorrowerOps: Amount repaid must not be larger than the Trove's debt"
 		);
 	}
@@ -911,13 +911,13 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 	) internal view {
 		if (_isRecoveryMode) {
 			require(
-				_maxFeePercentage <= vestaParams.DECIMAL_PRECISION(),
+				_maxFeePercentage <= dfrancParams.DECIMAL_PRECISION(),
 				"Max fee percentage must less than or equal to 100%"
 			);
 		} else {
 			require(
-				_maxFeePercentage >= vestaParams.BORROWING_FEE_FLOOR(_asset) &&
-					_maxFeePercentage <= vestaParams.DECIMAL_PRECISION(),
+				_maxFeePercentage >= dfrancParams.BORROWING_FEE_FLOOR(_asset) &&
+					_maxFeePercentage <= dfrancParams.DECIMAL_PRECISION(),
 				"Max fee percentage must be between 0.5% and 100%"
 			);
 		}

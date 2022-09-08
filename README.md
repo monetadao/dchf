@@ -544,7 +544,7 @@ Contracts Description Table
 | └ | _issueMON | Internal 🔒 | 🛑  | isStabilityPool |
 | └ | _getLastUpdateTokenDistribution | Internal 🔒 |   | |
 | └ | sendMON | External ❗️ | 🛑  | onlyStabilityPool |
-| └ | setWeeklyVstaDistribution | External ❗️ | 🛑  | isController isStabilityPool |
+| └ | setWeeklyDfrancDistribution | External ❗️ | 🛑  | isController isStabilityPool |
 ||||||
 | **DCHFTokenTester** | Implementation | DCHFToken |||
 | └ | <Constructor> | Public ❗️ | 🛑  | DCHFToken |
@@ -808,7 +808,7 @@ Contracts Description Table
 | └ | removeRedemptionBlock | External ❗️ | 🛑  |NO❗️ |
 ||||||
 | **IDfrancBase** | Interface |  |||
-| └ | vestaParams | External ❗️ |   |NO❗️ |
+| └ | dfrancParams | External ❗️ |   |NO❗️ |
 ||||||
 | **ERC20Test** | Implementation | ERC20Permit |||
 | └ | <Constructor> | Public ❗️ | 🛑  | ERC20 |
@@ -895,7 +895,7 @@ Contracts Description Table
 | └ | addFundToStabilityPool | External ❗️ | 🛑  |NO❗️ |
 | └ | addFundToStabilityPoolFrom | External ❗️ | 🛑  |NO❗️ |
 | └ | transferFundToAnotherStabilityPool | External ❗️ | 🛑  |NO❗️ |
-| └ | setWeeklyVstaDistribution | External ❗️ | 🛑  |NO❗️ |
+| └ | setWeeklyDfrancDistribution | External ❗️ | 🛑  |NO❗️ |
 ||||||
 | **ICollSurplusPool** | Interface | IDeposit |||
 | └ | setAddresses | External ❗️ | 🛑  |NO❗️ |

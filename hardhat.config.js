@@ -5,6 +5,7 @@ require("solidity-coverage");
 require("hardhat-gas-reporter");
 require('@openzeppelin/hardhat-upgrades');
 require('hardhat-contract-sizer');
+require('@openzeppelin/hardhat-defender');
 
 const accounts = require("./hardhatAccountsList2k.js");
 const accountsList = accounts.accountsList
@@ -67,14 +68,14 @@ module.exports = {
     localhost: {
       url: "http://localhost:7545"
     },
-    mainnet: {
+    /*mainnet: {
       url: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       accounts: [
         getSecret('DEPLOYER_PRIVATEKEY')
       ]
-    },
+    },*/
     rinkeby: {
-      url: getSecret("RINKEBY_RPC_URL"),
+      url: "https://rinkeby.infura.io/v3/cf9de047e0f54fac8d44b12783036bc8",
       accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
     },
     fork: {
@@ -91,5 +92,9 @@ module.exports = {
   },
   gasReporter: {
     enabled: false
+  },
+  defender: {
+    apiKey: getSecret("DEFENDER_API_KEY"),
+    apiSecret: getSecret("DEFENDER_API_SECRET"),
   }
 };

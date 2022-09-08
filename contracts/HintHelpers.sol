@@ -69,7 +69,7 @@ contract HintHelpers is DfrancBase, CheckContract {
 	 *     or zero in case of no partial redemption.
 	 *  - `truncatedDCHFamount` is the maximum amount that can be redeemed out of the the provided `_DCHFamount`. This can be lower than
 	 *    `_DCHFamount` when redeeming the full amount would leave the last Trove of the redemption sequence with less net debt than the
-	 *    minimum allowed value (i.e. vestaParams.MIN_NET_DEBT()).
+	 *    minimum allowed value (i.e. dfrancParams.MIN_NET_DEBT()).
 	 *
 	 * The number of Troves to consider for redemption can be capped by passing a non-zero value as `_maxIterations`, while passing zero
 	 * will leave it uncapped.
@@ -104,7 +104,7 @@ contract HintHelpers is DfrancBase, CheckContract {
 		while (
 			currentTroveuser != address(0) &&
 			troveManagerHelpers.getCurrentICR(vars._asset, currentTroveuser, _price) <
-			vestaParams.MCR(vars._asset)
+			dfrancParams.MCR(vars._asset)
 		) {
 			currentTroveuser = sortedTrovesCached.getPrev(vars._asset, currentTroveuser);
 		}
@@ -122,10 +122,10 @@ contract HintHelpers is DfrancBase, CheckContract {
 			).add(troveManagerHelpers.getPendingDCHFDebtReward(vars._asset, currentTroveuser));
 
 			if (netDCHFDebt > remainingDCHF) {
-				if (netDCHFDebt > vestaParams.MIN_NET_DEBT(vars._asset)) {
+				if (netDCHFDebt > dfrancParams.MIN_NET_DEBT(vars._asset)) {
 					uint256 maxRedeemableDCHF = DfrancMath._min(
 						remainingDCHF,
-						netDCHFDebt.sub(vestaParams.MIN_NET_DEBT(vars._asset))
+						netDCHFDebt.sub(dfrancParams.MIN_NET_DEBT(vars._asset))
 					);
 
 					uint256 ETH = troveManagerHelpers.getTroveColl(vars._asset, currentTroveuser).add(

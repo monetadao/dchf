@@ -57,7 +57,7 @@ contract BorrowerWrappersScript is
 		checkContract(address(stabilityPoolCached));
 		stabilityPoolManager = stabilityPoolCached;
 
-		IPriceFeed priceFeedCached = troveManagerCached.vestaParams().priceFeed();
+		IPriceFeed priceFeedCached = troveManagerCached.dfrancParams().priceFeed();
 		checkContract(address(priceFeedCached));
 		priceFeed = priceFeedCached;
 

@@ -115,14 +115,14 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 		address _borrowerOperationsAddress,
 		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
-		address _vestaParamsAddress,
+		address _dfrancParamsAddress,
 		address _troveManagerAddress
 	) external initializer {
 		require(!isInitialized, "AI");
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_dchfTokenAddress);
 		checkContract(_sortedTrovesAddress);
-		checkContract(_vestaParamsAddress);
+		checkContract(_dfrancParamsAddress);
 		isInitialized = true;
 
 		__Ownable_init();
@@ -132,7 +132,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 		sortedTroves = ISortedTroves(_sortedTrovesAddress);
 		troveManagerAddress = _troveManagerAddress;
 
-		setDfrancParameters(_vestaParamsAddress);
+		setDfrancParameters(_dfrancParamsAddress);
 	}
 
 	// --- Helper functions ---
@@ -190,8 +190,8 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 		return
 			_applyPendingRewards(
 				_asset,
-				vestaParams.activePool(),
-				vestaParams.defaultPool(),
+				dfrancParams.activePool(),
+				dfrancParams.defaultPool(),
 				_borrower
 			);
 	}
@@ -527,7 +527,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 		totalStakesSnapshot[_asset] = totalStakes[_asset];
 
 		uint256 activeColl = _activePool.getAssetBalance(_asset);
-		uint256 liquidatedColl = vestaParams.defaultPool().getAssetBalance(_asset);
+		uint256 liquidatedColl = dfrancParams.defaultPool().getAssetBalance(_asset);
 		totalCollateralSnapshot[_asset] = activeColl.sub(_collRemainder).add(liquidatedColl);
 
 		emit SystemSnapshotsUpdated(
@@ -602,7 +602,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 	) public view override returns (bool) {
 		uint256 TCR = DfrancMath._computeCR(_entireSystemColl, _entireSystemDebt, _price);
 
-		return TCR < vestaParams.CCR(_asset);
+		return TCR < dfrancParams.CCR(_asset);
 	}
 
 	function updateBaseRateFromRedemption(
@@ -651,7 +651,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 	{
 		return
 			DfrancMath._min(
-				vestaParams.REDEMPTION_FEE_FLOOR(_asset).add(_baseRate),
+				dfrancParams.REDEMPTION_FEE_FLOOR(_asset).add(_baseRate),
 				DECIMAL_PRECISION
 			);
 	}
@@ -699,8 +699,8 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 	{
 		return
 			DfrancMath._min(
-				vestaParams.BORROWING_FEE_FLOOR(_asset).add(_baseRate),
-				vestaParams.MAX_BORROWING_FEE(_asset)
+				dfrancParams.BORROWING_FEE_FLOOR(_asset).add(_baseRate),
+				dfrancParams.MAX_BORROWING_FEE(_asset)
 			);
 	}
 
@@ -784,7 +784,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 	}
 
 	function _requireTCRoverMCR(address _asset, uint256 _price) public view override {
-		require(_getTCR(_asset, _price) >= vestaParams.MCR(_asset), "CR");
+		require(_getTCR(_asset, _price) >= dfrancParams.MCR(_asset), "CR");
 	}
 
 	function _requireValidMaxFeePercentage(address _asset, uint256 _maxFeePercentage)
@@ -793,7 +793,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 		override
 	{
 		require(
-			_maxFeePercentage >= vestaParams.REDEMPTION_FEE_FLOOR(_asset) &&
+			_maxFeePercentage >= dfrancParams.REDEMPTION_FEE_FLOOR(_asset) &&
 				_maxFeePercentage <= DECIMAL_PRECISION,
 			"MF"
 		);

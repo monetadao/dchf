@@ -11,7 +11,7 @@ let mdh;
 let config;
 let deployerWallet;
 let gasPrice;
-let vestaCore;
+let dfrancCore;
 let MONContracts;
 let deploymentState;
 
@@ -102,9 +102,9 @@ async function mainnetDeploy(configParams) {
   // Deployment Phase 3
   if (config.DEPLOYMENT_PHASE == 3) {
     // Deploy core logic contracts
-    vestaCore = await mdh.deployLiquityCoreMainnet(deploymentState, ADMIN_WALLET)
+    dfrancCore = await mdh.deployDchfCoreMainnet(deploymentState, ADMIN_WALLET)
 
-    await mdh.logContractObjects(vestaCore)
+    await mdh.logContractObjects(dfrancCore)
 
     // Deploy MON Contracts
     MONContracts = await mdh.deployMONContractsMainnet(
@@ -117,12 +117,12 @@ async function mainnetDeploy(configParams) {
 
 
     await mdh.connectCoreContractsMainnet(
-      vestaCore,
+      dfrancCore,
       MONContracts
     )
 
     console.log("Connect MON Contract to Core");
-    await mdh.connectMONContractsToCoreMainnet(MONContracts, vestaCore, TREASURY_WALLET)
+    await mdh.connectMONContractsToCoreMainnet(MONContracts, dfrancCore, TREASURY_WALLET)
 
 
     console.log("Adding Collaterals");
@@ -136,7 +136,7 @@ async function mainnetDeploy(configParams) {
 
     mdh.saveDeployment(deploymentState)
 
-    await mdh.deployMultiTroveGetterMainnet(vestaCore, deploymentState)
+    await mdh.deployMultiTroveGetterMainnet(dfrancCore, deploymentState)
     await mdh.logContractObjects(MONContracts)
 
     await giveContractsOwnerships();
@@ -153,26 +153,27 @@ async function addETHCollaterals() {
   if (!ETHAddress || ETHAddress == "")
     throw ("CANNOT FIND THE ETH Address")
 
-  if ((await vestaCore.stabilityPoolManager.unsafeGetAssetStabilityPool(ETHAddress)) == ZERO_ADDRESS) {
+  if ((await dfrancCore.stabilityPoolManager.unsafeGetAssetStabilityPool(ETHAddress)) == ZERO_ADDRESS) {
 
     console.log("Creating Collateral - ETH")
 
     const stabilityPoolETHProxy = await upgrades.deployProxy(await mdh.getFactory("StabilityPool"), [
       ETHAddress,
-      vestaCore.borrowerOperations.address,
-      vestaCore.troveManager.address,
-      vestaCore.troveManagerHelpers.address,
-      vestaCore.dchfToken.address,
-      vestaCore.sortedTroves.address,
+      dfrancCore.borrowerOperations.address,
+      dfrancCore.troveManager.address,
+      dfrancCore.troveManagerHelpers.address,
+      dfrancCore.dchfToken.address,
+      dfrancCore.sortedTroves.address,
       MONContracts.communityIssuance.address,
-      vestaCore.dfrancParameters.address
+      dfrancCore.dfrancParameters.address
     ], { initializer: 'setAddresses' });
 
+    console.log("Deploying ETH Stability Pool");
     await stabilityPoolETHProxy.deployed();
 
     const txReceiptProxyETH = await mdh
       .sendAndWaitForTransaction(
-        vestaCore.adminContract.addNewCollateral(
+        dfrancCore.adminContract.addNewCollateral(
           stabilityPoolETHProxy.address,
           config.externalAddrs.CHAINLINK_ETHUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
@@ -186,7 +187,7 @@ async function addETHCollaterals() {
     const name = "ProxyStabilityPoolETH";
 
     deploymentState[name] = {
-      address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(ETHAddress),
+      address: await dfrancCore.stabilityPoolManager.getAssetStabilityPool(ETHAddress),
       txHash: txReceiptProxyETH.transactionHash
     }
 
@@ -202,26 +203,26 @@ async function addBTCCollaterals() {
   if (!BTCAddress || BTCAddress == "")
     throw ("CANNOT FIND THE renBTC Address")
 
-  if ((await vestaCore.stabilityPoolManager.unsafeGetAssetStabilityPool(BTCAddress)) == ZERO_ADDRESS) {
+  if ((await dfrancCore.stabilityPoolManager.unsafeGetAssetStabilityPool(BTCAddress)) == ZERO_ADDRESS) {
     console.log("Creating Collateral - BTC")
 
     const stabilityPoolBTCProxy = await upgrades.deployProxy(await mdh.getFactory("StabilityPool"), [
       BTCAddress,
-      vestaCore.borrowerOperations.address,
-      vestaCore.troveManager.address,
-      vestaCore.troveManagerHelpers.address,
-      vestaCore.dchfToken.address,
-      vestaCore.sortedTroves.address,
+      dfrancCore.borrowerOperations.address,
+      dfrancCore.troveManager.address,
+      dfrancCore.troveManagerHelpers.address,
+      dfrancCore.dchfToken.address,
+      dfrancCore.sortedTroves.address,
       MONContracts.communityIssuance.address,
-      vestaCore.dfrancParameters.address
+      dfrancCore.dfrancParameters.address
     ], { initializer: 'setAddresses' });
 
-
+    console.log("Deploying BTC Stability Pool");
     await stabilityPoolBTCProxy.deployed();
 
     const txReceiptProxyBTC = await mdh
       .sendAndWaitForTransaction(
-        vestaCore.adminContract.addNewCollateral(
+        dfrancCore.adminContract.addNewCollateral(
           stabilityPoolBTCProxy.address,
           config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
@@ -234,7 +235,7 @@ async function addBTCCollaterals() {
     const name = "ProxyStabilityPoolRenBTC";
 
     deploymentState[name] = {
-      address: await vestaCore.stabilityPoolManager.getAssetStabilityPool(BTCAddress),
+      address: await dfrancCore.stabilityPoolManager.getAssetStabilityPool(BTCAddress),
       txHash: txReceiptProxyBTC.transactionHash
     }
 
@@ -244,14 +245,14 @@ async function addBTCCollaterals() {
 
 
 async function giveContractsOwnerships() {
-  await transferOwnership(vestaCore.adminContract, ADMIN_WALLET);
-  await transferOwnership(vestaCore.priceFeed, ADMIN_WALLET);
-  await transferOwnership(vestaCore.dfrancParameters, ADMIN_WALLET);
-  await transferOwnership(vestaCore.stabilityPoolManager, ADMIN_WALLET);
-  await transferOwnership(vestaCore.dchfToken, ADMIN_WALLET);
+  await transferOwnership(dfrancCore.adminContract, ADMIN_WALLET);
+  await transferOwnership(dfrancCore.priceFeed, ADMIN_WALLET);
+  await transferOwnership(dfrancCore.dfrancParameters, ADMIN_WALLET);
+  await transferOwnership(dfrancCore.stabilityPoolManager, ADMIN_WALLET);
+  await transferOwnership(dfrancCore.dchfToken, ADMIN_WALLET);
   await transferOwnership(MONContracts.MONStaking, ADMIN_WALLET);
 
-  await transferOwnership(vestaCore.lockedMON, TREASURY_WALLET);
+  await transferOwnership(dfrancCore.lockedMON, TREASURY_WALLET);
   await transferOwnership(MONContracts.communityIssuance, TREASURY_WALLET);
 }
 

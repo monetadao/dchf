@@ -40,7 +40,7 @@ interface IBorrowerOperations {
 		address _sortedTrovesAddress,
 		address _dchfTokenAddress,
 		address _MONStakingAddress,
-		address _vestaParamsAddress
+		address _dfrancParamsAddress
 	) external;
 
 	function openTrove(

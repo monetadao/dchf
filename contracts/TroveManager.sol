@@ -52,7 +52,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _monStakingAddress,
-		address _vestaParamsAddress,
+		address _dfrancParamsAddress,
 		address _troveManagerHelpersAddress
 	) external override initializer {
 		require(!isInitialized, "AI");
@@ -62,7 +62,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 		checkContract(_dchfTokenAddress);
 		checkContract(_sortedTrovesAddress);
 		checkContract(_monStakingAddress);
-		checkContract(_vestaParamsAddress);
+		checkContract(_dfrancParamsAddress);
 		checkContract(_troveManagerHelpersAddress);
 		isInitialized = true;
 
@@ -76,7 +76,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 		monStaking = IMONStaking(_monStakingAddress);
 		troveManagerHelpers = ITroveManagerHelpers(_troveManagerHelpersAddress);
 
-		setDfrancParameters(_vestaParamsAddress);
+		setDfrancParameters(_dfrancParamsAddress);
 	}
 
 	// --- Trove Getter functions ---
@@ -130,7 +130,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			_asset,
 			singleLiquidation.entireTroveColl
 		);
-		singleLiquidation.DCHFGasCompensation = vestaParams.DCHF_GAS_COMPENSATION(_asset);
+		singleLiquidation.DCHFGasCompensation = dfrancParams.DCHF_GAS_COMPENSATION(_asset);
 		uint256 collToLiquidate = singleLiquidation.entireTroveColl.sub(
 			singleLiquidation.collGasCompensation
 		);
@@ -188,13 +188,13 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			_asset,
 			singleLiquidation.entireTroveColl
 		);
-		singleLiquidation.DCHFGasCompensation = vestaParams.DCHF_GAS_COMPENSATION(_asset);
+		singleLiquidation.DCHFGasCompensation = dfrancParams.DCHF_GAS_COMPENSATION(_asset);
 		vars.collToLiquidate = singleLiquidation.entireTroveColl.sub(
 			singleLiquidation.collGasCompensation
 		);
 
 		// If ICR <= 100%, purely redistribute the Trove across all active Troves
-		if (_ICR <= vestaParams._100pct()) {
+		if (_ICR <= dfrancParams._100pct()) {
 			troveManagerHelpers.movePendingTroveRewardsToActivePool(
 				_asset,
 				_activePool,
@@ -231,7 +231,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			);
 
 			// If 100% < ICR < MCR, offset as much as possible, and redistribute the remainder
-		} else if ((_ICR > vestaParams._100pct()) && (_ICR < vestaParams.MCR(_asset))) {
+		} else if ((_ICR > dfrancParams._100pct()) && (_ICR < dfrancParams.MCR(_asset))) {
 			troveManagerHelpers.movePendingTroveRewardsToActivePool(
 				_asset,
 				_activePool,
@@ -279,7 +279,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			 * The remainder due to the capped rate will be claimable as collateral surplus.
 			 */
 		} else if (
-			(_ICR >= vestaParams.MCR(_asset)) &&
+			(_ICR >= dfrancParams.MCR(_asset)) &&
 			(_ICR < _TCR) &&
 			(singleLiquidation.entireTroveDebt <= _DCHFInStabPool)
 		) {
@@ -384,10 +384,10 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 	) internal view returns (LiquidationValues memory singleLiquidation) {
 		singleLiquidation.entireTroveDebt = _entireTroveDebt;
 		singleLiquidation.entireTroveColl = _entireTroveColl;
-		uint256 cappedCollPortion = _entireTroveDebt.mul(vestaParams.MCR(_asset)).div(_price);
+		uint256 cappedCollPortion = _entireTroveDebt.mul(dfrancParams.MCR(_asset)).div(_price);
 
 		singleLiquidation.collGasCompensation = _getCollGasCompensation(_asset, cappedCollPortion);
-		singleLiquidation.DCHFGasCompensation = vestaParams.DCHF_GAS_COMPENSATION(_asset);
+		singleLiquidation.DCHFGasCompensation = dfrancParams.DCHF_GAS_COMPENSATION(_asset);
 
 		singleLiquidation.debtToOffset = _entireTroveDebt;
 		singleLiquidation.collToSendToSP = cappedCollPortion.sub(
@@ -404,8 +404,8 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 	 */
 	function liquidateTroves(address _asset, uint256 _n) external override {
 		ContractsCache memory contractsCache = ContractsCache(
-			vestaParams.activePool(),
-			vestaParams.defaultPool(),
+			dfrancParams.activePool(),
+			dfrancParams.defaultPool(),
 			IDCHFToken(address(0)),
 			IMONStaking(address(0)),
 			sortedTroves,
@@ -418,7 +418,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 
 		LiquidationTotals memory totals;
 
-		vars.price = vestaParams.priceFeed().fetchPrice(_asset);
+		vars.price = dfrancParams.priceFeed().fetchPrice(_asset);
 		vars.DCHFInStabPool = stabilityPoolCached.getTotalDCHFDeposits();
 		vars.recoveryModeAtStart = troveManagerHelpers.checkRecoveryMode(_asset, vars.price);
 
@@ -530,7 +530,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 
 			if (!vars.backToNormalMode) {
 				// Break the loop if ICR is greater than MCR and Stability Pool is empty
-				if (vars.ICR >= vestaParams.MCR(_asset) && vars.remainingDCHFInStabPool == 0) {
+				if (vars.ICR >= dfrancParams.MCR(_asset) && vars.remainingDCHFInStabPool == 0) {
 					break;
 				}
 
@@ -571,7 +571,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 					vars.entireSystemDebt,
 					assetVars._price
 				);
-			} else if (vars.backToNormalMode && vars.ICR < vestaParams.MCR(_asset)) {
+			} else if (vars.backToNormalMode && vars.ICR < dfrancParams.MCR(_asset)) {
 				singleLiquidation = _liquidateNormalMode(
 					assetVars._asset,
 					_contractsCache.activePool,
@@ -610,7 +610,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			vars.user = sortedTrovesCached.getLast(_asset);
 			vars.ICR = troveManagerHelpers.getCurrentICR(_asset, vars.user, _price);
 
-			if (vars.ICR < vestaParams.MCR(_asset)) {
+			if (vars.ICR < dfrancParams.MCR(_asset)) {
 				singleLiquidation = _liquidateNormalMode(
 					_asset,
 					_activePool,
@@ -635,15 +635,15 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 	function batchLiquidateTroves(address _asset, address[] memory _troveArray) public override {
 		require(_troveArray.length != 0, "CA");
 
-		IActivePool activePoolCached = vestaParams.activePool();
-		IDefaultPool defaultPoolCached = vestaParams.defaultPool();
+		IActivePool activePoolCached = dfrancParams.activePool();
+		IDefaultPool defaultPoolCached = dfrancParams.defaultPool();
 		IStabilityPool stabilityPoolCached = stabilityPoolManager.getAssetStabilityPool(_asset);
 
 		LocalVariables_OuterLiquidationFunction memory vars;
 		LiquidationTotals memory totals;
 
 		vars.DCHFInStabPool = stabilityPoolCached.getTotalDCHFDeposits();
-		vars.price = vestaParams.priceFeed().fetchPrice(_asset);
+		vars.price = dfrancParams.priceFeed().fetchPrice(_asset);
 
 		vars.recoveryModeAtStart = troveManagerHelpers.checkRecoveryMode(_asset, vars.price);
 
@@ -744,7 +744,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 
 			if (!vars.backToNormalMode) {
 				// Skip this trove if ICR is greater than MCR and Stability Pool is empty
-				if (vars.ICR >= vestaParams.MCR(_asset) && vars.remainingDCHFInStabPool == 0) {
+				if (vars.ICR >= dfrancParams.MCR(_asset) && vars.remainingDCHFInStabPool == 0) {
 					continue;
 				}
 
@@ -785,7 +785,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 					vars.entireSystemDebt,
 					_price
 				);
-			} else if (vars.backToNormalMode && vars.ICR < vestaParams.MCR(_asset)) {
+			} else if (vars.backToNormalMode && vars.ICR < dfrancParams.MCR(_asset)) {
 				singleLiquidation = _liquidateNormalMode(
 					_asset,
 					_activePool,
@@ -820,7 +820,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			vars.user = _troveArray[vars.i];
 			vars.ICR = troveManagerHelpers.getCurrentICR(_asset, vars.user, _price);
 
-			if (vars.ICR < vestaParams.MCR(_asset)) {
+			if (vars.ICR < dfrancParams.MCR(_asset)) {
 				singleLiquidation = _liquidateNormalMode(
 					_asset,
 					_activePool,
@@ -913,7 +913,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 		singleRedemption.DCHFLot = DfrancMath._min(
 			_maxDCHFamount,
 			troveManagerHelpers.getTroveDebt(vars._asset, vars._borrower).sub(
-				vestaParams.DCHF_GAS_COMPENSATION(_asset)
+				dfrancParams.DCHF_GAS_COMPENSATION(_asset)
 			)
 		);
 
@@ -928,7 +928,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			singleRedemption.ETHLot
 		);
 
-		if (newDebt == vestaParams.DCHF_GAS_COMPENSATION(_asset)) {
+		if (newDebt == dfrancParams.DCHF_GAS_COMPENSATION(_asset)) {
 			// No debt left in the Trove (except for the liquidation reserve), therefore the trove gets closed
 			troveManagerHelpers.removeStake(vars._asset, vars._borrower);
 			troveManagerHelpers.closeTrove(
@@ -940,7 +940,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 				vars._asset,
 				_contractsCache,
 				vars._borrower,
-				vestaParams.DCHF_GAS_COMPENSATION(vars._asset),
+				dfrancParams.DCHF_GAS_COMPENSATION(vars._asset),
 				newColl
 			);
 			emit TroveUpdated(
@@ -962,7 +962,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			 */
 			if (
 				newNICR != _partialRedemptionHintNICR ||
-				_getNetDebt(vars._asset, newDebt) < vestaParams.MIN_NET_DEBT(vars._asset)
+				_getNetDebt(vars._asset, newDebt) < dfrancParams.MIN_NET_DEBT(vars._asset)
 			) {
 				singleRedemption.cancelledPartial = true;
 				return singleRedemption;
@@ -1029,7 +1029,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			_firstRedemptionHint == address(0) ||
 			!_sortedTroves.contains(_asset, _firstRedemptionHint) ||
 			troveManagerHelpers.getCurrentICR(_asset, _firstRedemptionHint, _price) <
-			vestaParams.MCR(_asset)
+			dfrancParams.MCR(_asset)
 		) {
 			return false;
 		}
@@ -1037,7 +1037,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 		address nextTrove = _sortedTroves.getNext(_asset, _firstRedemptionHint);
 		return
 			nextTrove == address(0) ||
-			troveManagerHelpers.getCurrentICR(_asset, nextTrove, _price) < vestaParams.MCR(_asset);
+			troveManagerHelpers.getCurrentICR(_asset, nextTrove, _price) < dfrancParams.MCR(_asset);
 	}
 
 	function setRedemptionWhitelistStatus(bool _status) external onlyOwner {
@@ -1087,11 +1087,11 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			require(redemptionWhitelist[msg.sender], "NW");
 		}
 
-		require(block.timestamp >= vestaParams.redemptionBlock(_asset), "BR");
+		require(block.timestamp >= dfrancParams.redemptionBlock(_asset), "BR");
 
 		ContractsCache memory contractsCache = ContractsCache(
-			vestaParams.activePool(),
-			vestaParams.defaultPool(),
+			dfrancParams.activePool(),
+			dfrancParams.defaultPool(),
 			dchfToken,
 			monStaking,
 			sortedTroves,
@@ -1101,7 +1101,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 		RedemptionTotals memory totals;
 
 		troveManagerHelpers._requireValidMaxFeePercentage(_asset, _maxFeePercentage);
-		totals.price = vestaParams.priceFeed().fetchPrice(_asset);
+		totals.price = dfrancParams.priceFeed().fetchPrice(_asset);
 		troveManagerHelpers._requireTCRoverMCR(_asset, totals.price);
 		troveManagerHelpers._requireAmountGreaterThanZero(_DCHFamount);
 		troveManagerHelpers._requireDCHFBalanceCoversRedemption(
@@ -1129,7 +1129,7 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 			while (
 				currentBorrower != address(0) &&
 				troveManagerHelpers.getCurrentICR(_asset, currentBorrower, totals.price) <
-				vestaParams.MCR(_asset)
+				dfrancParams.MCR(_asset)
 			) {
 				currentBorrower = contractsCache.sortedTroves.getPrev(_asset, currentBorrower);
 			}

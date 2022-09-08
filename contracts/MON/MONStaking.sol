@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/CheckContract.sol";
@@ -115,7 +116,7 @@ contract MONStaking is
 
 				if (i == 0) {
 					uint256 DCHFGain = _getPendingDCHFGain(msg.sender);
-					dchfToken.transfer(msg.sender, DCHFGain);
+					dchfToken.safeTransfer(msg.sender, DCHFGain);
 
 					emit StakingGainsDCHFWithdrawn(msg.sender, DCHFGain);
 				}
@@ -135,7 +136,7 @@ contract MONStaking is
 		emit TotalMONStakedUpdated(totalMONStaked);
 
 		// Transfer MON from caller to this contract
-		monToken.transferFrom(msg.sender, address(this), _MONamount);
+		monToken.safeTransferFrom(msg.sender, address(this), _MONamount);
 
 		emit StakeChanged(msg.sender, newStake);
 	}
@@ -158,7 +159,7 @@ contract MONStaking is
 
 			if (i == 0) {
 				uint256 DCHFGain = _getPendingDCHFGain(msg.sender);
-				dchfToken.transfer(msg.sender, DCHFGain);
+				dchfToken.safeTransfer(msg.sender, DCHFGain);
 				emit StakingGainsDCHFWithdrawn(msg.sender, DCHFGain);
 			}
 
@@ -179,7 +180,7 @@ contract MONStaking is
 			emit TotalMONStakedUpdated(totalMONStaked);
 
 			// Transfer unstaked MON to user
-			monToken.transfer(msg.sender, MONToWithdraw);
+			monToken.safeTransfer(msg.sender, MONToWithdraw);
 
 			emit StakeChanged(msg.sender, newStake);
 		}

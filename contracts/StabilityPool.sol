@@ -5,6 +5,7 @@ pragma solidity ^0.8.14;
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Interfaces/IStabilityPool.sol";
@@ -19,7 +20,7 @@ import "./Dependencies/DfrancSafeMath128.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
-contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
+contract StabilityPool is DfrancBase, CheckContract, ReentrancyGuardUpgradeable, IStabilityPool {
 	using SafeMathUpgradeable for uint256;
 	using DfrancSafeMath128 for uint128;
 	using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -125,7 +126,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress,
-		address _vestaParamsAddress
+		address _dfrancParamsAddress
 	) external initializer {
 		require(!isInitialized, "Already initialized");
 		checkContract(_borrowerOperationsAddress);
@@ -134,7 +135,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 		checkContract(_dchfTokenAddress);
 		checkContract(_sortedTrovesAddress);
 		checkContract(_communityIssuanceAddress);
-		checkContract(_vestaParamsAddress);
+		checkContract(_dfrancParamsAddress);
 
 		isInitialized = true;
 		__Ownable_init();
@@ -150,7 +151,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 		dchfToken = IDCHFToken(_dchfTokenAddress);
 		sortedTroves = ISortedTroves(_sortedTrovesAddress);
 		communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
-		setDfrancParameters(_vestaParamsAddress);
+		setDfrancParameters(_dfrancParamsAddress);
 
 		P = DECIMAL_PRECISION;
 
@@ -179,7 +180,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 	 * - Sends depositor's accumulated gains (MON, ETH) to depositor
 	 * - Increases deposit and system stake, and takes new snapshots for each.
 	 */
-	function provideToSP(uint256 _amount) external override {
+	function provideToSP(uint256 _amount) external override nonReentrant {
 		_requireNonZeroAmount(_amount);
 
 		uint256 initialDeposit = deposits[msg.sender];
@@ -221,7 +222,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 	 *
 	 * If _amount > userDeposit, the user withdraws all of their compounded deposit.
 	 */
-	function withdrawFromSP(uint256 _amount) external override {
+	function withdrawFromSP(uint256 _amount) external override nonReentrant {
 		if (_amount != 0) {
 			_requireNoUnderCollateralizedTroves();
 		}
@@ -482,7 +483,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 	}
 
 	function _moveOffsetCollAndDebt(uint256 _collToAdd, uint256 _debtToOffset) internal {
-		IActivePool activePoolCached = vestaParams.activePool();
+		IActivePool activePoolCached = dfrancParams.activePool();
 
 		// Cancel the liquidated DCHF debt with the DCHF in the stability pool
 		activePoolCached.decreaseDCHFDebt(assetAddress, _debtToOffset);
@@ -783,7 +784,7 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 
 	function _requireCallerIsActivePool() internal view {
 		require(
-			msg.sender == address(vestaParams.activePool()),
+			msg.sender == address(dfrancParams.activePool()),
 			"StabilityPool: Caller is not ActivePool"
 		);
 	}
@@ -796,11 +797,11 @@ contract StabilityPool is DfrancBase, CheckContract, IStabilityPool {
 	}
 
 	function _requireNoUnderCollateralizedTroves() public {
-		uint256 price = vestaParams.priceFeed().fetchPrice(assetAddress);
+		uint256 price = dfrancParams.priceFeed().fetchPrice(assetAddress);
 		address lowestTrove = sortedTroves.getLast(assetAddress);
 		uint256 ICR = troveManagerHelpers.getCurrentICR(assetAddress, lowestTrove, price);
 		require(
-			ICR >= vestaParams.MCR(assetAddress),
+			ICR >= dfrancParams.MCR(assetAddress),
 			"StabilityPool: Cannot withdraw while there are troves with ICR < MCR"
 		);
 	}
