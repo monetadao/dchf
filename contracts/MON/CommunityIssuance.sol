@@ -222,7 +222,7 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 			return;
 		}
 
-		monToken.transfer(_account, safeAmount);
+		monToken.safeTransfer(_account, safeAmount);
 	}
 
 	function setWeeklyDfrancDistribution(address _stabilityPool, uint256 _weeklyReward)
