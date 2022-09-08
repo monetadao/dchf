@@ -1,8 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
 
-import "./Dependencies/ProxyAdmin.sol";
-import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
 
 import "./Dependencies/CheckContract.sol";
@@ -12,7 +11,7 @@ import "./Interfaces/IDfrancParameters.sol";
 import "./Interfaces/IStabilityPool.sol";
 import "./Interfaces/ICommunityIssuance.sol";
 
-contract AdminContract is ProxyAdmin {
+contract AdminContract is OwnableUpgradeable {
 	string public constant NAME = "AdminContract";
 
 	bytes32 public constant STABILITY_POOL_NAME_BYTES =
