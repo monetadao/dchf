@@ -5,7 +5,7 @@ const CONTRACT_NAME_TO_UPGRADE = "AdminContract";
 const CONTRACT_NAME_IN_OUTPUT = "adminContract";
 
 async function main() {
-    console.log("Upgrading on testnet");
+    console.log("Upgrading on mainnet");
     await upgrade(configParams, CONTRACT_NAME_TO_UPGRADE, CONTRACT_NAME_IN_OUTPUT)
 }
 
