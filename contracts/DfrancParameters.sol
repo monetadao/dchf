@@ -21,8 +21,8 @@ contract DfrancParameters is IDfrancParameters, OwnableUpgradeable, CheckContrac
 	uint256 public constant BORROWING_FEE_FLOOR_DEFAULT = (DECIMAL_PRECISION / 1000) * 5; // 0.5%
 	uint256 public constant MAX_BORROWING_FEE_DEFAULT = (DECIMAL_PRECISION / 100) * 5; // 5%
 
-	uint256 public constant DCHF_GAS_COMPENSATION_DEFAULT = 30 ether;
-	uint256 public constant MIN_NET_DEBT_DEFAULT = 300 ether;
+	uint256 public constant DCHF_GAS_COMPENSATION_DEFAULT = 200 ether;
+	uint256 public constant MIN_NET_DEBT_DEFAULT = 2000 ether;
 	uint256 public constant REDEMPTION_FEE_FLOOR_DEFAULT = (DECIMAL_PRECISION / 1000) * 5; // 0.5%
 
 	// Minimum collateral ratio for individual troves
