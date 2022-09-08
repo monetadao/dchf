@@ -94,7 +94,7 @@ module.exports = {
     enabled: false
   },
   defender: {
-    apiKey: "2FQk3211G3dhkAUmt9ANFgnxDzrMYeew",
-    apiSecret: "3NsWEgMmAFEp1RX7Si9soi9hD4SG76gCy1UXJmZxXTwyCtKHQtVqWHTns9BDMMHo",
+    apiKey: getSecret("DEFENDER_API_KEY"),
+    apiSecret: getSecret("DEFENDER_API_SECRET"),
   }
 };
