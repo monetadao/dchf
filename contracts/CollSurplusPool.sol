@@ -11,7 +11,7 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
 contract CollSurplusPool is OwnableUpgradeable, CheckContract, ICollSurplusPool {
-	using SafeMathUpgradeable for uint256;
+	using SafeMathUpgradeable for uint256; //
 	using SafeERC20Upgradeable for IERC20Upgradeable;
 
 	string public constant NAME = "CollSurplusPool";
@@ -19,6 +19,7 @@ contract CollSurplusPool is OwnableUpgradeable, CheckContract, ICollSurplusPool 
 
 	address public borrowerOperationsAddress;
 	address public troveManagerAddress;
+	address public troveManagerHelpersAddress;
 	address public activePoolAddress;
 
 	bool public isInitialized;
@@ -33,11 +34,13 @@ contract CollSurplusPool is OwnableUpgradeable, CheckContract, ICollSurplusPool 
 	function setAddresses(
 		address _borrowerOperationsAddress,
 		address _troveManagerAddress,
+		address _troveManagerHelpersAddress,
 		address _activePoolAddress
 	) external override initializer {
 		require(!isInitialized, "Already initialized");
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_troveManagerAddress);
+		checkContract(_troveManagerHelpersAddress);
 		checkContract(_activePoolAddress);
 		isInitialized = true;
 
@@ -45,6 +48,7 @@ contract CollSurplusPool is OwnableUpgradeable, CheckContract, ICollSurplusPool 
 
 		borrowerOperationsAddress = _borrowerOperationsAddress;
 		troveManagerAddress = _troveManagerAddress;
+		troveManagerHelpersAddress = _troveManagerHelpersAddress;
 		activePoolAddress = _activePoolAddress;
 
 		emit BorrowerOperationsAddressChanged(_borrowerOperationsAddress);
@@ -127,7 +131,10 @@ contract CollSurplusPool is OwnableUpgradeable, CheckContract, ICollSurplusPool 
 	}
 
 	function _requireCallerIsTroveManager() internal view {
-		require(msg.sender == troveManagerAddress, "CollSurplusPool: Caller is not TroveManager");
+		require(
+			msg.sender == troveManagerAddress ||
+			msg.sender == troveManagerHelpersAddress, 
+			"CollSurplusPool: Caller is not TroveManager");
 	}
 
 	function _requireCallerIsActivePool() internal view {

@@ -376,6 +376,7 @@ class DeploymentHelper {
       await this.sendAndWaitForTransaction(contracts.activePool.setAddresses(
         contracts.borrowerOperations.address,
         contracts.troveManager.address,
+        contracts.troveManagerHelpers.address,
         contracts.stabilityPoolManager.address,
         contracts.defaultPool.address,
         contracts.collSurplusPool.address,
@@ -385,6 +386,7 @@ class DeploymentHelper {
     await this.isOwnershipRenounced(contracts.defaultPool) ||
       await this.sendAndWaitForTransaction(contracts.defaultPool.setAddresses(
         contracts.troveManager.address,
+        contracts.troveManagerHelpers.address,
         contracts.activePool.address,
         { gasPrice }
       ))
@@ -393,6 +395,7 @@ class DeploymentHelper {
       await this.sendAndWaitForTransaction(contracts.collSurplusPool.setAddresses(
         contracts.borrowerOperations.address,
         contracts.troveManager.address,
+        contracts.troveManagerHelpers.address,
         contracts.activePool.address,
         { gasPrice }
       ))
@@ -428,6 +431,7 @@ class DeploymentHelper {
         MONContracts.MONToken.address,
         coreContracts.dchfToken.address,
         coreContracts.troveManager.address,
+        coreContracts.troveManagerHelpers.address,
         coreContracts.borrowerOperations.address,
         coreContracts.activePool.address,
         treasuryAddress,

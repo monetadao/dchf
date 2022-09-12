@@ -25,6 +25,7 @@ contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
 	address constant ETH_REF_ADDRESS = address(0);
 
 	address public troveManagerAddress;
+	address public troveManagerHelpersAddress;
 	address public activePoolAddress;
 
 	bool public isInitialized;
@@ -34,18 +35,23 @@ contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
 
 	// --- Dependency setters ---
 
-	function setAddresses(address _troveManagerAddress, address _activePoolAddress)
-		external
+	function setAddresses(
+		address _troveManagerAddress, 
+		address _troveManagerHelpersAddress, 
+		address _activePoolAddress
+	  ) external
 		initializer
 	{
 		require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
 		checkContract(_activePoolAddress);
+		checkContract(_troveManagerHelpersAddress);
 		isInitialized = true;
 
 		__Ownable_init();
 
 		troveManagerAddress = _troveManagerAddress;
+		troveManagerHelpersAddress = _troveManagerHelpersAddress;
 		activePoolAddress = _activePoolAddress;
 
 		emit TroveManagerAddressChanged(_troveManagerAddress);
@@ -121,7 +127,10 @@ contract DefaultPool is OwnableUpgradeable, CheckContract, IDefaultPool {
 	}
 
 	modifier callerIsTroveManager() {
-		require(msg.sender == troveManagerAddress, "DefaultPool: Caller is not the TroveManager");
+		require(
+			msg.sender == troveManagerAddress ||
+			msg.sender == troveManagerHelpersAddress, 
+			"DefaultPool: Caller is not the TroveManager");
 		_;
 	}
 

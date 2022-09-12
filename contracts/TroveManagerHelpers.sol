@@ -78,7 +78,10 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 	// @dev This workaround was needed in order to reduce bytecode size
 
 	function _onlyBOorTM() private view {
-		require(msg.sender == borrowerOperationsAddress || msg.sender == troveManagerAddress, "WA");
+		require(
+			msg.sender == borrowerOperationsAddress || 
+			msg.sender == troveManagerAddress,
+			"WA");
 	}
 
 	modifier onlyBOorTM() {
@@ -96,7 +99,9 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, ITroveManagerHelpers 
 	}
 
 	function _onlyTroveManager() private view {
-		require(msg.sender == troveManagerAddress, "WA");
+		require(
+			msg.sender == troveManagerAddress,
+			"WA");
 	}
 
 	modifier onlyTroveManager() {

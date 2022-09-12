@@ -51,7 +51,7 @@ module.exports = {
       },
     },
   },
-  networks: {
+  /*networks: {
     hardhat: {
       allowUnlimitedContractSize: true,
       accounts: accountsList,
@@ -73,7 +73,7 @@ module.exports = {
       accounts: [
         getSecret('DEPLOYER_PRIVATEKEY')
       ]
-    },*/
+    },
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cf9de047e0f54fac8d44b12783036bc8",
       accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
@@ -81,10 +81,10 @@ module.exports = {
     fork: {
       url: "http://localhost:7545"
     }
-  },
-  etherscan: {
+  },*/
+  /*etherscan: {
     apiKey: getSecret("ETHERSCAN_API_KEY")
-  },
+  },*/
   mocha: { timeout: 12000000 },
   rpc: {
     host: "localhost",
