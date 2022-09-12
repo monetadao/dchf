@@ -51,7 +51,7 @@ module.exports = {
       },
     },
   },
-  /*networks: {
+  networks: {
     hardhat: {
       allowUnlimitedContractSize: true,
       accounts: accountsList,
@@ -68,7 +68,7 @@ module.exports = {
     localhost: {
       url: "http://localhost:7545"
     },
-    /*mainnet: {
+    mainnet: {
       url: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       accounts: [
         getSecret('DEPLOYER_PRIVATEKEY')
@@ -81,10 +81,10 @@ module.exports = {
     fork: {
       url: "http://localhost:7545"
     }
-  },*/
-  /*etherscan: {
+  },
+  etherscan: {
     apiKey: getSecret("ETHERSCAN_API_KEY")
-  },*/
+  },
   mocha: { timeout: 12000000 },
   rpc: {
     host: "localhost",

@@ -11,7 +11,7 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
 
 contract CollSurplusPool is OwnableUpgradeable, CheckContract, ICollSurplusPool {
-	using SafeMathUpgradeable for uint256; //
+	using SafeMathUpgradeable for uint256;
 	using SafeERC20Upgradeable for IERC20Upgradeable;
 
 	string public constant NAME = "CollSurplusPool";

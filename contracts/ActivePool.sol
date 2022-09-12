@@ -105,7 +105,7 @@ contract ActivePool is
 		address _asset,
 		address _account,
 		uint256 _amount
-	) external override nonReentrant callerIsBOorTroveMorSP { //here here
+	) external override nonReentrant callerIsBOorTroveMorSP {
 		if (stabilityPoolManager.isStabilityPool(msg.sender)) {
 			assert(address(stabilityPoolManager.getAssetStabilityPool(_asset)) == msg.sender);
 		}
