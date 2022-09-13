@@ -253,8 +253,8 @@ class DeploymentHelper {
     if (!this.configParams.ETHERSCAN_BASE_URL) {
       console.log('No Etherscan Url defined, skipping verification')
     } else {
-      await this.verifyContract('MONStaking', deploymentState, [], true)
-      await this.verifyContract('communityIssuance', deploymentState, [], true)
+      await this.verifyContract('MONStaking', deploymentState)
+      await this.verifyContract('communityIssuance', deploymentState)
       await this.verifyContract('MONToken', deploymentState, [treasurySigAddress])
     }
 
