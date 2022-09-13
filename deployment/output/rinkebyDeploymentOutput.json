@@ -94,5 +94,9 @@
   "MONStaking": {
     "address": "0x6Ae3C28f6f665De8b2dfd1802A0e66F081c14A41",
     "txHash": "0x1d1741af6320358b7055c366200119bf84a6bf0769bf40ef142ca45f46aba9bf"
+  },
+  "communityIssuance": {
+    "address": "0x269cbA1487628447598dC715B51457067b0c516C",
+    "txHash": "0x970d17aa20bc7c39fd1c558fe336a631f23e0131c10d285cd2706c9991031d0f"
   }
 }
