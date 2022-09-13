@@ -152,25 +152,25 @@ class DeploymentHelper {
     const lockedMONFactory = await this.getFactory("LockedMON")
     const adminContractFactory = await this.getFactory("AdminContract")
 
-    // Deploy txs
-
     //// USE PROXY
-    const priceFeed = await this.loadOrDeploy(priceFeedFactory, 'priceFeed', deploymentState, true)
-    const sortedTroves = await this.loadOrDeploy(sortedTrovesFactory, 'sortedTroves', deploymentState, true)
-    const troveManager = await this.loadOrDeploy(troveManagerFactory, 'troveManager', deploymentState, true)
-    const troveManagerHelpers = await this.loadOrDeploy(troveManagerHelpersFactory, 'troveManagerHelpers', deploymentState, true)
-    const activePool = await this.loadOrDeploy(activePoolFactory, 'activePool', deploymentState, true)
-    const stabilityPoolManager = await this.loadOrDeploy(StabilityPoolManagerFactory, 'stabilityPoolManager', deploymentState, true)
-    const defaultPool = await this.loadOrDeploy(defaultPoolFactory, 'defaultPool', deploymentState, true)
-    const collSurplusPool = await this.loadOrDeploy(collSurplusPoolFactory, 'collSurplusPool', deploymentState, true)
-    const borrowerOperations = await this.loadOrDeploy(borrowerOperationsFactory, 'borrowerOperations', deploymentState, true)
-    const hintHelpers = await this.loadOrDeploy(hintHelpersFactory, 'hintHelpers', deploymentState, true)
-    const dfrancParameters = await this.loadOrDeploy(vaultParametersFactory, 'dfrancParameters', deploymentState, true)
-    const adminContract = await this.loadOrDeploy(adminContractFactory, 'adminContract', deploymentState, true)
 
     //// NO PROXY
     const gasPool = await this.loadOrDeploy(gasPoolFactory, 'gasPool', deploymentState)
     const lockedMON = await this.loadOrDeploy(lockedMONFactory, 'lockedMON', deploymentState)
+    const sortedTroves = await this.loadOrDeploy(sortedTrovesFactory, 'sortedTroves', deploymentState)
+    const troveManager = await this.loadOrDeploy(troveManagerFactory, 'troveManager', deploymentState)
+    const troveManagerHelpers = await this.loadOrDeploy(troveManagerHelpersFactory, 'troveManagerHelpers', deploymentState)
+    const activePool = await this.loadOrDeploy(activePoolFactory, 'activePool', deploymentState)
+    const stabilityPoolManager = await this.loadOrDeploy(StabilityPoolManagerFactory, 'stabilityPoolManager', deploymentState)
+    const defaultPool = await this.loadOrDeploy(defaultPoolFactory, 'defaultPool', deploymentState)
+    const collSurplusPool = await this.loadOrDeploy(collSurplusPoolFactory, 'collSurplusPool', deploymentState)
+    const borrowerOperations = await this.loadOrDeploy(borrowerOperationsFactory, 'borrowerOperations', deploymentState)
+    const hintHelpers = await this.loadOrDeploy(hintHelpersFactory, 'hintHelpers', deploymentState)
+    const dfrancParameters = await this.loadOrDeploy(vaultParametersFactory, 'dfrancParameters', deploymentState)
+    const priceFeed = await this.loadOrDeploy(priceFeedFactory, 'priceFeed', deploymentState)
+    const adminContract = await this.loadOrDeploy(adminContractFactory, 'adminContract', deploymentState)
+
+
     
 
     const DCHFTokenParams = [
@@ -194,21 +194,21 @@ class DeploymentHelper {
     if (!this.configParams.ETHERSCAN_BASE_URL) {
       console.log('No Etherscan Url defined, skipping verification')
     } else {
-      await this.verifyContract('priceFeed', deploymentState, [], true)
-      await this.verifyContract('sortedTroves', deploymentState, [], true)
-      await this.verifyContract('troveManager', deploymentState, [], true)
-      await this.verifyContract('troveManagerHelpers', deploymentState, [], true)
-      await this.verifyContract('activePool', deploymentState, [], true)
-      await this.verifyContract('stabilityPoolManager', deploymentState, [], true)
-      await this.verifyContract('gasPool', deploymentState)
-      await this.verifyContract('defaultPool', deploymentState, [], true)
-      await this.verifyContract('collSurplusPool', deploymentState, [], true)
-      await this.verifyContract('borrowerOperations', deploymentState, [], true)
-      await this.verifyContract('hintHelpers', deploymentState, [], true)
+      await this.verifyContract('priceFeed', deploymentState, [], false)
+      await this.verifyContract('sortedTroves', deploymentState, [], false)
+      await this.verifyContract('troveManager', deploymentState, [], false)
+      await this.verifyContract('troveManagerHelpers', deploymentState, [], false)
+      await this.verifyContract('activePool', deploymentState, [], false)
+      await this.verifyContract('stabilityPoolManager', deploymentState, [], false)
+      await this.verifyContract('gasPool', deploymentState, [], false)
+      await this.verifyContract('defaultPool', deploymentState, [], false)
+      await this.verifyContract('collSurplusPool', deploymentState, [], false)
+      await this.verifyContract('borrowerOperations', deploymentState, [], false)
+      await this.verifyContract('hintHelpers', deploymentState, [], false)
       await this.verifyContract('DCHFToken', deploymentState, DCHFTokenParams)
-      await this.verifyContract('dfrancParameters', deploymentState, [], true)
-      await this.verifyContract('lockedMON', deploymentState)
-      await this.verifyContract('adminContract', deploymentState, [], true)
+      await this.verifyContract('dfrancParameters', deploymentState, [], false)
+      await this.verifyContract('lockedMON', deploymentState, [], false)
+      await this.verifyContract('adminContract', deploymentState, [], false)
     }
 
     const coreContracts = {
@@ -238,8 +238,8 @@ class DeploymentHelper {
     const communityIssuanceFactory = await this.getFactory("CommunityIssuance")
     const MONTokenFactory = await this.getFactory("MONToken")
 
-    const MONStaking = await this.loadOrDeploy(MONStakingFactory, 'MONStaking', deploymentState, true)
-    const communityIssuance = await this.loadOrDeploy(communityIssuanceFactory, 'communityIssuance', deploymentState, true)
+    const MONStaking = await this.loadOrDeploy(MONStakingFactory, 'MONStaking', deploymentState)
+    const communityIssuance = await this.loadOrDeploy(communityIssuanceFactory, 'communityIssuance', deploymentState)
 
     // Deploy MON Token, passing Community Issuance and Factory addresses to the constructor
     const MONToken = await this.loadOrDeploy(

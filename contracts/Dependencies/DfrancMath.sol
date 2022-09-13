@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.14;
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 library DfrancMath {
-	using SafeMathUpgradeable for uint256;
+	using SafeMath for uint256;
 
 	uint256 internal constant DECIMAL_PRECISION = 1 ether;
 

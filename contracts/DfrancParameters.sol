@@ -1,12 +1,13 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./Dependencies/CheckContract.sol";
+import "./Dependencies/Initializable.sol";
 import "./Interfaces/IDfrancParameters.sol";
 
-contract DfrancParameters is IDfrancParameters, OwnableUpgradeable, CheckContract {
+contract DfrancParameters is IDfrancParameters, Ownable, CheckContract, Initializable {
 	string public constant NAME = "DfrancParameters";
 
 	uint256 public constant override DECIMAL_PRECISION = 1 ether;
@@ -64,8 +65,6 @@ contract DfrancParameters is IDfrancParameters, OwnableUpgradeable, CheckContrac
 		checkContract(_priceFeed);
 		checkContract(_adminContract);
 		isInitialized = true;
-
-		__Ownable_init();
 
 		adminContract = _adminContract;
 		activePool = IActivePool(_activePool);

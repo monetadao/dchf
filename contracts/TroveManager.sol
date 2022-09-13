@@ -5,10 +5,11 @@ pragma solidity ^0.8.14;
 import "./Interfaces/ITroveManager.sol";
 import "./Dependencies/DfrancBase.sol";
 import "./Dependencies/CheckContract.sol";
+import "./Dependencies/Initializable.sol";
 import "./Interfaces/ITroveManagerHelpers.sol";
 
-contract TroveManager is DfrancBase, CheckContract, ITroveManager {
-	using SafeMathUpgradeable for uint256;
+contract TroveManager is DfrancBase, CheckContract, Initializable, ITroveManager {
+	using SafeMath for uint256;
 	string public constant NAME = "TroveManager";
 
 	// --- Connected contract declarations ---
@@ -65,8 +66,6 @@ contract TroveManager is DfrancBase, CheckContract, ITroveManager {
 		checkContract(_dfrancParamsAddress);
 		checkContract(_troveManagerHelpersAddress);
 		isInitialized = true;
-
-		__Ownable_init();
 
 		stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
 		gasPoolAddress = _gasPoolAddress;

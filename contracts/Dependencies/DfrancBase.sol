@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./BaseMath.sol";
 import "./DfrancMath.sol";
@@ -14,8 +14,8 @@ import "../Interfaces/IDfrancBase.sol";
  * Base contract for TroveManager, BorrowerOperations and StabilityPool. Contains global system constants and
  * common functions.
  */
-contract DfrancBase is BaseMath, IDfrancBase, OwnableUpgradeable {
-	using SafeMathUpgradeable for uint256;
+contract DfrancBase is BaseMath, IDfrancBase, Ownable {
+	using SafeMath for uint256;
 	address public constant ETH_REF_ADDRESS = address(0);
 
 	IDfrancParameters public override dfrancParams;

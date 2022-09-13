@@ -1,17 +1,18 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/proxy/Clones.sol";
 
 import "./Dependencies/CheckContract.sol";
+import "./Dependencies/Initializable.sol";
 
 import "./Interfaces/IStabilityPoolManager.sol";
 import "./Interfaces/IDfrancParameters.sol";
 import "./Interfaces/IStabilityPool.sol";
 import "./Interfaces/ICommunityIssuance.sol";
 
-contract AdminContract is OwnableUpgradeable {
+contract AdminContract is Ownable, Initializable {
 	string public constant NAME = "AdminContract";
 
 	bytes32 public constant STABILITY_POOL_NAME_BYTES =
@@ -47,7 +48,6 @@ contract AdminContract is OwnableUpgradeable {
 		CheckContract(_dchfTokenAddress);
 		CheckContract(_sortedTrovesAddress);
 		CheckContract(_communityIssuanceAddress);
-		__Ownable_init();
 		isInitialized = true;
 
 		borrowerOperationsAddress = _borrowerOperationsAddress;

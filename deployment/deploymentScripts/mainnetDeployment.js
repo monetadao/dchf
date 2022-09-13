@@ -157,7 +157,9 @@ async function addETHCollaterals() {
 
     console.log("Creating Collateral - ETH")
 
-    const stabilityPoolETHProxy = await upgrades.deployProxy(await mdh.getFactory("StabilityPool"), [
+    const stabilityPoolETHFactory = await ethers.getContractFactory("StabilityPool")
+
+    const stabilityPoolETH = await stabilityPoolETHFactory.deploy([
       ETHAddress,
       dfrancCore.borrowerOperations.address,
       dfrancCore.troveManager.address,
@@ -169,12 +171,12 @@ async function addETHCollaterals() {
     ], { initializer: 'setAddresses' });
 
     console.log("Deploying ETH Stability Pool");
-    await stabilityPoolETHProxy.deployed();
+    await stabilityPoolETH.deployed();
 
     const txReceiptProxyETH = await mdh
       .sendAndWaitForTransaction(
         dfrancCore.adminContract.addNewCollateral(
-          stabilityPoolETHProxy.address,
+          stabilityPoolETH.address,
           config.externalAddrs.CHAINLINK_ETHUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
           dec(config.monetaCommunityIssuanceParams.ETH_STABILITY_POOL_FUNDING, 18),
@@ -184,7 +186,7 @@ async function addETHCollaterals() {
       })
 
 
-    const name = "ProxyStabilityPoolETH";
+    const name = "StabilityPoolETH";
 
     deploymentState[name] = {
       address: await dfrancCore.stabilityPoolManager.getAssetStabilityPool(ETHAddress),

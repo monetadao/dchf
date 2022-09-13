@@ -1,8 +1,8 @@
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./ERC20Decimals.sol";
 
 library SafetyTransfer {
-	using SafeMathUpgradeable for uint256;
+	using SafeMath for uint256;
 
 	//_amount is in ether (1e18) and we want to convert it to the token decimal
 	function decimalsCorrection(address _token, uint256 _amount)

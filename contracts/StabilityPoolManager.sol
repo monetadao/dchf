@@ -1,11 +1,12 @@
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./Dependencies/CheckContract.sol";
+import "./Dependencies/Initializable.sol";
 import "./Interfaces/IStabilityPoolManager.sol";
 
-contract StabilityPoolManager is OwnableUpgradeable, CheckContract, IStabilityPoolManager {
+contract StabilityPoolManager is Ownable, CheckContract, Initializable, IStabilityPoolManager {
 	mapping(address => address) stabilityPools;
 	mapping(address => bool) validStabilityPools;
 
@@ -23,8 +24,6 @@ contract StabilityPoolManager is OwnableUpgradeable, CheckContract, IStabilityPo
 		require(!isInitialized, "Already initialized");
 		checkContract(_adminContract);
 		isInitialized = true;
-
-		__Ownable_init();
 
 		adminContract = _adminContract;
 	}

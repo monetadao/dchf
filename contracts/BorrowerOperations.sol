@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.14;
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Interfaces/ITroveManager.sol";
@@ -15,10 +15,11 @@ import "./Interfaces/IStabilityPoolManager.sol";
 import "./Dependencies/DfrancBase.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
+import "./Dependencies/Initializable.sol";
 
-contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
-	using SafeMathUpgradeable for uint256;
-	using SafeERC20Upgradeable for IERC20Upgradeable;
+contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations, Initializable {
+	using SafeMath for uint256;
+	using SafeERC20 for IERC20;
 
 	string public constant NAME = "BorrowerOperations";
 
@@ -124,8 +125,6 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 		checkContract(_MONStakingAddress);
 		checkContract(_dfrancParamsAddress);
 		isInitialized = true;
-
-		__Ownable_init();
 
 		troveManager = ITroveManager(_troveManagerAddress);
 		troveManagerHelpers = ITroveManagerHelpers(_troveManagerHelpersAddress);
@@ -697,7 +696,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations {
 			(bool success, ) = address(_activePool).call{ value: _amount }("");
 			require(success, "BorrowerOps: Sending ETH to ActivePool failed");
 		} else {
-			IERC20Upgradeable(_asset).safeTransferFrom(
+			IERC20(_asset).safeTransferFrom(
 				msg.sender,
 				address(_activePool),
 				SafetyTransfer.decimalsCorrection(_asset, _amount)

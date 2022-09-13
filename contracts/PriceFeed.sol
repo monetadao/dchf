@@ -2,14 +2,15 @@
 
 pragma solidity ^0.8.14;
 import "./Interfaces/IPriceFeed.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/BaseMath.sol";
 import "./Dependencies/DfrancMath.sol";
+import "./Dependencies/Initializable.sol";
 
-contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
-	using SafeMathUpgradeable for uint256;
+contract PriceFeed is Ownable, CheckContract, BaseMath, Initializable, IPriceFeed {
+	using SafeMath for uint256;
 
 	string public constant NAME = "PriceFeed";
 
@@ -40,8 +41,6 @@ contract PriceFeed is OwnableUpgradeable, CheckContract, BaseMath, IPriceFeed {
 		require(!isInitialized);
 		checkContract(_adminContract);
 		isInitialized = true;
-
-		__Ownable_init();
 
 		adminContract = _adminContract;
 		status = Status.chainlinkWorking;
