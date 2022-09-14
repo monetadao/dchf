@@ -123,6 +123,7 @@
   },
   "multiTroveGetter": {
     "address": "0x68302d826Cd322b9F871b7622B1030aA66370041",
-    "txHash": "0xcb1d6769a8763ac0a848932d9458d4f87e25292dfac1fa9fbee697e32e7e78d3"
+    "txHash": "0xcb1d6769a8763ac0a848932d9458d4f87e25292dfac1fa9fbee697e32e7e78d3",
+    "verification": "https://rinkeby.etherscan.io/address/0x68302d826Cd322b9F871b7622B1030aA66370041#code"
   }
 }
