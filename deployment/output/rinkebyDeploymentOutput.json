@@ -120,5 +120,9 @@
     "init": "0x37f89538c7e222f60c6df460a801d50991de8ff38c2d91b6c386566009c18248",
     "txHash": "0xc247c7f4a5696e9d6fd10c9ccded36718544ca2a2d0e987f9a80d5542649c346",
     "verification": "https://rinkeby.etherscan.io/address/0x9F49dc472B0630Ae6a8BEA9eF3F77db472fF3148#code"
+  },
+  "multiTroveGetter": {
+    "address": "0x68302d826Cd322b9F871b7622B1030aA66370041",
+    "txHash": "0xcb1d6769a8763ac0a848932d9458d4f87e25292dfac1fa9fbee697e32e7e78d3"
   }
 }
