@@ -249,7 +249,7 @@ async function addBTCCollaterals() {
     .sendAndWaitForTransaction(
       dfrancCore.adminContract.addNewCollateral(
         stabilityPoolBTC.address,
-        config.externalAddrs.CHAINLINK_ETHUSD_PROXY,
+        config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
         config.externalAddrs.CHAINLINK_USDCHF_PROXY,
         dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_FUNDING, 18),
         dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION, 18),
