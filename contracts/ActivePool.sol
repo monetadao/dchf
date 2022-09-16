@@ -36,6 +36,7 @@ contract ActivePool is
 
 	address public borrowerOperationsAddress;
 	address public troveManagerAddress;
+	address public troveManagerHelpersAddress;
 	IDefaultPool public defaultPool;
 	ICollSurplusPool public collSurplusPool;
 
@@ -51,6 +52,7 @@ contract ActivePool is
 	function setAddresses(
 		address _borrowerOperationsAddress,
 		address _troveManagerAddress,
+		address _troveManagerHelpersAddress,
 		address _stabilityManagerAddress,
 		address _defaultPoolAddress,
 		address _collSurplusPoolAddress
@@ -58,6 +60,7 @@ contract ActivePool is
 		require(!isInitialized, "Already initialized");
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_troveManagerAddress);
+		checkContract(_troveManagerHelpersAddress);
 		checkContract(_stabilityManagerAddress);
 		checkContract(_defaultPoolAddress);
 		checkContract(_collSurplusPoolAddress);
@@ -68,6 +71,7 @@ contract ActivePool is
 
 		borrowerOperationsAddress = _borrowerOperationsAddress;
 		troveManagerAddress = _troveManagerAddress;
+		troveManagerHelpersAddress = _troveManagerHelpersAddress;
 		stabilityPoolManager = IStabilityPoolManager(_stabilityManagerAddress);
 		defaultPool = IDefaultPool(_defaultPoolAddress);
 		collSurplusPool = ICollSurplusPool(_collSurplusPoolAddress);
@@ -165,6 +169,7 @@ contract ActivePool is
 		require(
 			msg.sender == borrowerOperationsAddress ||
 				msg.sender == troveManagerAddress ||
+				msg.sender == troveManagerHelpersAddress ||
 				stabilityPoolManager.isStabilityPool(msg.sender),
 			"ActivePool: Caller is neither BorrowerOperations nor TroveManager nor StabilityPool"
 		);
@@ -173,7 +178,9 @@ contract ActivePool is
 
 	modifier callerIsBOorTroveM() {
 		require(
-			msg.sender == borrowerOperationsAddress || msg.sender == troveManagerAddress,
+			msg.sender == borrowerOperationsAddress || 
+			msg.sender == troveManagerAddress ||
+			msg.sender == troveManagerHelpersAddress,
 			"ActivePool: Caller is neither BorrowerOperations nor TroveManager"
 		);
 

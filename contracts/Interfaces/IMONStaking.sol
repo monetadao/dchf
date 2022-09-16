@@ -36,6 +36,7 @@ interface IMONStaking {
 		address _MONTokenAddress,
 		address _dchfTokenAddress,
 		address _troveManagerAddress,
+		address _troveManagerHelpersAddress,
 		address _borrowerOperationsAddress,
 		address _activePoolAddress,
 		address _treasury

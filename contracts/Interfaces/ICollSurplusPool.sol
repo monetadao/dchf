@@ -19,6 +19,7 @@ interface ICollSurplusPool is IDeposit {
 	function setAddresses(
 		address _borrowerOperationsAddress,
 		address _troveManagerAddress,
+		address _troveManagerHelpersAddress,
 		address _activePoolAddress
 	) external;
 

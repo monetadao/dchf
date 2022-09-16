@@ -54,6 +54,7 @@ contract MONStaking is
 	IERC20Upgradeable public dchfToken;
 
 	address public troveManagerAddress;
+	address public troveManagerHelpersAddress;
 	address public borrowerOperationsAddress;
 	address public activePoolAddress;
 	address public treasury;
@@ -63,6 +64,7 @@ contract MONStaking is
 		address _monTokenAddress,
 		address _dchfTokenAddress,
 		address _troveManagerAddress,
+		address _troveManagerHelpersAddress,
 		address _borrowerOperationsAddress,
 		address _activePoolAddress,
 		address _treasury
@@ -72,6 +74,7 @@ contract MONStaking is
 		checkContract(_monTokenAddress);
 		checkContract(_dchfTokenAddress);
 		checkContract(_troveManagerAddress);
+		checkContract(_troveManagerHelpersAddress);
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_activePoolAddress);
 		isInitialized = true;
@@ -84,6 +87,7 @@ contract MONStaking is
 		monToken = IERC20Upgradeable(_monTokenAddress);
 		dchfToken = IERC20Upgradeable(_dchfTokenAddress);
 		troveManagerAddress = _troveManagerAddress;
+		troveManagerHelpersAddress = _troveManagerHelpersAddress;
 		borrowerOperationsAddress = _borrowerOperationsAddress;
 		activePoolAddress = _activePoolAddress;
 		treasury = _treasury;
@@ -312,7 +316,10 @@ contract MONStaking is
 	// --- 'require' functions ---
 
 	modifier callerIsTroveManager() {
-		require(msg.sender == troveManagerAddress, "MONStaking: caller is not TroveM");
+		require(
+			msg.sender == troveManagerAddress ||
+			msg.sender == troveManagerHelpersAddress, 
+			"MONStaking: caller is not TroveM");
 		_;
 	}
 
