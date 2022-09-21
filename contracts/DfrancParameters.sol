@@ -224,7 +224,7 @@ contract DfrancParameters is IDfrancParameters, Ownable, CheckContract, Initiali
 		public
 		override
 		onlyOwner
-		safeCheck("Min Net Debt", _asset, minNetDebt, 0, 1800 ether)
+		safeCheck("Min Net Debt", _asset, minNetDebt, 0, 10000 ether)
 	{
 		uint256 oldMinNet = MIN_NET_DEBT[_asset];
 		MIN_NET_DEBT[_asset] = minNetDebt;
