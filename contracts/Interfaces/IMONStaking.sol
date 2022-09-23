@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 interface IMONStaking {
 	// --- Events --
@@ -28,7 +28,7 @@ interface IMONStaking {
 	event AssetSent(address indexed _asset, address indexed _account, uint256 _amount);
 	event StakerSnapshotsUpdated(address _staker, uint256 _F_Asset, uint256 _F_DCHF);
 
-	function monToken() external view returns (IERC20Upgradeable);
+	function monToken() external view returns (IERC20);
 
 	// --- Functions ---
 

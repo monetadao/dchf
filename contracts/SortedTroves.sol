@@ -5,9 +5,10 @@ import "./Interfaces/ISortedTroves.sol";
 import "./Interfaces/ITroveManager.sol";
 import "./Interfaces/ITroveManagerHelpers.sol";
 import "./Interfaces/IBorrowerOperations.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Dependencies/CheckContract.sol";
+import "./Dependencies/Initializable.sol";
 
 /*
  * A sorted doubly linked list with nodes sorted in descending order.
@@ -42,8 +43,8 @@ import "./Dependencies/CheckContract.sol";
  *
  * - Public functions with parameters have been made internal to save gas, and given an external wrapper function for external access
  */
-contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
-	using SafeMathUpgradeable for uint256;
+contract SortedTroves is Ownable, CheckContract, Initializable, ISortedTroves {
+	using SafeMath for uint256;
 
 	bool public isInitialized;
 
@@ -88,8 +89,6 @@ contract SortedTroves is OwnableUpgradeable, CheckContract, ISortedTroves {
 		checkContract(_troveManagerHelpersAddress);
 		checkContract(_borrowerOperationsAddress);
 		isInitialized = true;
-
-		__Ownable_init();
 
 		data[ETH_REF_ADDRESS].maxSize = MAX_UINT256;
 

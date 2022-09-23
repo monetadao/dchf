@@ -2,10 +2,9 @@
 
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "./Interfaces/IBorrowerOperations.sol";
 import "./Interfaces/IStabilityPool.sol";
@@ -19,11 +18,12 @@ import "./Dependencies/DfrancBase.sol";
 import "./Dependencies/DfrancSafeMath128.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
+import "./Dependencies/Initializable.sol";
 
-contract StabilityPool is DfrancBase, CheckContract, ReentrancyGuardUpgradeable, IStabilityPool {
-	using SafeMathUpgradeable for uint256;
+contract StabilityPool is DfrancBase, CheckContract, ReentrancyGuard, Initializable, IStabilityPool {
+	using SafeMath for uint256;
 	using DfrancSafeMath128 for uint128;
-	using SafeERC20Upgradeable for IERC20Upgradeable;
+	using SafeERC20 for IERC20;
 
 	string public constant NAME = "StabilityPool";
 	bytes32 public constant STABILITY_POOL_NAME_BYTES =
@@ -138,7 +138,6 @@ contract StabilityPool is DfrancBase, CheckContract, ReentrancyGuardUpgradeable,
 		checkContract(_dfrancParamsAddress);
 
 		isInitialized = true;
-		__Ownable_init();
 
 		if (_assetAddress != ETH_REF_ADDRESS) {
 			checkContract(_assetAddress);
@@ -704,7 +703,7 @@ contract StabilityPool is DfrancBase, CheckContract, ReentrancyGuardUpgradeable,
 			(bool success, ) = msg.sender.call{ value: _amountEther }("");
 			require(success, "StabilityPool: sending ETH failed");
 		} else {
-			IERC20Upgradeable(assetAddress).safeTransfer(msg.sender, _amount);
+			IERC20(assetAddress).safeTransfer(msg.sender, _amount);
 		}
 
 		emit StabilityPoolAssetBalanceUpdated(assetBalance);

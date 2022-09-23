@@ -2,25 +2,26 @@
 
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "../Interfaces/IStabilityPoolManager.sol";
 import "../Interfaces/ICommunityIssuance.sol";
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/DfrancMath.sol";
 import "../Dependencies/CheckContract.sol";
+import "../Dependencies/Initializable.sol";
 
-contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContract, BaseMath {
-	using SafeMathUpgradeable for uint256;
-	using SafeERC20Upgradeable for IERC20Upgradeable;
+contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMath, Initializable {
+	using SafeMath for uint256;
+	using SafeERC20 for IERC20;
 
 	string public constant NAME = "CommunityIssuance";
 	uint256 public constant DISTRIBUTION_DURATION = 7 days / 60;
 	uint256 public constant SECONDS_IN_ONE_MINUTE = 60;
 
-	IERC20Upgradeable public monToken;
+	IERC20 public monToken;
 	IStabilityPoolManager public stabilityPoolManager;
 
 	mapping(address => uint256) public totalMONIssued;
@@ -69,11 +70,10 @@ contract CommunityIssuance is ICommunityIssuance, OwnableUpgradeable, CheckContr
 		checkContract(_stabilityPoolManagerAddress);
 		checkContract(_adminContract);
 		isInitialized = true;
-		__Ownable_init();
 
 		adminContract = _adminContract;
 
-		monToken = IERC20Upgradeable(_monTokenAddress);
+		monToken = IERC20(_monTokenAddress);
 		stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManagerAddress);
 
 		emit MONTokenAddressSet(_monTokenAddress);

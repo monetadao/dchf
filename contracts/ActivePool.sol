@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.14;
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "./Interfaces/IActivePool.sol";
 import "./Interfaces/IDefaultPool.sol";
@@ -14,6 +14,7 @@ import "./Interfaces/ICollSurplusPool.sol";
 import "./Interfaces/IDeposit.sol";
 import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
+import "./Dependencies/Initializable.sol";
 
 /*
  * The Active Pool holds the collaterals and DCHF debt (but not DCHF tokens) for all active troves.
@@ -23,13 +24,14 @@ import "./Dependencies/SafetyTransfer.sol";
  *
  */
 contract ActivePool is
-	OwnableUpgradeable,
-	ReentrancyGuardUpgradeable,
+	Ownable,
+	ReentrancyGuard,
 	CheckContract,
+	Initializable,
 	IActivePool
 {
-	using SafeERC20Upgradeable for IERC20Upgradeable;
-	using SafeMathUpgradeable for uint256;
+	using SafeERC20 for IERC20;
+	using SafeMath for uint256;
 
 	string public constant NAME = "ActivePool";
 	address constant ETH_REF_ADDRESS = address(0);
@@ -65,9 +67,6 @@ contract ActivePool is
 		checkContract(_defaultPoolAddress);
 		checkContract(_collSurplusPoolAddress);
 		isInitialized = true;
-
-		__Ownable_init();
-		__ReentrancyGuard_init();
 
 		borrowerOperationsAddress = _borrowerOperationsAddress;
 		troveManagerAddress = _troveManagerAddress;
@@ -116,7 +115,7 @@ contract ActivePool is
 		assetsBalance[_asset] = assetsBalance[_asset].sub(_amount);
 
 		if (_asset != ETH_REF_ADDRESS) {
-			IERC20Upgradeable(_asset).safeTransfer(_account, safetyTransferAmount);
+			IERC20(_asset).safeTransfer(_account, safetyTransferAmount);
 
 			if (isERC20DepositContract(_account)) {
 				IDeposit(_account).receivedERC20(_asset, _amount);

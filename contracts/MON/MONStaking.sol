@@ -2,29 +2,31 @@
 
 pragma solidity ^0.8.14;
 
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/DfrancMath.sol";
+import "../Dependencies/Initializable.sol";
 import "../Interfaces/IMONStaking.sol";
 import "../Interfaces/IDeposit.sol";
 import "../Dependencies/SafetyTransfer.sol";
 
 contract MONStaking is
 	IMONStaking,
-	PausableUpgradeable,
-	OwnableUpgradeable,
+	Pausable,
+	Ownable,
 	CheckContract,
 	BaseMath,
-	ReentrancyGuardUpgradeable
+	ReentrancyGuard,
+	Initializable
 {
-	using SafeMathUpgradeable for uint256;
-	using SafeERC20Upgradeable for IERC20Upgradeable;
+	using SafeMath for uint256;
+	using SafeERC20 for IERC20;
 
 	bool public isInitialized;
 
@@ -50,8 +52,8 @@ contract MONStaking is
 	mapping(address => bool) isAssetTracked;
 	mapping(address => uint256) public sentToTreasuryTracker;
 
-	IERC20Upgradeable public override monToken;
-	IERC20Upgradeable public dchfToken;
+	IERC20 public monToken;
+	IERC20 public dchfToken;
 
 	address public troveManagerAddress;
 	address public troveManagerHelpersAddress;
@@ -78,14 +80,10 @@ contract MONStaking is
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_activePoolAddress);
 		isInitialized = true;
-
-		__Pausable_init();
-		__ReentrancyGuard_init();
-		__Ownable_init();
 		_pause();
 
-		monToken = IERC20Upgradeable(_monTokenAddress);
-		dchfToken = IERC20Upgradeable(_dchfTokenAddress);
+		monToken = IERC20(_monTokenAddress);
+		dchfToken = IERC20(_dchfTokenAddress);
 		troveManagerAddress = _troveManagerAddress;
 		troveManagerHelpersAddress = _troveManagerHelpersAddress;
 		borrowerOperationsAddress = _borrowerOperationsAddress;
@@ -309,7 +307,7 @@ contract MONStaking is
 			(bool success, ) = _sendTo.call{ value: _amount }("");
 			require(success, "MONStaking: Failed to send accumulated AssetGain");
 		} else {
-			IERC20Upgradeable(_asset).safeTransfer(_sendTo, _amount);
+			IERC20(_asset).safeTransfer(_sendTo, _amount);
 		}
 	}
 

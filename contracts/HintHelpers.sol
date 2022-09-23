@@ -6,9 +6,10 @@ import "./Interfaces/ITroveManagerHelpers.sol";
 import "./Interfaces/ISortedTroves.sol";
 import "./Dependencies/DfrancBase.sol";
 import "./Dependencies/CheckContract.sol";
+import "./Dependencies/Initializable.sol";
 
-contract HintHelpers is DfrancBase, CheckContract {
-	using SafeMathUpgradeable for uint256;
+contract HintHelpers is DfrancBase, CheckContract, Initializable {
+	using SafeMath for uint256;
 	string public constant NAME = "HintHelpers";
 
 	struct LocalRedemptionVars {
@@ -43,8 +44,6 @@ contract HintHelpers is DfrancBase, CheckContract {
 		checkContract(_troveManagerHelpersAddress);
 		checkContract(_vaultParametersAddress);
 		isInitialized = true;
-
-		__Ownable_init();
 
 		sortedTroves = ISortedTroves(_sortedTrovesAddress);
 		troveManager = ITroveManager(_troveManagerAddress);

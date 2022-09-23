@@ -157,24 +157,36 @@ async function addETHCollaterals() {
 
     console.log("Creating Collateral - ETH")
 
-    const stabilityPoolETHProxy = await upgrades.deployProxy(await mdh.getFactory("StabilityPool"), [
-      ETHAddress,
-      dfrancCore.borrowerOperations.address,
-      dfrancCore.troveManager.address,
-      dfrancCore.troveManagerHelpers.address,
-      dfrancCore.dchfToken.address,
-      dfrancCore.sortedTroves.address,
-      MONContracts.communityIssuance.address,
-      dfrancCore.dfrancParameters.address
-    ], { initializer: 'setAddresses' });
+    const stabilityPoolETHFactory = await ethers.getContractFactory("StabilityPool")
+
+    const stabilityPoolETH = await stabilityPoolETHFactory.deploy();
 
     console.log("Deploying ETH Stability Pool");
-    await stabilityPoolETHProxy.deployed();
+    await stabilityPoolETH.deployed();
 
-    const txReceiptProxyETH = await mdh
+    console.log("Initializing ETH Stability Pool with Parameters");
+    await stabilityPoolETH.deployed();
+
+    const initializeSBETH = await mdh
+    .sendAndWaitForTransaction(
+      stabilityPoolETH.setAddresses(
+        ETHAddress,
+        dfrancCore.borrowerOperations.address,
+        dfrancCore.troveManager.address,
+        dfrancCore.troveManagerHelpers.address,
+        dfrancCore.dchfToken.address,
+        dfrancCore.sortedTroves.address,
+        MONContracts.communityIssuance.address,
+        dfrancCore.dfrancParameters.address,
+        { gasPrice }
+        ))
+
+    console.log("ETH Stability Pool deployed at address: " + stabilityPoolETH.address);
+
+    const txReceiptSBETH = await mdh
       .sendAndWaitForTransaction(
         dfrancCore.adminContract.addNewCollateral(
-          stabilityPoolETHProxy.address,
+          stabilityPoolETH.address,
           config.externalAddrs.CHAINLINK_ETHUSD_PROXY,
           config.externalAddrs.CHAINLINK_USDCHF_PROXY,
           dec(config.monetaCommunityIssuanceParams.ETH_STABILITY_POOL_FUNDING, 18),
@@ -184,14 +196,15 @@ async function addETHCollaterals() {
       })
 
 
-    const name = "ProxyStabilityPoolETH";
+    const name = "StabilityPoolETH";
 
     deploymentState[name] = {
-      address: await dfrancCore.stabilityPoolManager.getAssetStabilityPool(ETHAddress),
-      txHash: txReceiptProxyETH.transactionHash
+      address: stabilityPoolETH.address,
+      init: initializeSBETH.transactionHash,
+      txHash: txReceiptSBETH.transactionHash
     }
 
-    await mdh.verifyContract(name, deploymentState, [], true);
+    await mdh.verifyContract(name, deploymentState, [], false);
   }
 }
 
@@ -206,40 +219,55 @@ async function addBTCCollaterals() {
   if ((await dfrancCore.stabilityPoolManager.unsafeGetAssetStabilityPool(BTCAddress)) == ZERO_ADDRESS) {
     console.log("Creating Collateral - BTC")
 
-    const stabilityPoolBTCProxy = await upgrades.deployProxy(await mdh.getFactory("StabilityPool"), [
-      BTCAddress,
-      dfrancCore.borrowerOperations.address,
-      dfrancCore.troveManager.address,
-      dfrancCore.troveManagerHelpers.address,
-      dfrancCore.dchfToken.address,
-      dfrancCore.sortedTroves.address,
-      MONContracts.communityIssuance.address,
-      dfrancCore.dfrancParameters.address
-    ], { initializer: 'setAddresses' });
+    const stabilityPoolBTCFactory = await ethers.getContractFactory("StabilityPool")
 
-    console.log("Deploying BTC Stability Pool");
-    await stabilityPoolBTCProxy.deployed();
+    const stabilityPoolBTC = await stabilityPoolBTCFactory.deploy();
 
-    const txReceiptProxyBTC = await mdh
-      .sendAndWaitForTransaction(
-        dfrancCore.adminContract.addNewCollateral(
-          stabilityPoolBTCProxy.address,
-          config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
-          config.externalAddrs.CHAINLINK_USDCHF_PROXY,
-          dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_FUNDING, 18),
-          dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION, 18),
-          config.REDEMPTION_SAFETY), {
-        gasPrice,
-      });
+    console.log("Deploying wBTC Stability Pool");
+    await stabilityPoolBTC.deployed();
 
-    const name = "ProxyStabilityPoolRenBTC";
+    console.log("Initializing wBTC Stability Pool with Parameters");
+    await stabilityPoolBTC.deployed();
+
+    const initializeSBBTC = await mdh
+    .sendAndWaitForTransaction(
+      stabilityPoolBTC.setAddresses(
+        BTCAddress,
+        dfrancCore.borrowerOperations.address,
+        dfrancCore.troveManager.address,
+        dfrancCore.troveManagerHelpers.address,
+        dfrancCore.dchfToken.address,
+        dfrancCore.sortedTroves.address,
+        MONContracts.communityIssuance.address,
+        dfrancCore.dfrancParameters.address,
+        { gasPrice }
+        ))
+
+    console.log("BTC Stability Pool deployed at address: " + stabilityPoolBTC.address);
+
+    const txReceiptSBBTC = await mdh
+    .sendAndWaitForTransaction(
+      dfrancCore.adminContract.addNewCollateral(
+        stabilityPoolBTC.address,
+        config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
+        config.externalAddrs.CHAINLINK_USDCHF_PROXY,
+        dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_FUNDING, 18),
+        dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION, 18),
+        config.REDEMPTION_SAFETY), {
+      gasPrice,
+    })
+
+
+    const name = "StabilityPoolBTC";
 
     deploymentState[name] = {
-      address: await dfrancCore.stabilityPoolManager.getAssetStabilityPool(BTCAddress),
-      txHash: txReceiptProxyBTC.transactionHash
+      address: stabilityPoolBTC.address,
+      init: initializeSBBTC.transactionHash,
+      txHash: txReceiptSBBTC.transactionHash
     }
 
-    await mdh.verifyContract(name, deploymentState, [], true);
+    await mdh.verifyContract(name, deploymentState, [], false);
+
   }
 }
 

@@ -52,7 +52,7 @@ module.exports = {
     },
   },
   networks: {
-    hardhat: {
+    /*hardhat: {
       allowUnlimitedContractSize: true,
       accounts: accountsList,
       initialBaseFeePerGas: 0,
@@ -73,7 +73,7 @@ module.exports = {
       accounts: [
         getSecret('DEPLOYER_PRIVATEKEY')
       ]
-    },
+    },*/
     rinkeby: {
       url: "https://rinkeby.infura.io/v3/cf9de047e0f54fac8d44b12783036bc8",
       accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
@@ -93,8 +93,8 @@ module.exports = {
   gasReporter: {
     enabled: false
   },
-  defender: {
+  /*defender: {
     apiKey: getSecret("DEFENDER_API_KEY"),
     apiSecret: getSecret("DEFENDER_API_SECRET"),
-  }
+  }*/
 };
