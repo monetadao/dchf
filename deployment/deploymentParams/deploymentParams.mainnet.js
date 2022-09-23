@@ -13,9 +13,9 @@ const externalAddrs = {
 
 // change for MULTISIG!!
 const dfrancAddresses = {
-  ADMIN_MULTI: "0x9abE62f0584A2E43675C2D20e1799E62bfF5D587", // Gnosis Multisig on ETH
-  MON_SAFE: "0x9abE62f0584A2E43675C2D20e1799E62bfF5D587", // Gnosis Multisig on ETH
-  DEPLOYER: "0x4F74e01855E79e4ec65ee67C51540144A698D972" // Change that for deployer
+  ADMIN_MULTI: "0x83737EAe72ba7597b36494D723fbF58cAfee8A69", // Gnosis Multisig on ETH
+  MON_SAFE: "0x83737EAe72ba7597b36494D723fbF58cAfee8A69", // Gnosis Multisig on ETH
+  DEPLOYER: "0x7d7711efd844e5e204DF29Dc3e109D1aF95a801C" // Change that for deployer
 }
 
 // 1 month funding
@@ -29,7 +29,7 @@ const monetaCommunityIssuanceParams = {
 const REDEMPTION_SAFETY = 14;
 
 // 1 = Deploy Moneta token, 2 = Deploy DCHF Core contracts
-const DEPLOYMENT_PHASE = 2;
+const DEPLOYMENT_PHASE = 1;
 
 const OUTPUT_FILE = './deployment/output/mainnetDeploymentOutput.json'
 
