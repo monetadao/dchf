@@ -149,14 +149,12 @@ class DeploymentHelper {
     const hintHelpersFactory = await this.getFactory("HintHelpers")
     const DCHFTokenFactory = await this.getFactory("DCHFToken")
     const vaultParametersFactory = await this.getFactory("DfrancParameters")
-    const lockedMONFactory = await this.getFactory("LockedMON")
     const adminContractFactory = await this.getFactory("AdminContract")
 
     //// USE PROXY
 
     //// NO PROXY
     const gasPool = await this.loadOrDeploy(gasPoolFactory, 'gasPool', deploymentState)
-    const lockedMON = await this.loadOrDeploy(lockedMONFactory, 'lockedMON', deploymentState)
     const sortedTroves = await this.loadOrDeploy(sortedTrovesFactory, 'sortedTroves', deploymentState)
     const troveManager = await this.loadOrDeploy(troveManagerFactory, 'troveManager', deploymentState)
     const troveManagerHelpers = await this.loadOrDeploy(troveManagerHelpersFactory, 'troveManagerHelpers', deploymentState)
@@ -171,7 +169,7 @@ class DeploymentHelper {
     const adminContract = await this.loadOrDeploy(adminContractFactory, 'adminContract', deploymentState)
 
 
-    
+
 
     const DCHFTokenParams = [
       stabilityPoolManager.address
@@ -207,7 +205,6 @@ class DeploymentHelper {
       await this.verifyContract('hintHelpers', deploymentState, [], false)
       await this.verifyContract('DCHFToken', deploymentState, DCHFTokenParams)
       await this.verifyContract('dfrancParameters', deploymentState, [], false)
-      await this.verifyContract('lockedMON', deploymentState, [], false)
       await this.verifyContract('adminContract', deploymentState, [], false)
     }
 
@@ -225,8 +222,7 @@ class DeploymentHelper {
       collSurplusPool,
       borrowerOperations,
       hintHelpers,
-      dfrancParameters,
-      lockedMON
+      dfrancParameters
     }
 
 
@@ -313,13 +309,6 @@ class DeploymentHelper {
         contracts.borrowerOperations.address,
         { gasPrice }
       ))
-
-    await this.isOwnershipRenounced(contracts.lockedMON) ||
-      await this.sendAndWaitForTransaction(contracts.lockedMON.setAddresses(
-        MONContracts.MONToken.address,
-        { gasPrice }
-      ))
-
     await this.isOwnershipRenounced(contracts.dfrancParameters) ||
       await this.sendAndWaitForTransaction(contracts.dfrancParameters.setAddresses(
         contracts.activePool.address,

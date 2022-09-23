@@ -11,40 +11,25 @@ const externalAddrs = {
   REN_BTC: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
 }
 
-
+// change for MULTISIG!!
 const dfrancAddresses = {
-  ADMIN_MULTI: "0x0893665BE05c2F1A548045Facc75BF6965d8eC65", // Gnosis Multisig on ETH
-  MON_SAFE: "0x0893665BE05c2F1A548045Facc75BF6965d8eC65", // Gnosis Multisig on ETH
-  DEPLOYER: "0xfe136C80C898d4268c441Fa003d637893783d1bC" // Change that for deployer
+  ADMIN_MULTI: "0x9abE62f0584A2E43675C2D20e1799E62bfF5D587", // Gnosis Multisig on ETH
+  MON_SAFE: "0x9abE62f0584A2E43675C2D20e1799E62bfF5D587", // Gnosis Multisig on ETH
+  DEPLOYER: "0x4F74e01855E79e4ec65ee67C51540144A698D972" // Change that for deployer
 }
 
-// change for real values
+// 1 month funding
 const monetaCommunityIssuanceParams = {
-  ETH_STABILITY_POOL_FUNDING: 100_000,
-  BTC_STABILITY_POOL_FUNDING: 100_000,
-  ETH_STABILITY_POOL_WEEKLY_DISTRIBUTION: 25_000,
-  BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION: 25_000,
-
+  ETH_STABILITY_POOL_FUNDING: 729_634,
+  BTC_STABILITY_POOL_FUNDING: 729_634,
+  ETH_STABILITY_POOL_WEEKLY_DISTRIBUTION: 182_408,
+  BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION: 182_408,
 }
 
-// change for real values
-const beneficiaries = {
-  //MARKETING GROWTH
-  "0x4F74e01855E79e4ec65ee67C51540144A698D972": 17_000_000,
+const REDEMPTION_SAFETY = 14;
 
-  // TEAM ADVISORS (needs to be distributed among all advisors)
-  "0xA8FAc0eC4B8F63864C80B36cd74667cEa74D1193": 10_000_000,
-
-  // AIRDROP (needs to be distributed among all airdrop accounts)
-  "0x085ad56B4CF061D67D0194e309e07e0F232C65f8": 15_000_000
-}
-
-const REDEMPTION_SAFETY = 0;
-
-// 1 = Deploy Moneta token, 2 = Set up Moneta vesting, 3 = Deploy DCHF Core contracts
-const DEPLOYMENT_PHASE = 1;
-
-const MON_LOCK_BATCH_SIZE = 100;
+// 1 = Deploy Moneta token, 2 = Deploy DCHF Core contracts
+const DEPLOYMENT_PHASE = 2;
 
 const OUTPUT_FILE = './deployment/output/mainnetDeploymentOutput.json'
 
@@ -62,7 +47,6 @@ module.exports = {
   externalAddrs,
   dfrancAddresses,
   monetaCommunityIssuanceParams,
-  beneficiaries,
   OUTPUT_FILE,
   waitFunction,
   GAS_PRICE,
@@ -70,6 +54,5 @@ module.exports = {
   ETHERSCAN_BASE_URL,
   IsMainnet,
   REDEMPTION_SAFETY,
-  DEPLOYMENT_PHASE,
-  MON_LOCK_BATCH_SIZE
+  DEPLOYMENT_PHASE
 };
