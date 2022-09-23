@@ -52,55 +52,6 @@ async function mainnetDeploy(configParams) {
 
   // Deployment Phase 2
   if (config.DEPLOYMENT_PHASE == 2) {
-    console.log("Deploy MON token if not deployed and LockMON");
-
-    const partialContracts = await mdh.deployPartially(TREASURY_WALLET, deploymentState);
-
-    // create vesting rule to beneficiaries
-    console.log("Beneficiaries")
-
-    if ((await partialContracts.MONToken.allowance(deployerWallet.address, partialContracts.lockedMON.address)) == 0)
-      await (await partialContracts.MONToken.approve(partialContracts.lockedMON.address, ethers.constants.MaxUint256)).wait();
-
-    const beneficiaries = Object.entries(config.beneficiaries);
-
-    const batchSize = config.MON_LOCK_BATCH_SIZE;
-
-    for (let i = 0; i < beneficiaries.length; i += batchSize) {
-
-      const currentBatchObj = beneficiaries.slice(i, i + batchSize);
-
-      const wallets = [];
-      const amounts = [];
-
-      for (const [key, value] of currentBatchObj) {
-        wallets.push(key);
-        amounts.push(dec(value, 18));
-      }
-
-      const txReceipt = await mdh.sendAndWaitForTransaction(partialContracts.lockedMON.addEntityVestingBatch(wallets, amounts));
-
-      for (let i = 0; i < amounts.length; i++) {
-        deploymentState[wallets[i]] = {
-          amount: amounts[i],
-          txHash: txReceipt.transactionHash
-        }
-
-        mdh.saveDeployment(deploymentState)
-      }
-
-    }
-
-    await transferOwnership(partialContracts.lockedMON, TREASURY_WALLET);
-
-    console.log(`deployerETHBalance after: ${await ethers.provider.getBalance(deployerWallet.address)}`)
-
-    return;
-
-  }
-
-  // Deployment Phase 3
-  if (config.DEPLOYMENT_PHASE == 3) {
     // Deploy core logic contracts
     dfrancCore = await mdh.deployDchfCoreMainnet(deploymentState, ADMIN_WALLET)
 
@@ -168,17 +119,17 @@ async function addETHCollaterals() {
     await stabilityPoolETH.deployed();
 
     const initializeSBETH = await mdh
-    .sendAndWaitForTransaction(
-      stabilityPoolETH.setAddresses(
-        ETHAddress,
-        dfrancCore.borrowerOperations.address,
-        dfrancCore.troveManager.address,
-        dfrancCore.troveManagerHelpers.address,
-        dfrancCore.dchfToken.address,
-        dfrancCore.sortedTroves.address,
-        MONContracts.communityIssuance.address,
-        dfrancCore.dfrancParameters.address,
-        { gasPrice }
+      .sendAndWaitForTransaction(
+        stabilityPoolETH.setAddresses(
+          ETHAddress,
+          dfrancCore.borrowerOperations.address,
+          dfrancCore.troveManager.address,
+          dfrancCore.troveManagerHelpers.address,
+          dfrancCore.dchfToken.address,
+          dfrancCore.sortedTroves.address,
+          MONContracts.communityIssuance.address,
+          dfrancCore.dfrancParameters.address,
+          { gasPrice }
         ))
 
     console.log("ETH Stability Pool deployed at address: " + stabilityPoolETH.address);
@@ -230,32 +181,32 @@ async function addBTCCollaterals() {
     await stabilityPoolBTC.deployed();
 
     const initializeSBBTC = await mdh
-    .sendAndWaitForTransaction(
-      stabilityPoolBTC.setAddresses(
-        BTCAddress,
-        dfrancCore.borrowerOperations.address,
-        dfrancCore.troveManager.address,
-        dfrancCore.troveManagerHelpers.address,
-        dfrancCore.dchfToken.address,
-        dfrancCore.sortedTroves.address,
-        MONContracts.communityIssuance.address,
-        dfrancCore.dfrancParameters.address,
-        { gasPrice }
+      .sendAndWaitForTransaction(
+        stabilityPoolBTC.setAddresses(
+          BTCAddress,
+          dfrancCore.borrowerOperations.address,
+          dfrancCore.troveManager.address,
+          dfrancCore.troveManagerHelpers.address,
+          dfrancCore.dchfToken.address,
+          dfrancCore.sortedTroves.address,
+          MONContracts.communityIssuance.address,
+          dfrancCore.dfrancParameters.address,
+          { gasPrice }
         ))
 
     console.log("BTC Stability Pool deployed at address: " + stabilityPoolBTC.address);
 
     const txReceiptSBBTC = await mdh
-    .sendAndWaitForTransaction(
-      dfrancCore.adminContract.addNewCollateral(
-        stabilityPoolBTC.address,
-        config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
-        config.externalAddrs.CHAINLINK_USDCHF_PROXY,
-        dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_FUNDING, 18),
-        dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION, 18),
-        config.REDEMPTION_SAFETY), {
-      gasPrice,
-    })
+      .sendAndWaitForTransaction(
+        dfrancCore.adminContract.addNewCollateral(
+          stabilityPoolBTC.address,
+          config.externalAddrs.CHAINLINK_BTCUSD_PROXY,
+          config.externalAddrs.CHAINLINK_USDCHF_PROXY,
+          dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_FUNDING, 18),
+          dec(config.monetaCommunityIssuanceParams.BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION, 18),
+          config.REDEMPTION_SAFETY), {
+        gasPrice,
+      })
 
 
     const name = "StabilityPoolBTC";
@@ -279,8 +230,6 @@ async function giveContractsOwnerships() {
   await transferOwnership(dfrancCore.stabilityPoolManager, ADMIN_WALLET);
   await transferOwnership(dfrancCore.dchfToken, ADMIN_WALLET);
   await transferOwnership(MONContracts.MONStaking, ADMIN_WALLET);
-
-  await transferOwnership(dfrancCore.lockedMON, TREASURY_WALLET);
   await transferOwnership(MONContracts.communityIssuance, TREASURY_WALLET);
 }
 
