@@ -87,7 +87,7 @@ contract CommunityIssuance is
 	}
 
 	function setAdminContract(address _admin) external onlyOwner {
-		require(_admin != address(0));
+		require(_admin != address(0), "Admin address is zero");
 		checkContract(_admin);
 		adminContract = _admin;
 	}

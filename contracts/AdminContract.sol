@@ -39,7 +39,7 @@ contract AdminContract is Ownable, Initializable {
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress
 	) external initializer {
-		require(!isInitialized);
+		require(!isInitialized, "Already initialized");
 		CheckContract(_paramaters);
 		CheckContract(_stabilityPoolManager);
 		CheckContract(_borrowerOperationsAddress);

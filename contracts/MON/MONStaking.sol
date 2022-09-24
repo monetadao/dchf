@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "../Dependencies/BaseMath.sol";
 import "../Dependencies/CheckContract.sol";
@@ -102,7 +102,7 @@ contract MONStaking is
 
 	// If caller has a pre-existing stake, send any accumulated ETH and DCHF gains to them.
 	function stake(uint256 _MONamount) external override nonReentrant whenNotPaused {
-		require(_MONamount > 0);
+		require(_MONamount > 0, "MON amount is zero");
 
 		uint256 currentStake = stakes[msg.sender];
 
@@ -197,6 +197,7 @@ contract MONStaking is
 	}
 
 	function changeTreasuryAddress(address _treasury) public onlyOwner {
+		require(_treasury != address(0), "Treasury address is zero");
 		treasury = _treasury;
 		emit TreasuryAddressChanged(_treasury);
 	}
@@ -315,9 +316,9 @@ contract MONStaking is
 
 	modifier callerIsTroveManager() {
 		require(
-			msg.sender == troveManagerAddress ||
-			msg.sender == troveManagerHelpersAddress, 
-			"MONStaking: caller is not TroveM");
+			msg.sender == troveManagerAddress || msg.sender == troveManagerHelpersAddress,
+			"MONStaking: caller is not TroveM"
+		);
 		_;
 	}
 
