@@ -53,11 +53,16 @@ contract StabilityPoolManager is Ownable, CheckContract, Initializable, IStabili
 
 		stabilityPools[asset] = stabilityPool;
 		validStabilityPools[stabilityPool] = true;
+
+		emit StabilityPoolAdded(asset, stabilityPool);
 	}
 
 	function removeStabilityPool(address asset) external isController {
-		delete validStabilityPools[stabilityPools[asset]];
+		address stabilityPool = stabilityPools[asset];
+		delete validStabilityPools[stabilityPool];
 		delete stabilityPools[asset];
+
+		emit StabilityPoolRemoved(asset, stabilityPool);
 	}
 
 	function getAssetStabilityPool(address asset)
