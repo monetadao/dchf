@@ -1,15 +1,18 @@
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.14;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "../Dependencies/CheckContract.sol";
 
 /*
 This contract is reserved for Linear Vesting to the Team members and the Advisors team.
 */
-contract LockedMON is Ownable, CheckContract {
+contract LockedMON is Ownable, ReentrancyGuard, CheckContract {
 	using SafeERC20 for IERC20;
 	using SafeMath for uint256;
 
@@ -97,6 +100,7 @@ contract LockedMON is Ownable, CheckContract {
 
 	function lowerEntityVesting(address _entity, uint256 newTotalSupply)
 		external
+		nonReentrant
 		onlyOwner
 		entityRuleExists(_entity)
 	{
@@ -111,7 +115,12 @@ contract LockedMON is Ownable, CheckContract {
 		vestingRule.totalSupply = newTotalSupply;
 	}
 
-	function removeEntityVesting(address _entity) external onlyOwner entityRuleExists(_entity) {
+	function removeEntityVesting(address _entity)
+		external
+		nonReentrant
+		onlyOwner
+		entityRuleExists(_entity)
+	{
 		sendMONTokenToEntity(_entity);
 		Rule memory vestingRule = entitiesVesting[_entity];
 
