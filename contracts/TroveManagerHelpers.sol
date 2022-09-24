@@ -880,14 +880,12 @@ contract TroveManagerHelpers is
 	}
 
 	// --- Trove property setters, called by TroveManager ---
-
-	// todo: only Trovemanager
 	function setTroveDeptAndColl(
 		address _asset,
 		address _borrower,
 		uint256 _debt,
 		uint256 _coll
-	) external override onlyBorrowerOperations {
+	) external override onlyTroveManager {
 		Troves[_borrower][_asset].debt = _debt;
 		Troves[_borrower][_asset].coll = _coll;
 	}
