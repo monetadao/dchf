@@ -285,8 +285,6 @@ interface ITroveManagerHelpers is IDfrancBase {
 		uint256 _debtIncrease
 	) external returns (uint256);
 
-	function removeStakeTrove(address _asset, address _borrower) external;
-
 	function setTroveStatus(
 		address _asset,
 		address _borrower,

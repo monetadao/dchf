@@ -350,14 +350,6 @@ contract TroveManagerHelpers is
 		return _removeStake(_asset, _borrower);
 	}
 
-	function removeStakeTrove(address _asset, address _borrower)
-		external
-		override
-		onlyTroveManager
-	{
-		return _removeStake(_asset, _borrower);
-	}
-
 	function _removeStake(address _asset, address _borrower) internal {
 		//add access control
 		uint256 stake = Troves[_borrower][_asset].stake;
