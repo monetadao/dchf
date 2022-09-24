@@ -8,7 +8,12 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/Initializable.sol";
 import "./TroveManager.sol";
 
-contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITroveManagerHelpers {
+contract TroveManagerHelpers is
+	DfrancBase,
+	CheckContract,
+	Initializable,
+	ITroveManagerHelpers
+{
 	using SafeMath for uint256;
 	string public constant NAME = "TroveManagerHelpers";
 
@@ -80,16 +85,16 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 
 	function _onlyBOorTM() private view {
 		require(
-			msg.sender == borrowerOperationsAddress || 
-			msg.sender == troveManagerAddress,
-			"WA");
+			msg.sender == borrowerOperationsAddress || msg.sender == troveManagerAddress,
+			"WA"
+		);
 	}
 
 	modifier onlyBOorTM() {
 		_onlyBOorTM();
 		_;
 	}
-	
+
 	function _onlyBorrowerOperations() private view {
 		require(msg.sender == borrowerOperationsAddress, "WA");
 	}
@@ -100,9 +105,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 	}
 
 	function _onlyTroveManager() private view {
-		require(
-			msg.sender == troveManagerAddress,
-			"WA");
+		require(msg.sender == troveManagerAddress, "WA");
 	}
 
 	modifier onlyTroveManager() {
@@ -342,11 +345,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 		coll = coll.add(pendingAssetReward);
 	}
 
-	function removeStake(address _asset, address _borrower)
-		external
-		override
-		onlyBOorTM
-	{
+	function removeStake(address _asset, address _borrower) external override onlyBOorTM {
 		return _removeStake(_asset, _borrower);
 	}
 
@@ -368,16 +367,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 	function updateStakeAndTotalStakes(address _asset, address _borrower)
 		external
 		override
-		onlyBorrowerOperations
-		returns (uint256)
-	{
-		return _updateStakeAndTotalStakes(_asset, _borrower);
-	}
-
-	function updateStakeAndTotalStakesTrove(address _asset, address _borrower)
-		external
-		override
-		onlyTroveManager
+		onlyBOorTM
 		returns (uint256)
 	{
 		return _updateStakeAndTotalStakes(_asset, _borrower);

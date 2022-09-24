@@ -293,10 +293,6 @@ interface ITroveManagerHelpers is IDfrancBase {
 		uint256 num
 	) external;
 
-	function updateStakeAndTotalStakesTrove(address _asset, address _borrower)
-		external
-		returns (uint256);
-
 	function updateTroveRewardSnapshots(address _asset, address _borrower) external;
 
 	function getBorrowingFeeWithDecay(address _asset, uint256 _DCHFDebt)
