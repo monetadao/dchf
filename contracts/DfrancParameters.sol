@@ -74,6 +74,7 @@ contract DfrancParameters is IDfrancParameters, Ownable, CheckContract, Initiali
 
 	function setAdminContract(address _admin) external onlyOwner {
 		require(_admin != address(0));
+		checkContract(_admin);
 		adminContract = _admin;
 	}
 

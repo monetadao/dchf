@@ -13,7 +13,13 @@ import "../Dependencies/DfrancMath.sol";
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/Initializable.sol";
 
-contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMath, Initializable {
+contract CommunityIssuance is
+	ICommunityIssuance,
+	Ownable,
+	CheckContract,
+	BaseMath,
+	Initializable
+{
 	using SafeMath for uint256;
 	using SafeERC20 for IERC20;
 
@@ -82,6 +88,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
 
 	function setAdminContract(address _admin) external onlyOwner {
 		require(_admin != address(0));
+		checkContract(_admin);
 		adminContract = _admin;
 	}
 
@@ -210,11 +217,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
 		return totalDistribuedSinceBeginning;
 	}
 
-	function sendMON(address _account, uint256 _MONamount)
-		external
-		override
-		onlyStabilityPool
-	{
+	function sendMON(address _account, uint256 _MONamount) external override onlyStabilityPool {
 		uint256 balanceMON = monToken.balanceOf(address(this));
 		uint256 safeAmount = balanceMON >= _MONamount ? _MONamount : balanceMON;
 

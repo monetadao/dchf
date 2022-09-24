@@ -30,6 +30,7 @@ contract StabilityPoolManager is Ownable, CheckContract, Initializable, IStabili
 
 	function setAdminContract(address _admin) external onlyOwner {
 		require(_admin != address(0), "Admin cannot be empty address");
+		checkContract(_admin);
 		adminContract = _admin;
 	}
 
