@@ -33,7 +33,7 @@ contract CommunityIssuance is
 	mapping(address => uint256) public totalMONIssued;
 	mapping(address => uint256) public lastUpdateTime; // lastUpdateTime is in minutes
 	mapping(address => uint256) public MONSupplyCaps;
-	mapping(address => uint256) public monDistributionsByPool;
+	mapping(address => uint256) public monDistributionsByPool; // monDistributionsByPool is in minutes
 
 	address public adminContract;
 
