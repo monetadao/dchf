@@ -61,8 +61,6 @@ contract LockedMON is Ownable, CheckContract {
 
 			require(entitiesVesting[_entity].createdDate == 0, "Entity already has a Vesting Rule");
 
-			assignedMONTokens += _totalSupply;
-
 			entitiesVesting[_entity] = Rule(
 				block.timestamp,
 				_totalSupply,
@@ -73,6 +71,8 @@ contract LockedMON is Ownable, CheckContract {
 
 			_sumTotalSupplies += _totalSupply;
 		}
+
+		assignedMONTokens += _sumTotalSupplies;
 
 		monToken.safeTransferFrom(msg.sender, address(this), _sumTotalSupplies);
 	}
