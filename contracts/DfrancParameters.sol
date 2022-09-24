@@ -133,7 +133,7 @@ contract DfrancParameters is IDfrancParameters, Ownable, CheckContract, Initiali
 		uint256 borrowingFeeFloor,
 		uint256 maxBorrowingFee,
 		uint256 redemptionFeeFloor
-	) public onlyOwner {
+	) external onlyOwner {
 		hasCollateralConfigured[_asset] = true;
 
 		setMCR(_asset, newMCR);
