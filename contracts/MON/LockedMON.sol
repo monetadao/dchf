@@ -156,8 +156,8 @@ contract LockedMON is Ownable, CheckContract {
 		} else {
 			claimable = entityRule
 				.totalSupply
-				.div(ONE_YEAR)
 				.mul(block.timestamp.sub(entityRule.createdDate))
+				.div(ONE_YEAR)
 				.sub(entityRule.claimed);
 		}
 
