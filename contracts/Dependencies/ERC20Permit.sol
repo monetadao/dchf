@@ -87,7 +87,7 @@ abstract contract ERC20Permit is ERC20, IERC2612Permit {
 		uint8 v,
 		bytes32 r,
 		bytes32 s
-	) public virtual override {
+	) external virtual override {
 		require(block.timestamp <= deadline, "Permit: expired deadline");
 
 		bytes32 hashStruct = keccak256(

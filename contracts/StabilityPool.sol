@@ -20,7 +20,13 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/SafetyTransfer.sol";
 import "./Dependencies/Initializable.sol";
 
-contract StabilityPool is DfrancBase, CheckContract, ReentrancyGuard, Initializable, IStabilityPool {
+contract StabilityPool is
+	DfrancBase,
+	CheckContract,
+	ReentrancyGuard,
+	Initializable,
+	IStabilityPool
+{
 	using SafeMath for uint256;
 	using DfrancSafeMath128 for uint128;
 	using SafeERC20 for IERC20;
@@ -612,7 +618,12 @@ contract StabilityPool is DfrancBase, CheckContract, ReentrancyGuard, Initializa
 	 * Return the user's compounded deposit. Given by the formula:  d = d0 * P/P(0)
 	 * where P(0) is the depositor's snapshot of the product P, taken when they last updated their deposit.
 	 */
-	function getCompoundedDCHFDeposit(address _depositor) public view override returns (uint256) {
+	function getCompoundedDCHFDeposit(address _depositor)
+		public
+		view
+		override
+		returns (uint256)
+	{
 		uint256 initialDeposit = deposits[_depositor];
 		if (initialDeposit == 0) {
 			return 0;
@@ -807,11 +818,6 @@ contract StabilityPool is DfrancBase, CheckContract, ReentrancyGuard, Initializa
 
 	function _requireUserHasDeposit(uint256 _initialDeposit) internal pure {
 		require(_initialDeposit > 0, "StabilityPool: User must have a non-zero deposit");
-	}
-
-	function _requireUserHasNoDeposit(address _address) internal view {
-		uint256 initialDeposit = deposits[_address];
-		require(initialDeposit == 0, "StabilityPool: User must have no deposit");
 	}
 
 	function _requireNonZeroAmount(uint256 _amount) internal pure {

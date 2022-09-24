@@ -38,7 +38,7 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, Initializable, IPriceFee
 	}
 
 	function setAddresses(address _adminContract) external initializer {
-		require(!isInitialized);
+		require(!isInitialized, "Already initialized");
 		checkContract(_adminContract);
 		isInitialized = true;
 
@@ -47,7 +47,8 @@ contract PriceFeed is Ownable, CheckContract, BaseMath, Initializable, IPriceFee
 	}
 
 	function setAdminContract(address _admin) external onlyOwner {
-		require(_admin != address(0));
+		require(_admin != address(0), "Admin address is zero");
+		checkContract(_admin);
 		adminContract = _admin;
 	}
 

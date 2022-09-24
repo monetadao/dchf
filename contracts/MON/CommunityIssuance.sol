@@ -13,7 +13,13 @@ import "../Dependencies/DfrancMath.sol";
 import "../Dependencies/CheckContract.sol";
 import "../Dependencies/Initializable.sol";
 
-contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMath, Initializable {
+contract CommunityIssuance is
+	ICommunityIssuance,
+	Ownable,
+	CheckContract,
+	BaseMath,
+	Initializable
+{
 	using SafeMath for uint256;
 	using SafeERC20 for IERC20;
 
@@ -25,9 +31,9 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
 	IStabilityPoolManager public stabilityPoolManager;
 
 	mapping(address => uint256) public totalMONIssued;
-	mapping(address => uint256) public lastUpdateTime;
+	mapping(address => uint256) public lastUpdateTime; // lastUpdateTime is in minutes
 	mapping(address => uint256) public MONSupplyCaps;
-	mapping(address => uint256) public monDistributionsByPool;
+	mapping(address => uint256) public monDistributionsByPool; // monDistributionsByPool is in minutes
 
 	address public adminContract;
 
@@ -81,7 +87,8 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
 	}
 
 	function setAdminContract(address _admin) external onlyOwner {
-		require(_admin != address(0));
+		require(_admin != address(0), "Admin address is zero");
+		checkContract(_admin);
 		adminContract = _admin;
 	}
 
@@ -132,7 +139,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
 		);
 
 		if (lastUpdateTime[_pool] == 0) {
-			lastUpdateTime[_pool] = block.timestamp;
+			lastUpdateTime[_pool] = (block.timestamp / SECONDS_IN_ONE_MINUTE);
 		}
 
 		MONSupplyCaps[_pool] += _assignedSupply;
@@ -187,7 +194,7 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
 			totalIssuance = maxPoolSupply;
 		}
 
-		lastUpdateTime[_pool] = block.timestamp;
+		lastUpdateTime[_pool] = (block.timestamp / SECONDS_IN_ONE_MINUTE);
 		totalMONIssued[_pool] = totalIssuance;
 		emit TotalMONIssuedUpdated(_pool, totalIssuance);
 
@@ -200,21 +207,17 @@ contract CommunityIssuance is ICommunityIssuance, Ownable, CheckContract, BaseMa
 		returns (uint256)
 	{
 		require(lastUpdateTime[stabilityPool] != 0, "Stability pool hasn't been assigned");
-		uint256 timePassed = block.timestamp.sub(lastUpdateTime[stabilityPool]).div(
-			SECONDS_IN_ONE_MINUTE
+		uint256 timePassed = block.timestamp.div(SECONDS_IN_ONE_MINUTE).sub(
+			lastUpdateTime[stabilityPool]
 		);
-		uint256 totalDistribuedSinceBeginning = monDistributionsByPool[stabilityPool].mul(
+		uint256 totalDistributedSinceBeginning = monDistributionsByPool[stabilityPool].mul(
 			timePassed
 		);
 
-		return totalDistribuedSinceBeginning;
+		return totalDistributedSinceBeginning;
 	}
 
-	function sendMON(address _account, uint256 _MONamount)
-		external
-		override
-		onlyStabilityPool
-	{
+	function sendMON(address _account, uint256 _MONamount) external override onlyStabilityPool {
 		uint256 balanceMON = monToken.balanceOf(address(this));
 		uint256 safeAmount = balanceMON >= _MONamount ? _MONamount : balanceMON;
 

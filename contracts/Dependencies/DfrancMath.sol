@@ -108,9 +108,8 @@ library DfrancMath {
 		uint256 _price
 	) internal pure returns (uint256) {
 		if (_debt > 0) {
-			uint256 newCollRatio = _coll.mul(_price).div(_debt);
 
-			return newCollRatio;
+			return _coll.mul(_price).div(_debt);
 		}
 		// Return the maximal value for uint256 if the Trove has a debt of 0. Represents "infinite" CR.
 		else {

@@ -73,7 +73,8 @@ contract DfrancParameters is IDfrancParameters, Ownable, CheckContract, Initiali
 	}
 
 	function setAdminContract(address _admin) external onlyOwner {
-		require(_admin != address(0));
+		require(_admin != address(0), "admin address is zero");
+		checkContract(_admin);
 		adminContract = _admin;
 	}
 
@@ -132,7 +133,7 @@ contract DfrancParameters is IDfrancParameters, Ownable, CheckContract, Initiali
 		uint256 borrowingFeeFloor,
 		uint256 maxBorrowingFee,
 		uint256 redemptionFeeFloor
-	) public onlyOwner {
+	) external onlyOwner {
 		hasCollateralConfigured[_asset] = true;
 
 		setMCR(_asset, newMCR);
@@ -191,6 +192,7 @@ contract DfrancParameters is IDfrancParameters, Ownable, CheckContract, Initiali
 		uint256 newBorrowingFee = (DECIMAL_PRECISION / 10000) * borrowingFeeFloor;
 
 		BORROWING_FEE_FLOOR[_asset] = newBorrowingFee;
+		require(MAX_BORROWING_FEE[_asset] > BORROWING_FEE_FLOOR[_asset], "Wrong inputs");
 
 		emit BorrowingFeeFloorChanged(oldBorrowing, newBorrowingFee);
 	}
@@ -205,6 +207,8 @@ contract DfrancParameters is IDfrancParameters, Ownable, CheckContract, Initiali
 		uint256 newMaxBorrowingFee = (DECIMAL_PRECISION / 10000) * maxBorrowingFee;
 
 		MAX_BORROWING_FEE[_asset] = newMaxBorrowingFee;
+		require(MAX_BORROWING_FEE[_asset] > BORROWING_FEE_FLOOR[_asset], "Wrong inputs");
+
 		emit MaxBorrowingFeeChanged(oldMaxBorrowingFee, newMaxBorrowingFee);
 	}
 
@@ -212,7 +216,7 @@ contract DfrancParameters is IDfrancParameters, Ownable, CheckContract, Initiali
 		public
 		override
 		onlyOwner
-		safeCheck("Gas Compensation", _asset, gasCompensation, 1 ether, 400 ether)
+		safeCheck("Gas Compensation", _asset, gasCompensation, 1 ether, 200 ether)
 	{
 		uint256 oldGasComp = DCHF_GAS_COMPENSATION[_asset];
 		DCHF_GAS_COMPENSATION[_asset] = gasCompensation;

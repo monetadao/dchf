@@ -8,7 +8,12 @@ import "./Dependencies/CheckContract.sol";
 import "./Dependencies/Initializable.sol";
 import "./TroveManager.sol";
 
-contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITroveManagerHelpers {
+contract TroveManagerHelpers is
+	DfrancBase,
+	CheckContract,
+	Initializable,
+	ITroveManagerHelpers
+{
 	using SafeMath for uint256;
 	string public constant NAME = "TroveManagerHelpers";
 
@@ -80,16 +85,16 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 
 	function _onlyBOorTM() private view {
 		require(
-			msg.sender == borrowerOperationsAddress || 
-			msg.sender == troveManagerAddress,
-			"WA");
+			msg.sender == borrowerOperationsAddress || msg.sender == troveManagerAddress,
+			"WA"
+		);
 	}
 
 	modifier onlyBOorTM() {
 		_onlyBOorTM();
 		_;
 	}
-	
+
 	function _onlyBorrowerOperations() private view {
 		require(msg.sender == borrowerOperationsAddress, "WA");
 	}
@@ -100,9 +105,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 	}
 
 	function _onlyTroveManager() private view {
-		require(
-			msg.sender == troveManagerAddress,
-			"WA");
+		require(msg.sender == troveManagerAddress, "WA");
 	}
 
 	modifier onlyTroveManager() {
@@ -129,6 +132,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 		checkContract(_dchfTokenAddress);
 		checkContract(_sortedTrovesAddress);
 		checkContract(_dfrancParamsAddress);
+		checkContract(_troveManagerAddress);
 		isInitialized = true;
 
 		borrowerOperationsAddress = _borrowerOperationsAddress;
@@ -342,19 +346,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 		coll = coll.add(pendingAssetReward);
 	}
 
-	function removeStake(address _asset, address _borrower)
-		external
-		override
-		onlyBOorTM
-	{
-		return _removeStake(_asset, _borrower);
-	}
-
-	function removeStakeTrove(address _asset, address _borrower)
-		external
-		override
-		onlyTroveManager
-	{
+	function removeStake(address _asset, address _borrower) external override onlyBOorTM {
 		return _removeStake(_asset, _borrower);
 	}
 
@@ -368,16 +360,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 	function updateStakeAndTotalStakes(address _asset, address _borrower)
 		external
 		override
-		onlyBorrowerOperations
-		returns (uint256)
-	{
-		return _updateStakeAndTotalStakes(_asset, _borrower);
-	}
-
-	function updateStakeAndTotalStakesTrove(address _asset, address _borrower)
-		external
-		override
-		onlyTroveManager
+		onlyBOorTM
 		returns (uint256)
 	{
 		return _updateStakeAndTotalStakes(_asset, _borrower);
@@ -787,7 +770,7 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 		require(_amount > 0, "AG");
 	}
 
-	function _requireTCRoverMCR(address _asset, uint256 _price) public view override {
+	function _requireTCRoverMCR(address _asset, uint256 _price) external view override {
 		require(_getTCR(_asset, _price) >= dfrancParams.MCR(_asset), "CR");
 	}
 
@@ -890,14 +873,12 @@ contract TroveManagerHelpers is DfrancBase, CheckContract, Initializable, ITrove
 	}
 
 	// --- Trove property setters, called by TroveManager ---
-
-	// todo: only Trovemanager
 	function setTroveDeptAndColl(
 		address _asset,
 		address _borrower,
 		uint256 _debt,
 		uint256 _coll
-	) external override onlyBorrowerOperations {
+	) external override onlyTroveManager {
 		Troves[_borrower][_asset].debt = _debt;
 		Troves[_borrower][_asset].coll = _coll;
 	}

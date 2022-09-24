@@ -644,7 +644,7 @@ contract TroveManager is DfrancBase, CheckContract, Initializable, ITroveManager
 		vars.DCHFInStabPool = stabilityPoolCached.getTotalDCHFDeposits();
 		vars.price = dfrancParams.priceFeed().fetchPrice(_asset);
 
-		vars.recoveryModeAtStart = troveManagerHelpers.checkRecoveryMode(_asset, vars.price);
+		vars.recoveryModeAtStart = _checkRecoveryMode(_asset, vars.price);
 
 		// Perform the appropriate liquidation sequence - tally values and obtain their totals.
 		if (vars.recoveryModeAtStart) {

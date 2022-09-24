@@ -9,7 +9,7 @@ contract MONToken is CheckContract, ERC20Permit {
 	using SafeMath for uint256;
 
 	// uint for use with SafeMath
-	uint256 internal _1_MILLION = 1e24; // 1e6 * 1e18 = 1e24
+	uint256 internal constant _1_MILLION = 1e24; // 1e6 * 1e18 = 1e24
 
 	address public immutable treasury;
 

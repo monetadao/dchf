@@ -16,8 +16,8 @@ library SafetyTransfer {
 		uint8 decimals = ERC20Decimals(_token).decimals();
 		if (decimals < 18) {
 			return _amount.div(10**(18 - decimals));
+		} else {
+			return _amount.mul(10**(decimals - 18));
 		}
-
-		return _amount;
 	}
 }
