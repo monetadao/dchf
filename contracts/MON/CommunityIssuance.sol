@@ -139,7 +139,7 @@ contract CommunityIssuance is
 		);
 
 		if (lastUpdateTime[_pool] == 0) {
-			lastUpdateTime[_pool] = block.timestamp;
+			lastUpdateTime[_pool] = (block.timestamp / SECONDS_IN_ONE_MINUTE);
 		}
 
 		MONSupplyCaps[_pool] += _assignedSupply;
@@ -194,7 +194,7 @@ contract CommunityIssuance is
 			totalIssuance = maxPoolSupply;
 		}
 
-		lastUpdateTime[_pool] = block.timestamp;
+		lastUpdateTime[_pool] = (block.timestamp / SECONDS_IN_ONE_MINUTE);
 		totalMONIssued[_pool] = totalIssuance;
 		emit TotalMONIssuedUpdated(_pool, totalIssuance);
 
@@ -207,14 +207,14 @@ contract CommunityIssuance is
 		returns (uint256)
 	{
 		require(lastUpdateTime[stabilityPool] != 0, "Stability pool hasn't been assigned");
-		uint256 timePassed = block.timestamp.sub(lastUpdateTime[stabilityPool]).div(
-			SECONDS_IN_ONE_MINUTE
+		uint256 timePassed = block.timestamp.div(SECONDS_IN_ONE_MINUTE).sub(
+			lastUpdateTime[stabilityPool]
 		);
-		uint256 totalDistribuedSinceBeginning = monDistributionsByPool[stabilityPool].mul(
+		uint256 totalDistributedSinceBeginning = monDistributionsByPool[stabilityPool].mul(
 			timePassed
 		);
 
-		return totalDistribuedSinceBeginning;
+		return totalDistributedSinceBeginning;
 	}
 
 	function sendMON(address _account, uint256 _MONamount) external override onlyStabilityPool {
