@@ -37,7 +37,7 @@ contract LockedMON is Ownable, CheckContract {
 		_;
 	}
 
-	function setAddresses(address _monAddress) public onlyOwner {
+	function setAddresses(address _monAddress) external onlyOwner {
 		require(!isInitialized, "Already Initialized");
 		checkContract(_monAddress);
 		isInitialized = true;
@@ -77,7 +77,7 @@ contract LockedMON is Ownable, CheckContract {
 		monToken.safeTransferFrom(msg.sender, address(this), _sumTotalSupplies);
 	}
 
-	function addEntityVesting(address _entity, uint256 _totalSupply) public onlyOwner {
+	function addEntityVesting(address _entity, uint256 _totalSupply) external onlyOwner {
 		require(address(0) != _entity, "Invalid Address");
 
 		require(entitiesVesting[_entity].createdDate == 0, "Entity already has a Vesting Rule");
@@ -96,7 +96,7 @@ contract LockedMON is Ownable, CheckContract {
 	}
 
 	function lowerEntityVesting(address _entity, uint256 newTotalSupply)
-		public
+		external
 		onlyOwner
 		entityRuleExists(_entity)
 	{
@@ -111,7 +111,7 @@ contract LockedMON is Ownable, CheckContract {
 		vestingRule.totalSupply = newTotalSupply;
 	}
 
-	function removeEntityVesting(address _entity) public onlyOwner entityRuleExists(_entity) {
+	function removeEntityVesting(address _entity) external onlyOwner entityRuleExists(_entity) {
 		sendMONTokenToEntity(_entity);
 		Rule memory vestingRule = entitiesVesting[_entity];
 

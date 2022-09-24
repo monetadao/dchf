@@ -777,7 +777,7 @@ contract TroveManagerHelpers is
 		require(_amount > 0, "AG");
 	}
 
-	function _requireTCRoverMCR(address _asset, uint256 _price) public view override {
+	function _requireTCRoverMCR(address _asset, uint256 _price) external view override {
 		require(_getTCR(_asset, _price) >= dfrancParams.MCR(_asset), "CR");
 	}
 

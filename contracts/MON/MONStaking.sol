@@ -192,7 +192,7 @@ contract MONStaking is
 		_pause();
 	}
 
-	function unpause() public onlyOwner {
+	function unpause() external onlyOwner {
 		_unpause();
 	}
 
