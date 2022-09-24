@@ -132,6 +132,7 @@ contract TroveManagerHelpers is
 		checkContract(_dchfTokenAddress);
 		checkContract(_sortedTrovesAddress);
 		checkContract(_dfrancParamsAddress);
+		checkContract(_troveManagerAddress);
 		isInitialized = true;
 
 		borrowerOperationsAddress = _borrowerOperationsAddress;
