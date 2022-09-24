@@ -621,12 +621,6 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations, I
 		return DCHFFee;
 	}
 
-	function _getUSDValue(uint256 _coll, uint256 _price) internal pure returns (uint256) {
-		uint256 usdValue = _price.mul(_coll).div(DECIMAL_PRECISION);
-
-		return usdValue;
-	}
-
 	function _getCollChange(uint256 _collReceived, uint256 _requestedCollWithdrawal)
 		internal
 		pure
@@ -739,13 +733,6 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations, I
 		require(
 			_collWithdrawal == 0 || _amountSent == 0,
 			"BorrowerOperations: Cannot withdraw and add coll"
-		);
-	}
-
-	function _requireCallerIsBorrower(address _borrower) internal view {
-		require(
-			msg.sender == _borrower,
-			"BorrowerOps: Caller must be the borrower for a withdrawal"
 		);
 	}
 
