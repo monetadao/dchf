@@ -103,7 +103,7 @@ contract DCHFToken is CheckContract, IDCHFToken, Ownable {
 
 	// --- External functions ---
 
-	function transfer(address recipient, uint256 amount) external override returns (bool) {
+	function transfer(address recipient, uint256 amount) public override returns (bool) {
 		_requireValidRecipient(recipient);
 		return super.transfer(recipient, amount);
 	}
@@ -112,7 +112,7 @@ contract DCHFToken is CheckContract, IDCHFToken, Ownable {
 		address sender,
 		address recipient,
 		uint256 amount
-	) external override returns (bool) {
+	) public override returns (bool) {
 		_requireValidRecipient(recipient);
 		return super.transferFrom(sender, recipient, amount);
 	}
