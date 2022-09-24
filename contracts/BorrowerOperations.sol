@@ -187,7 +187,6 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations, I
 			msg.sender
 		);
 
-		vars.DCHFFee;
 		vars.netDebt = _DCHFamount;
 
 		if (!isRecoveryMode) {
