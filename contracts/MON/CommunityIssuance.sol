@@ -31,7 +31,7 @@ contract CommunityIssuance is
 	IStabilityPoolManager public stabilityPoolManager;
 
 	mapping(address => uint256) public totalMONIssued;
-	mapping(address => uint256) public lastUpdateTime;
+	mapping(address => uint256) public lastUpdateTime; // lastUpdateTime is in minutes
 	mapping(address => uint256) public MONSupplyCaps;
 	mapping(address => uint256) public monDistributionsByPool;
 
