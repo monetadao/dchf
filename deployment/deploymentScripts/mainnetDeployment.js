@@ -219,7 +219,7 @@ async function addBTCCollaterals() {
     console.log("Transferring Ownership to Multisig of Stability Pool BTC");
 
     const transferOwnershipSBBTC = await mdh.sendAndWaitForTransaction(
-      stabilityPoolBTC.transferOwnesrship(
+      stabilityPoolBTC.transferOwnership(
         ADMIN_WALLET
       ))
 
