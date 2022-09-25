@@ -28,7 +28,7 @@ const monetaCommunityIssuanceParams = {
 const REDEMPTION_SAFETY = 14;
 
 // 1 = Deploy Moneta token, 2 = Deploy DCHF Core contracts
-const DEPLOYMENT_PHASE = 2;
+const DEPLOYMENT_PHASE = 1;
 
 const OUTPUT_FILE = './deployment/output/goerliDeploymentOutput.json'
 
