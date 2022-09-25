@@ -8,7 +8,7 @@ const externalAddrs = {
   CHAINLINK_USDCHF_PROXY: "0xAb5c49580294Aff77670F839ea425f5b78ab3Ae7",
 
   WETH_ERC20: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
-  REN_BTC: "0xda4a47edf8ab3c5eeeb537a97c5b66ea42f49cda",
+  WRP_BTC: "0xda4a47edf8ab3c5eeeb537a97c5b66ea42f49cda",
 }
 
 
@@ -28,7 +28,7 @@ const monetaCommunityIssuanceParams = {
 const REDEMPTION_SAFETY = 14;
 
 // 1 = Deploy Moneta token, 2 = Deploy DCHF Core contracts
-const DEPLOYMENT_PHASE = 1;
+const DEPLOYMENT_PHASE = 2;
 
 const OUTPUT_FILE = './deployment/output/goerliDeploymentOutput.json'
 
