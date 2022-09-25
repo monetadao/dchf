@@ -22,14 +22,14 @@ const dfrancAddresses = {
 const monetaCommunityIssuanceParams = {
   ETH_STABILITY_POOL_FUNDING: 729_634,
   BTC_STABILITY_POOL_FUNDING: 729_634,
-  ETH_STABILITY_POOL_WEEKLY_DISTRIBUTION: 182_408,
-  BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION: 182_408,
+  ETH_STABILITY_POOL_WEEKLY_DISTRIBUTION: 0,
+  BTC_STABILITY_POOL_WEEKLY_DISTRIBUTION: 0,
 }
 
 const REDEMPTION_SAFETY = 14;
 
 // 1 = Deploy Moneta token, 2 = Deploy DCHF Core contracts
-const DEPLOYMENT_PHASE = 1;
+const DEPLOYMENT_PHASE = 2;
 
 const OUTPUT_FILE = './deployment/output/mainnetDeploymentOutput.json'
 
