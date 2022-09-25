@@ -146,12 +146,12 @@ async function addETHCollaterals() {
         gasPrice,
       })
 
-      console.log("Transferring Ownership to Multisig of Stability Pool ETH");
+    console.log("Transferring Ownership to Multisig of Stability Pool ETH");
 
-      const transferOwnershipSBETH = await mdh.sendAndWaitForTransaction(
-        stabilityPoolETH.transferOwnership(
-          ADMIN_WALLET
-        ))
+    const transferOwnershipSBETH = await mdh.sendAndWaitForTransaction(
+      stabilityPoolETH.transferOwnership(
+        ADMIN_WALLET
+      ))
 
 
     const name = "StabilityPoolETH";
@@ -216,12 +216,12 @@ async function addBTCCollaterals() {
         gasPrice,
       })
 
-      console.log("Transferring Ownership to Multisig of Stability Pool BTC");
+    console.log("Transferring Ownership to Multisig of Stability Pool BTC");
 
-      const transferOwnershipSBBTC = await mdh.sendAndWaitForTransaction(
-        stabilityPoolBTC.transferOwnesrhip(
-          ADMIN_WALLET
-        ))
+    const transferOwnershipSBBTC = await mdh.sendAndWaitForTransaction(
+      stabilityPoolBTC.transferOwnesrship(
+        ADMIN_WALLET
+      ))
 
 
     const name = "StabilityPoolBTC";
