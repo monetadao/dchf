@@ -99,7 +99,7 @@ async function addETHCollaterals() {
 
   const ETHAddress = !config.IsMainnet
     ? await mdh.deployMockERC20Contract(deploymentState, "mockETH", 18)
-    : config.externalAddrs.WETH_ERC20
+    : ethers.constants.AddressZero
 
   if (!ETHAddress || ETHAddress == "")
     throw ("CANNOT FIND THE ETH Address")
