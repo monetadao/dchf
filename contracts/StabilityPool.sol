@@ -133,7 +133,7 @@ contract StabilityPool is
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress,
 		address _dfrancParamsAddress
-	) external initializer {
+	) external initializer onlyOwner {
 		require(!isInitialized, "Already initialized");
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_troveManagerAddress);

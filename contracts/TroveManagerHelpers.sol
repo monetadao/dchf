@@ -2,6 +2,7 @@
 
 pragma solidity ^0.8.14;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Interfaces/ITroveManagerHelpers.sol";
 import "./Dependencies/DfrancBase.sol";
 import "./Dependencies/CheckContract.sol";

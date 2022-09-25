@@ -99,7 +99,7 @@ async function addETHCollaterals() {
 
   const ETHAddress = !config.IsMainnet
     ? await mdh.deployMockERC20Contract(deploymentState, "mockETH", 18)
-    : config.externalAddrs.WETH_ERC20
+    : ethers.constants.AddressZero
 
   if (!ETHAddress || ETHAddress == "")
     throw ("CANNOT FIND THE ETH Address")
@@ -146,13 +146,21 @@ async function addETHCollaterals() {
         gasPrice,
       })
 
+    console.log("Transferring Ownership to Multisig of Stability Pool ETH");
+
+    const transferOwnershipSBETH = await mdh.sendAndWaitForTransaction(
+      stabilityPoolETH.transferOwnership(
+        ADMIN_WALLET
+      ))
+
 
     const name = "StabilityPoolETH";
 
     deploymentState[name] = {
       address: stabilityPoolETH.address,
       init: initializeSBETH.transactionHash,
-      txHash: txReceiptSBETH.transactionHash
+      txHash: txReceiptSBETH.transactionHash,
+      transferOwnership: transferOwnershipSBETH.transactionHash
     }
 
     await mdh.verifyContract(name, deploymentState, [], false);
@@ -162,7 +170,7 @@ async function addETHCollaterals() {
 async function addBTCCollaterals() {
   const BTCAddress = !config.IsMainnet
     ? await mdh.deployMockERC20Contract(deploymentState, "renBTC", 8)
-    : config.externalAddrs.REN_BTC
+    : config.externalAddrs.WRP_BTC
 
   if (!BTCAddress || BTCAddress == "")
     throw ("CANNOT FIND THE renBTC Address")
@@ -208,13 +216,21 @@ async function addBTCCollaterals() {
         gasPrice,
       })
 
+    console.log("Transferring Ownership to Multisig of Stability Pool BTC");
+
+    const transferOwnershipSBBTC = await mdh.sendAndWaitForTransaction(
+      stabilityPoolBTC.transferOwnership(
+        ADMIN_WALLET
+      ))
+
 
     const name = "StabilityPoolBTC";
 
     deploymentState[name] = {
       address: stabilityPoolBTC.address,
       init: initializeSBBTC.transactionHash,
-      txHash: txReceiptSBBTC.transactionHash
+      txHash: txReceiptSBBTC.transactionHash,
+      transferOwnership: transferOwnershipSBBTC.transactionHash
     }
 
     await mdh.verifyContract(name, deploymentState, [], false);
@@ -231,6 +247,10 @@ async function giveContractsOwnerships() {
   await transferOwnership(dfrancCore.dchfToken, ADMIN_WALLET);
   await transferOwnership(MONContracts.MONStaking, ADMIN_WALLET);
   await transferOwnership(MONContracts.communityIssuance, TREASURY_WALLET);
+  await transferOwnership(dfrancCore.troveManager, ADMIN_WALLET);
+  await transferOwnership(dfrancCore.troveManagerHelpers, ADMIN_WALLET);
+  await transferOwnership(dfrancCore.borrowerOperations, ADMIN_WALLET);
+  await transferOwnership(dfrancCore.hintHelpers, ADMIN_WALLET);
 }
 
 async function transferOwnership(contract, newOwner) {

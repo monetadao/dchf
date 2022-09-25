@@ -1,21 +1,21 @@
-const IsMainnet = false;
+const IsMainnet = true;
 
 const externalAddrs = {
   // https://data.chain.link/eth-usd
-  CHAINLINK_ETHUSD_PROXY: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
-  CHAINLINK_BTCUSD_PROXY: "0xECe365B379E1dD183B20fc5f022230C044d51404",
+  CHAINLINK_ETHUSD_PROXY: "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e",
+  CHAINLINK_BTCUSD_PROXY: "0xA39434A63A52E749F02807ae27335515BA4b07F7",
   CHAINLINK_FLAG_HEALTH: "0x491B1dDA0A8fa069bbC1125133A975BF4e85a91b",
-  CHAINLINK_USDCHF_PROXY: "0x5e601CF5EF284Bcd12decBDa189479413284E1d2",
+  CHAINLINK_USDCHF_PROXY: "0xAb5c49580294Aff77670F839ea425f5b78ab3Ae7",
 
-  WETH_ERC20: "0xdf032bc4b9dc2782bb09352007d4c57b75160b15",
-  REN_BTC: "0x577D296678535e4903D59A4C929B718e1D575e0A",
+  WETH_ERC20: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+  WRP_BTC: "0xda4a47edf8ab3c5eeeb537a97c5b66ea42f49cda",
 }
 
 
 const dfrancAddresses = {
-  ADMIN_MULTI: "0x4F74e01855E79e4ec65ee67C51540144A698D972",
-  MON_SAFE: "0x4F74e01855E79e4ec65ee67C51540144A698D972", // TODO
-  DEPLOYER: "0x4F74e01855E79e4ec65ee67C51540144A698D972"
+  ADMIN_MULTI: "0x9E0F2E2b98233472398A1aEFd0255d675af25cf7",
+  MON_SAFE: "0x9E0F2E2b98233472398A1aEFd0255d675af25cf7", // TODO
+  DEPLOYER: "0xDDe14fa2ef87F3dEAC674c88a7B125B4f9eda3C0"
 }
 
 const monetaCommunityIssuanceParams = {
@@ -28,9 +28,9 @@ const monetaCommunityIssuanceParams = {
 const REDEMPTION_SAFETY = 14;
 
 // 1 = Deploy Moneta token, 2 = Deploy DCHF Core contracts
-const DEPLOYMENT_PHASE = 1;
+const DEPLOYMENT_PHASE = 2;
 
-const OUTPUT_FILE = './deployment/output/rinkebyDeploymentOutput.json'
+const OUTPUT_FILE = './deployment/output/goerliDeploymentOutput.json'
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 const waitFunction = async () => {
@@ -40,7 +40,7 @@ const waitFunction = async () => {
 const GAS_PRICE = 25000000000
 const TX_CONFIRMATIONS = 1
 
-const ETHERSCAN_BASE_URL = 'https://rinkeby.etherscan.io/address'
+const ETHERSCAN_BASE_URL = 'https://goerli.etherscan.io/address'
 
 module.exports = {
   externalAddrs,

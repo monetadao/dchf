@@ -1,5 +1,5 @@
 const { mainnetDeploy } = require('./mainnetDeployment.js')
-const configParams = require("../deploymentParams/deploymentParams.rinkeby.js")
+const configParams = require("../deploymentParams/deploymentParams.goerli.js")
 
 async function main() {
   console.log("Deploying on testnet");

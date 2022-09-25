@@ -58,7 +58,7 @@ contract ActivePool is
 		address _stabilityManagerAddress,
 		address _defaultPoolAddress,
 		address _collSurplusPoolAddress
-	) external initializer {
+	) external initializer onlyOwner {
 		require(!isInitialized, "Already initialized");
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_troveManagerAddress);

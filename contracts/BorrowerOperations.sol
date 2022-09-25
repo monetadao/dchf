@@ -113,7 +113,7 @@ contract BorrowerOperations is DfrancBase, CheckContract, IBorrowerOperations, I
 		address _dchfTokenAddress,
 		address _MONStakingAddress,
 		address _dfrancParamsAddress
-	) external override initializer {
+	) external override initializer onlyOwner {
 		require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
 		checkContract(_troveManagerHelpersAddress);

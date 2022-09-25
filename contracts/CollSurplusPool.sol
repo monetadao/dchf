@@ -38,7 +38,7 @@ contract CollSurplusPool is Ownable, CheckContract, Initializable, ICollSurplusP
 		address _troveManagerAddress,
 		address _troveManagerHelpersAddress,
 		address _activePoolAddress
-	) external override initializer {
+	) external override initializer onlyOwner {
 		require(!isInitialized, "Already initialized");
 		checkContract(_borrowerOperationsAddress);
 		checkContract(_troveManagerAddress);
