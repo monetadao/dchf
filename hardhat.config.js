@@ -74,8 +74,8 @@ module.exports = {
         getSecret('DEPLOYER_PRIVATEKEY')
       ]
     },*/
-    rinkeby: {
-      url: "https://rinkeby.infura.io/v3/335a6e32175c42c4bed4b5ada058e94c",
+    goerli: {
+      url: "https://goerli.infura.io/v3/335a6e32175c42c4bed4b5ada058e94c",
       accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
     },
     fork: {
