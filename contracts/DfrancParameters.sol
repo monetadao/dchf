@@ -58,7 +58,7 @@ contract DfrancParameters is IDfrancParameters, Ownable, CheckContract, Initiali
 		address _defaultPool,
 		address _priceFeed,
 		address _adminContract
-	) external override initializer {
+	) external override initializer onlyOwner {
 		require(!isInitialized, "Already initalized");
 		checkContract(_activePool);
 		checkContract(_defaultPool);

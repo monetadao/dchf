@@ -83,7 +83,7 @@ contract SortedTroves is Ownable, CheckContract, Initializable, ISortedTroves {
 		address _troveManagerAddress,
 		address _troveManagerHelpersAddress,
 		address _borrowerOperationsAddress
-	) external override initializer {
+	) external override initializer onlyOwner {
 		require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);
 		checkContract(_troveManagerHelpersAddress);

@@ -42,6 +42,7 @@ contract DefaultPool is Ownable, CheckContract, Initializable, IDefaultPool {
 		address _activePoolAddress
 	  ) external
 		initializer
+		onlyOwner
 	{
 		require(!isInitialized, "Already initialized");
 		checkContract(_troveManagerAddress);

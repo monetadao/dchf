@@ -38,7 +38,7 @@ contract AdminContract is Ownable, Initializable {
 		address _dchfTokenAddress,
 		address _sortedTrovesAddress,
 		address _communityIssuanceAddress
-	) external initializer {
+	) external initializer onlyOwner {
 		require(!isInitialized, "Already initialized");
 		CheckContract(_paramaters);
 		CheckContract(_stabilityPoolManager);

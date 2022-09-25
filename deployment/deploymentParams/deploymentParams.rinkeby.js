@@ -13,9 +13,9 @@ const externalAddrs = {
 
 
 const dfrancAddresses = {
-  ADMIN_MULTI: "0x4F74e01855E79e4ec65ee67C51540144A698D972",
-  MON_SAFE: "0x4F74e01855E79e4ec65ee67C51540144A698D972", // TODO
-  DEPLOYER: "0x4F74e01855E79e4ec65ee67C51540144A698D972"
+  ADMIN_MULTI: "0x9BB671fc3Fb341fd494f305eD4F1417C86a9413B",
+  MON_SAFE: "0x9BB671fc3Fb341fd494f305eD4F1417C86a9413B", // TODO
+  DEPLOYER: "0xDDe14fa2ef87F3dEAC674c88a7B125B4f9eda3C0"
 }
 
 const monetaCommunityIssuanceParams = {
@@ -28,7 +28,7 @@ const monetaCommunityIssuanceParams = {
 const REDEMPTION_SAFETY = 14;
 
 // 1 = Deploy Moneta token, 2 = Deploy DCHF Core contracts
-const DEPLOYMENT_PHASE = 1;
+const DEPLOYMENT_PHASE = 2;
 
 const OUTPUT_FILE = './deployment/output/rinkebyDeploymentOutput.json'
 

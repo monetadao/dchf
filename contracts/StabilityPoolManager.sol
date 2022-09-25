@@ -20,7 +20,7 @@ contract StabilityPoolManager is Ownable, CheckContract, Initializable, IStabili
 		_;
 	}
 
-	function setAddresses(address _adminContract) external initializer {
+	function setAddresses(address _adminContract) external initializer onlyOwner {
 		require(!isInitialized, "Already initialized");
 		checkContract(_adminContract);
 		isInitialized = true;

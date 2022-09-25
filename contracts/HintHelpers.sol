@@ -37,7 +37,7 @@ contract HintHelpers is DfrancBase, CheckContract, Initializable {
 		address _troveManagerAddress,
 		address _troveManagerHelpersAddress,
 		address _vaultParametersAddress
-	) external initializer {
+	) external initializer onlyOwner {
 		require(!isInitialized, "Already initialized");
 		checkContract(_sortedTrovesAddress);
 		checkContract(_troveManagerAddress);
