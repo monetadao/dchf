@@ -67,13 +67,13 @@ module.exports = {
 
     localhost: {
       url: "http://localhost:7545"
-    },
+    },*/
     mainnet: {
       url: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
       accounts: [
         getSecret('DEPLOYER_PRIVATEKEY')
       ]
-    },*/
+    },
     goerli: {
       url: "https://goerli.infura.io/v3/335a6e32175c42c4bed4b5ada058e94c",
       accounts: [getSecret("RINKEBY_PRIVATE_KEY")]
