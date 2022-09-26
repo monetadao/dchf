@@ -53,7 +53,7 @@ class DeploymentHelper {
 
     const contract = proxy
       ? await upgrades.deployProxy(factory)
-      : await factory.deploy(...params);
+      : await factory.deploy(...params, { gasPrice: this.configParams.GAS_PRICE });
 
     await this.deployerWallet.provider.waitForTransaction(contract.deployTransaction.hash, this.configParams.TX_CONFIRMATIONS)
 
