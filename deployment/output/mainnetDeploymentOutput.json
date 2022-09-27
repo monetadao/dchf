@@ -102,5 +102,20 @@
     "address": "0xD4EcC372E99daBDbc0faBE02d2515a24388fACcA",
     "txHash": "0x4564c3b64f7bab20e163e2f437a95bdd75151024163a31da7a88147ce08b14b6",
     "verification": "https://etherscan.io/address/0xD4EcC372E99daBDbc0faBE02d2515a24388fACcA#code"
+  },
+  "LockedMONMarketing": {
+    "address": "0x2e92c456278D77558723ca263c713B5D30520a39",
+    "txHash": "0x18cd5cd38bd3a99d107d5f4d6cb6dca537854ce57d0874c2559b5083d51423f0",
+    "verification": "https://etherscan.io/address/0x2e92c456278D77558723ca263c713B5D30520a39#code"
+  },
+  "LockedMONReserves": {
+    "address": "0x0F45883CDBE2B4D9cF79c823509112028DA0C857",
+    "txHash": "0xe8fcf31935bd141309987f9bec7f7e54addc5b8a541ae0c7b36c309f4c12ba15",
+    "verification": "https://etherscan.io/address/0x0F45883CDBE2B4D9cF79c823509112028DA0C857#code"
+  },
+  "LockedMONAdvisors": {
+    "address": "0x8eba1aD289f5e6c50D2f924E17cC8dd607B3C083",
+    "txHash": "0xae45a215c23ff92d096ce15f2e70c6b5954958f9b0eca7f766d9d8611c9ac03d",
+    "verification": "https://etherscan.io/address/0x8eba1aD289f5e6c50D2f924E17cC8dd607B3C083#code"
   }
 }
