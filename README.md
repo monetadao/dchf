@@ -10,13 +10,36 @@ The main changes from the fork were done such that the contracts are deployable 
 
 In Addition, the repository was cleaned up such that it can only be deployed to rinkeby and mainnet. Many scripts, tests, helpers etc. were removed.
 
+## Deployed Contracts
+
+- MONToken: 0x1EA48B9965bb5086F3b468E50ED93888a661fc17
+- gasPool: 0xC9A113C35f961af3526E6F016F6DF9DA0A4c7BfA
+- sortedTroves: 0x1Dd69453a685C735f2ab43E2169b57e9Edf72286
+- troveManager: 0x99838142189adE67c1951f9c57c3333281334F7F
+- troveManagerHelpers: 0xaAACB8C39Bd5Acbb0A236112Df8d15411161e518
+- activePool: 0x77E034c8A1392d99a2C776A6C1593866fEE36a33
+- stabilityPoolManager: 0x202FbFF035188f9f0525E144C8B3F8249a74aD21
+- defaultPool: 0xC1f785B74a01dd9FAc0dE6070bC583fe9eaC7Ab5
+- collSurplusPool: 0xA622c3bdBFBE749B1984bc127bFB500e196F594b
+- borrowerOperations: 0x9eB2Ce1be2DD6947e4f5Aabe33106f48861DFD74
+- hintHelpers: 0x17244338034Bea1fA940779Bc769Ff01833406c4
+- dfrancParameters: 0x6F9990B242873d7396511f2630412A3fcEcacc42
+- priceFeed: 0x09AB3C0ce6Cb41C13343879A667a6bDAd65ee9DA
+- adminContract: 0x2748C55219DCa1D9D3c3a57505e99BB04e42F254
+- DCHFToken: 0x045da4bFe02B320f4403674B3b7d121737727A36
+- MONStaking: 0x8Bc3702c35D33E5DF7cb0F06cb72a0c34Ae0C56F
+- communityIssuance: 0x0fa46e8cBCEff8468DB2Ec2fD77731D8a11d3D86
+- StabilityPoolETH: 0x6a9f9d6F5D672a9784c5E560a9648de6cbe2c548
+- StabilityPoolBTC: 0x04556d845f12Ff7D8Ff04a37F40387Dd1B454c4b
+- multiTroveGetter: 0xD4EcC372E99daBDbc0faBE02d2515a24388fACcA
+
 ## Deployment
 
 Do the following steps to deploy the whole infrastructure:
 
 1. Run `npm i`
-2. Create a `secrets.js` from the template `secrets.js.template` file. Add the `RINKEBY_PRIVATE_KEY`, the `RINKEBY_RPC_URL` and the `ETHERSCAN_API_KEY` for rinkeby deployment (todo: mainnetdeplyoment)
-3. In `deployment/deploymentParams/deploymentParams.rinkeby.js` (todo mainnetdeployment) it's needed to replace the values between the lines 16-18 to the Deployer's wallet (accordingly to the private key set on `secrets.js` file). All the oracles addresses are correct and should not be changed. Also the value `GAS_PRICE` is set correctly and you risk getting stuck in the deployment if the value is changed.
+2. Create a `secrets.js` from the template `secrets.js.template` file. Add the `RINKEBY_PRIVATE_KEY`, the `RINKEBY_RPC_URL` and the `ETHERSCAN_API_KEY` for rinkeby deployment (todo: mainnet deployment)
+3. In `deployment/deploymentParams/deploymentParams.rinkeby.js` (todo mainnet deployment) it's needed to replace the values between the lines 16-18 to the Deployer's wallet (accordingly to the private key set on `secrets.js` file). All the oracles addresses are correct and should not be changed. Also the value `GAS_PRICE` is set correctly and you risk getting stuck in the deployment if the value is changed.
 4. You can choose to either deploy only the MONETA contracts (moneta token, vesting) or the whole infrastructure. Set the parameter `MON_TOKEN_ONLY` to handle this
 5. Run `npx hardhat run deployment/deploymentScripts/rinkebyDeployment.js --network rinkeby` (todo mainnet deployment), to deploy the contracts.
 6. You can check and verify the contracts by checking the output file in `deployment/output/rinkebyDeploymentOutput.json`.
