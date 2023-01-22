@@ -8,7 +8,7 @@ This repository was initially forked from vesta finance (link) and was changed i
 
 The main changes from the fork were done such that the contracts are deployable on mainnet. Vesta Finance deployed the contracts on Arbitrum which does not have a max byte size limit for contracts. Therefore, the TroveManager.sol was over 25kb of size and needed to be split up into TroveManager.sol and TroveManagerHelpers.sol.
 
-In Addition, the repository was cleaned up such that it can only be deployed to rinkeby and mainnet. Many scripts, tests, helpers etc. were removed.
+In Addition, the repository was cleaned up such that it can only be deployed to Ethereum mainnet and the Goerli testnet. Many scripts, tests, helpers etc. were removed.
 
 ## Deployed Contracts
 
@@ -38,11 +38,11 @@ In Addition, the repository was cleaned up such that it can only be deployed to 
 Do the following steps to deploy the whole infrastructure:
 
 1. Run `npm i`
-2. Create a `secrets.js` from the template `secrets.js.template` file. Add the `RINKEBY_PRIVATE_KEY`, the `RINKEBY_RPC_URL` and the `ETHERSCAN_API_KEY` for rinkeby deployment (todo: mainnet deployment)
-3. In `deployment/deploymentParams/deploymentParams.rinkeby.js` (todo mainnet deployment) it's needed to replace the values between the lines 16-18 to the Deployer's wallet (accordingly to the private key set on `secrets.js` file). All the oracles addresses are correct and should not be changed. Also the value `GAS_PRICE` is set correctly and you risk getting stuck in the deployment if the value is changed.
+2. Create a `secrets.js` from the template `secrets.js.template` file. Add the `INFURA_API_KEY`, the `DEPLOYER_PRIVATEKEY` and the `ETHERSCAN_API_KEY` for mainnet deployment (or the Goerli parameters for testnet deployment).
+3. Update the addresses on lines 16-18 in `deployment/deploymentParams/deploymentParams.mainnet.js` (or the goerli file for testnet deployment) to reflect your specific setting. The Deployer address needs to reflect the private key set in the `secrets.js` file. Verify the oracle addresses on lines 5-18. The parameter `GAS_PRICE` should be fine and your deploy transactions risk getting stuck if the value is changed.
 4. You can choose to either deploy only the MONETA contracts (moneta token, vesting) or the whole infrastructure. Set the parameter `MON_TOKEN_ONLY` to handle this
-5. Run `npx hardhat run deployment/deploymentScripts/rinkebyDeployment.js --network rinkeby` (todo mainnet deployment), to deploy the contracts.
-6. You can check and verify the contracts by checking the output file in `deployment/output/rinkebyDeploymentOutput.json`.
+5. Run `npx hardhat run deployment/deploymentScripts/mainnetDeployment.js --network mainnet` (or the Goerli references for testnet deployment), to deploy the contracts.
+6. You can check and verify the contracts by checking the output file in `deployment/output/mainnetDeploymentOutput.json`.
 
 ## Important Notes
 

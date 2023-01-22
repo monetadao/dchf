@@ -24,11 +24,11 @@ const getSecret = (secretKey, defaultValue = '') => {
 }
 
 const infuraMainnetUrl = () => {
-  return `https://mainnet.infura.io/v3/${getSecret('infuraAPIKey')}`
+  return `https://mainnet.infura.io/v3/${getSecret('INFURA_API_KEY')}`
 }
 
 const infuraGoerliUrl = () => {
-  return `https://goerli.infura.io/v3/${getSecret('infuraAPIKey')}`
+  return `https://goerli.infura.io/v3/${getSecret('INFURA_API_KEY')}`
 }
 
 module.exports = {
