@@ -5,7 +5,6 @@ require('solidity-coverage')
 require('hardhat-gas-reporter')
 require('@openzeppelin/hardhat-upgrades')
 require('hardhat-contract-sizer')
-// require("@openzeppelin/hardhat-defender")
 
 const accounts = require('./hardhatAccountsList2k.js')
 const accountsList = accounts.accountsList
@@ -23,12 +22,13 @@ const getSecret = (secretKey, defaultValue = '') => {
 
   return secret
 }
-const alchemyUrl = () => {
-  return `https://eth-mainnet.alchemyapi.io/v2/${getSecret('alchemyAPIKey')}`
+
+const infuraMainnetUrl = () => {
+  return `https://mainnet.infura.io/v3/${getSecret('infuraAPIKey')}`
 }
 
-const infuraUrl = () => {
-  return `https://mainnet.infura.io/v3/${getSecret('infuraAPIKey')}`
+const infuraGoerliUrl = () => {
+  return `https://goerli.infura.io/v3/${getSecret('infuraAPIKey')}`
 }
 
 module.exports = {
@@ -63,7 +63,7 @@ module.exports = {
       //   gasPrice: 20000000000,
       hardfork: 'london',
       forking: {
-        url: infuraUrl(),
+        url: infuraMainnetUrl(),
       },
     },
 
@@ -74,16 +74,12 @@ module.exports = {
       timeout: 1000 * 60,
     },
     mainnet: {
-      url: infuraUrl(),
+      url: infuraMainnetUrl(),
       accounts: [getSecret('DEPLOYER_PRIVATEKEY')],
     },
     goerli: {
-      url: 'https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-      accounts: [getSecret('RINKEBY_PRIVATE_KEY')],
-    },
-    rinkeby: {
-      url: 'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
-      accounts: [getSecret('RINKEBY_PRIVATE_KEY')],
+      url: infuraGoerliUrl(),
+      accounts: [getSecret('GOERLI_DEPLOYER_PRIVATEKEY')],
     },
     fork: {
       url: 'http://localhost:7545',
@@ -99,9 +95,5 @@ module.exports = {
   },
   gasReporter: {
     enabled: false,
-  },
-  /*defender: {
-    apiKey: getSecret("DEFENDER_API_KEY"),
-    apiSecret: getSecret("DEFENDER_API_SECRET"),
-  }*/
+  }
 }
