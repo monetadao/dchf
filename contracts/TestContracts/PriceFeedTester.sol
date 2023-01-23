@@ -5,6 +5,14 @@ pragma solidity ^0.8.14;
 import "../PriceFeed.sol";
 
 contract PriceFeedTester is PriceFeed {
+	enum Status {
+		chainlinkWorking,
+		chainlinkUntrusted
+	}
+
+	Status public status;
+	mapping(address => uint256) public lastGoodPrice;
+
 	function setLastGoodPrice(uint256 _lastGoodPrice) external {
 		lastGoodPrice[address(0)] = _lastGoodPrice;
 	}
