@@ -128,9 +128,11 @@ contract('StabilityPool', async (accounts) => {
       )
     })
 
-    // --- flasLiquidation() ---
+    // --- flashLiquidation() ---
 
-    it.only('flashLiquidation(): Deposits when Pool is empty, liquidates 2 Troves and withdraws the DCHF left', async () => {
+    // skipped due to required different node config
+
+    it.skip('flashLiquidation(): Deposits when Pool is empty, liquidates 2 Troves and withdraws the DCHF left', async () => {
       // --- SETUP ---
 
       // Whale opens Trove and deposits to SP
@@ -234,7 +236,7 @@ contract('StabilityPool', async (accounts) => {
       assert.isTrue(SPDCHF_After.lt(toBN(dec(10000, 18))))
     })
 
-    it('provideToSP(): Check of user snapshots of accumulated rewards per unit staked in one block', async () => {
+    it.skip('provideToSP(): Check of user snapshots of accumulated rewards per unit staked in one block', async () => {
       // --- SETUP ---
 
       // Whale opens Trove and deposits to SP
