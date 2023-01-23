@@ -67,13 +67,13 @@ npx hardhat test
 or for a specific test e.g `BorrowerOperationsTest`
 
 ```
-npx hardhat test test/liquity/BorrowerOperationsTest.js
+npx hardhat test test/core/BorrowerOperationsTest.js
 ```
 
 or for a specific test and specific network e.g `BorrowerOperationsTest` and network hardhat
 
 ```
-npx hardhat test test/liquity/BorrowerOperationsTest.js -- network hardhat
+npx hardhat test test/core/BorrowerOperationsTest.js -- network hardhat
 ```
 
 ### Deploy
