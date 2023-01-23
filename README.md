@@ -33,10 +33,10 @@ To build the project
 First clone the repository locally
 
 ```
-https://github.com/defifranc/dchf.git
+git clone https://github.com/defifranc/dchf.git
 ```
 
-Enter in the repository
+Switch to the repository directory
 
 ```
 cd dchf
@@ -56,9 +56,9 @@ npx hardhat compile
 
 ### Test
 
-Prior to running the tests you need to make sure the different packages are installed (`npm i`) and the `secrets.js` file is filled with your `INFURA_API_KEY`
+Prior to running the tests you need to make sure the required packages are installed (`npm i`). Also, create a `secrets.js` file in the project's root folder from the template `secrets.js.template` and add your `INFURA_API_KEY`.
 
-To run all the tests (default network is hardhat):
+To run all the tests on a local mainnet fork (default network is `hardhat`):
 
 ```
 npx hardhat test
@@ -78,13 +78,13 @@ npx hardhat test test/liquity/BorrowerOperationsTest.js -- network hardhat
 
 ### Deploy
 
-Be aware than before running the deployment scripts you need to make sure the different packages are installed (`npm i`)
+Prior to running the deploy scripts you need to make sure the required packages are installed (`npm i`).
 
-Do the following steps to deploy the whole infrastructure:
+Then, proceed along the following steps to deploy the entire protocol:
 
-1. Create a `secrets.js` from the template `secrets.js.template` file. Add the `INFURA_API_KEY`, the `DEPLOYER_PRIVATEKEY` and the `ETHERSCAN_API_KEY` for mainnet deployment (or the Goerli parameters for testnet deployment).
-2. Update the addresses on lines 16-18 in `deployment/deploymentParams/deploymentParams.mainnet.js` (or the goerli file for testnet deployment) to reflect your specific setting. The Deployer address needs to reflect the private key set in the `secrets.js` file. Verify the oracle addresses on lines 5-18. The parameter `GAS_PRICE` should be fine and your deploy transactions risk getting stuck if the value is changed.
-3. You can choose to either deploy only the MONETA contracts (moneta token, vesting) or the whole infrastructure. Set the parameter `MON_TOKEN_ONLY` to handle this
+1. Create a `secrets.js` file in the project's root folder from the template `secrets.js.template`. Add the `INFURA_API_KEY`, the `DEPLOYER_PRIVATEKEY` and the `ETHERSCAN_API_KEY` for mainnet deployment (or the Goerli parameters for testnet deployment).
+2. Update the addresses on lines 16-18 in `deployment/deploymentParams/deploymentParams.mainnet.js` (or the goerli file for testnet deployment) to reflect your specific setting. The Deployer address needs to reflect the private key set in the `secrets.js` file. Verify the oracle addresses on lines 5-18 and parameter `GAS_PRICE` (if `GAS_PRICE` is too low you risk your deploy transactions getting stuck).
+3. You can choose to either deploy only the Moneta contracts (see `MON` folder) or the entire protocol. Set the parameter `MON_TOKEN_ONLY` to handle this
 4. Run `npx hardhat run deployment/deploymentScripts/mainnetDeployment.js --network mainnet` (or the Goerli references for testnet deployment), to deploy the contracts.
 5. You can check and verify the contracts by checking the output file in `deployment/output/mainnetDeploymentOutput.json`.
 
