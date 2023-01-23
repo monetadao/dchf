@@ -10,6 +10,84 @@ The main changes from the fork were done such that the contracts are deployable 
 
 In Addition, the repository was cleaned up such that it can only be deployed to Ethereum mainnet and the Goerli testnet. Many scripts, tests, helpers etc. were removed.
 
+## Getting Started
+
+### Requirements
+
+A working Node.js >=16.0 installation
+
+Otherwise, you need to install Node Version Manager (nvm) https://github.com/nvm-sh/nvm
+
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+nvm install 18
+nvm use 18
+nvm alias default 18
+npm install npm --global # Upgrade npm to the latest version
+```
+
+### Build
+
+To build the project
+
+First clone the repository locally
+
+```
+https://github.com/defifranc/dchf.git
+```
+
+Enter in the repository
+
+```
+cd dchf
+```
+
+Install the dependencies
+
+```
+npm i
+```
+
+Once all the packages are installed, just run this command to compile the contracts and build the artifacts:
+
+```
+npx hardhat compile
+```
+
+### Test
+
+Prior to running the tests you need to make sure the different packages are installed (`npm i`) and the `secrets.js` file is filled with your `INFURA_API_KEY`
+
+To run all the tests (default network is hardhat):
+
+```
+npx hardhat test
+```
+
+or for a specific test e.g `BorrowerOperationsTest`
+
+```
+npx hardhat test test/liquity/BorrowerOperationsTest.js
+```
+
+or for a specific test and specific network e.g `BorrowerOperationsTest` and network hardhat
+
+```
+npx hardhat test test/liquity/BorrowerOperationsTest.js -- network hardhat
+```
+
+### Deploy
+
+Be aware than before running the deployment scripts you need to make sure the different packages are installed (`npm i`)
+
+Do the following steps to deploy the whole infrastructure:
+
+1. Create a `secrets.js` from the template `secrets.js.template` file. Add the `INFURA_API_KEY`, the `DEPLOYER_PRIVATEKEY` and the `ETHERSCAN_API_KEY` for mainnet deployment (or the Goerli parameters for testnet deployment).
+2. Update the addresses on lines 16-18 in `deployment/deploymentParams/deploymentParams.mainnet.js` (or the goerli file for testnet deployment) to reflect your specific setting. The Deployer address needs to reflect the private key set in the `secrets.js` file. Verify the oracle addresses on lines 5-18. The parameter `GAS_PRICE` should be fine and your deploy transactions risk getting stuck if the value is changed.
+3. You can choose to either deploy only the MONETA contracts (moneta token, vesting) or the whole infrastructure. Set the parameter `MON_TOKEN_ONLY` to handle this
+4. Run `npx hardhat run deployment/deploymentScripts/mainnetDeployment.js --network mainnet` (or the Goerli references for testnet deployment), to deploy the contracts.
+5. You can check and verify the contracts by checking the output file in `deployment/output/mainnetDeploymentOutput.json`.
+
 ## Deployed Contracts
 
 - MONToken: 0x1EA48B9965bb5086F3b468E50ED93888a661fc17
@@ -32,39 +110,6 @@ In Addition, the repository was cleaned up such that it can only be deployed to 
 - StabilityPoolETH: 0x6a9f9d6F5D672a9784c5E560a9648de6cbe2c548
 - StabilityPoolBTC: 0x04556d845f12Ff7D8Ff04a37F40387Dd1B454c4b
 - multiTroveGetter: 0xD4EcC372E99daBDbc0faBE02d2515a24388fACcA
-
-## Deployment
-
-Do the following steps to deploy the whole infrastructure:
-
-1. Run `npm i`
-2. Create a `secrets.js` from the template `secrets.js.template` file. Add the `INFURA_API_KEY`, the `DEPLOYER_PRIVATEKEY` and the `ETHERSCAN_API_KEY` for mainnet deployment (or the Goerli parameters for testnet deployment).
-3. Update the addresses on lines 16-18 in `deployment/deploymentParams/deploymentParams.mainnet.js` (or the goerli file for testnet deployment) to reflect your specific setting. The Deployer address needs to reflect the private key set in the `secrets.js` file. Verify the oracle addresses on lines 5-18. The parameter `GAS_PRICE` should be fine and your deploy transactions risk getting stuck if the value is changed.
-4. You can choose to either deploy only the MONETA contracts (moneta token, vesting) or the whole infrastructure. Set the parameter `MON_TOKEN_ONLY` to handle this
-5. Run `npx hardhat run deployment/deploymentScripts/mainnetDeployment.js --network mainnet` (or the Goerli references for testnet deployment), to deploy the contracts.
-6. You can check and verify the contracts by checking the output file in `deployment/output/mainnetDeploymentOutput.json`.
-
-## Testing
-
-Prior to run the tests you need to make sure the different packages are installed (`npm i`) and the `secrets.js` file is filled with your `INFURA_API_KEY`
-
-To run all the tests (default network is hardhat):
-
-```
-npx hardhat test
-```
-
-or for a specific test e.g `BorrowerOperationsTest`
-
-```
-npx hardhat test test/liquity/BorrowerOperationsTest.js
-```
-
-or for a specific test and specific network e.g `BorrowerOperationsTest` and network hardhat
-
-```
-npx hardhat test test/liquity/BorrowerOperationsTest.js -- network hardhat
-```
 
 ## Important Notes
 
