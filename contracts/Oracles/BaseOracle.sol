@@ -35,7 +35,7 @@ abstract contract BaseOracle is IOracle, BaseMath {
 	constructor(address _chfFeed, uint256 _chfFeedTimeout) {
 		chfFeed = _chfFeed;
 		chfTimeout = _chfFeedTimeout;
-		chfScale = 10**DECIMAL_PRECISION / 10**AggregatorV3Interface(_chfFeed).decimals();
+		chfScale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_chfFeed).decimals();
 	}
 
 	/// ======== Oracle Implementation ======== ///
@@ -46,7 +46,7 @@ abstract contract BaseOracle is IOracle, BaseMath {
 	function value() external view override(IOracle) returns (uint256 value_) {
 		(uint256 _chf, ) = _chfValue();
 		(uint256 _feed, ) = _feedValue();
-		return (_chf * _feed) / 1e18;
+		return (_feed * DECIMAL_PRECISION) / _chf;
 	}
 
 	/// @notice Retrieves the latest spot price for a `token` from the corresponding Oracle

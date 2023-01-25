@@ -31,7 +31,7 @@ contract ChainlinkOracle is BaseOracle {
 	) BaseOracle(_chfFeed, _chfFeedTimeout) {
 		feed = _feed;
 		timeout = _timeout;
-		scale = 10**DECIMAL_PRECISION / 10**AggregatorV3Interface(_feed).decimals();
+		scale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_feed).decimals();
 	}
 
 	/// ======== Chainlink Oracle Implementation ======== ///
@@ -45,7 +45,7 @@ contract ChainlinkOracle is BaseOracle {
 		override(BaseOracle)
 		returns (uint256 value_, uint256 timestamp_)
 	{
-		// fetch last chainlink price chf
-		(value_, timestamp_) = _fetchValidValue(chfFeed, chfTimeout, chfScale);
+		// fetch last chainlink price feed e.g ETH / BTC
+		(value_, timestamp_) = _fetchValidValue(feed, timeout, scale);
 	}
 }

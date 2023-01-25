@@ -11,7 +11,7 @@ interface IGrizzlyVault {
 
 	function decimals() external view returns (uint8);
 
-	function want() external view returns (address);
+	function token() external view returns (address);
 }
 
 interface ICurvePool {
@@ -69,24 +69,24 @@ contract Chainlink3PoolPairedLpOracle is BaseOracle {
 	) BaseOracle(_chfFeed, _chfFeedTimeout) {
 		feed = _feed;
 		timeout = _timeout;
-		scale = 10**DECIMAL_PRECISION / 10**AggregatorV3Interface(_feed).decimals();
+		scale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_feed).decimals();
 
 		usdcFeed = _usdcFeed;
 		usdcTimeout = _usdcTimeout;
-		usdcScale = 10**DECIMAL_PRECISION / 10**AggregatorV3Interface(_usdcFeed).decimals();
+		usdcScale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_usdcFeed).decimals();
 
 		daiFeed = _daiFeed;
 		daiTimeout = _daiTimeout;
-		daiScale = 10**DECIMAL_PRECISION / 10**AggregatorV3Interface(_daiFeed).decimals();
+		daiScale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_daiFeed).decimals();
 
 		usdtFeed = _usdtFeed;
 		usdtTimeout = _usdtTimeout;
-		usdtScale = 10**DECIMAL_PRECISION / 10**AggregatorV3Interface(_usdtFeed).decimals();
+		usdtScale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_usdtFeed).decimals();
 
 		gvToken = _gvToken;
 		lpToken = _lpToken;
 
-		assert(IGrizzlyVault(gvToken).want() == _lpToken); // sanity check in constructor
+		assert(IGrizzlyVault(gvToken).token() == _lpToken); // sanity check in constructor
 	}
 
 	/// ======== Chainlink Oracle Implementation ======== ///
@@ -112,7 +112,7 @@ contract Chainlink3PoolPairedLpOracle is BaseOracle {
 
 		value_ =
 			(underlyingValue * ICurvePool(lpToken).get_virtual_price()) /
-			ICurvePool(lpToken).decimals();
+			10**(ICurvePool(lpToken).decimals());
 
 		// value_ =
 		// 	(IGrizzlyVault(gvToken).pricePerShare() * lpValueAdjusted) /
