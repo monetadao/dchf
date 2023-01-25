@@ -2,6 +2,7 @@ const { expect } = require('hardhat')
 const { ethers, network } = require('hardhat')
 
 const testHelpers = require('../utils/testHelpers.js')
+const timeValues = testHelpers.TimeValues
 const th = testHelpers.TestHelper
 const toBN = th.toBN
 const dec = th.dec
@@ -52,6 +53,17 @@ describe('Oracle', function () {
       await PriceFeed.connect(Account1).fetchPrice(GV_FRAX)
       await PriceFeed.connect(Account2).fetchPrice(GV_FRAX)
       await PriceFeed.connect(Account3).fetchPrice(GV_FRAX)
+    })
+
+    it('Fetches the price, delayed 1h interval', async function () {
+      await PriceFeed.addOracle(GV_FRAX, GVOracle.address, CHAINLINK_USD_CHF)
+
+      await network.provider.send('evm_increaseTime', [timeValues.SECONDS_IN_ONE_HOUR])
+      await network.provider.send('evm_mine')
+
+      const tx = await PriceFeed.fetchPrice(GV_FRAX)
+      const txData = await tx.wait()
+      console.log('gasUsed:', txData.cumulativeGasUsed.toNumber()) // 199447
     })
 
     it('Can read getRoundData and latestRoundData', async function () {
