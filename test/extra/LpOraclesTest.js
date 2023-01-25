@@ -8,6 +8,13 @@ const toBN = th.toBN
 const dec = th.dec
 const ZERO_ADDRESS = th.ZERO_ADDRESS
 
+const { abi: BOpABI } = require('../../artifacts/contracts/BorrowerOperations.sol/BorrowerOperations.json')
+
+const BORROWER_OPERATIONS = '0x9eB2Ce1be2DD6947e4f5Aabe33106f48861DFD74'
+const DFRANC_PARAMS = '0x6F9990B242873d7396511f2630412A3fcEcacc42'
+
+const MULTISIG = '0x83737EAe72ba7597b36494D723fbF58cAfee8A69'
+
 const GV_FRAX = '0xF437C8cEa5Bb0d8C10Bb9c012fb4a765663942f1'
 const CHAINLINK_USD_CHF = '0x449d117117838ffa61263b61da6301aa2a88b13a'
 const ADMIN_CONTRACT = '0x2748C55219DCa1D9D3c3a57505e99BB04e42F254'
@@ -56,7 +63,7 @@ describe('Oracle', function () {
   let OldPriceFeedInstance
 
   beforeEach(async function () {
-    ;[Owner, Account1, Account2, Account3] = await ethers.getSigners()
+    ;[Owner, Account1, Account2, Account3, Account4] = await ethers.getSigners()
 
     const GVOracleFactory = await ethers.getContractFactory('Chainlink3PoolPairedLpOracle')
     GVOracle = await GVOracleFactory.deploy(...deployParams)
@@ -127,19 +134,6 @@ describe('Oracle', function () {
       expect(priceDirect.toString()).to.be.eq(priceOldFeed.toString())
     })
 
-    it.skip('Fetches the price, gas reporting purposes', async function () {
-      await PriceFeed.addOracle(GV_FRAX, GVOracle.address, CHAINLINK_USD_CHF)
-
-      const tx = await PriceFeed.fetchPrice(GV_FRAX)
-      const txData = await tx.wait()
-      console.log('gasUsed:', txData.cumulativeGasUsed.toNumber()) // 199447
-
-      // Extra calls to make the sample representative
-      await PriceFeed.connect(Account1).fetchPrice(GV_FRAX)
-      await PriceFeed.connect(Account2).fetchPrice(GV_FRAX)
-      await PriceFeed.connect(Account3).fetchPrice(GV_FRAX)
-    })
-
     it.skip('Can read getRoundData and latestRoundData', async function () {
       const getLatestRoundData = await GVOracle.latestAnswer()
       console.log('GetLatestRoundData lpOracle answer:', +getLatestRoundData.answer)
@@ -154,6 +148,84 @@ describe('Oracle', function () {
       const diff = timestampBefore - getLatestRoundData.updatedAt.toNumber()
 
       expect(diff).lt((await PriceFeed.TIMEOUT()).toNumber())
+    })
+  })
+
+  describe('Gas testing of current and new PriceFeeds', function () {
+    it('Opens a Trove with 3 accounts but different priceFeeds, gas reporting purposes', async function () {
+      await PriceFeed.addOracle(ZERO_ADDRESS, ChainlinkOracleETH.address)
+
+      // new instance of the current mainnet deployed BorrowerOperations
+      const BorrowerOperationsFactory = await ethers.getContractFactory('BorrowerOperations')
+      const BorrowerOperations = BorrowerOperationsFactory.attach(BORROWER_OPERATIONS)
+
+      const minDebt = hre.ethers.utils.parseUnits('2500', 18)
+      const coll = hre.ethers.utils.parseUnits('10', 18)
+
+      const txI = await BorrowerOperations.connect(Account1).openTrove(
+        ZERO_ADDRESS,
+        0,
+        th._100pct,
+        minDebt,
+        ZERO_ADDRESS,
+        ZERO_ADDRESS,
+        { value: coll }
+      )
+      const txIData = await txI.wait()
+      console.log('gasUsed I old PriceFeed first openTrove:', txIData.cumulativeGasUsed.toNumber()) // 560559
+
+      const txII = await BorrowerOperations.connect(Account2).openTrove(
+        ZERO_ADDRESS,
+        0,
+        th._100pct,
+        minDebt,
+        ZERO_ADDRESS,
+        ZERO_ADDRESS,
+        { value: coll }
+      )
+      const txIIData = await txII.wait()
+      console.log('gasUsed II old PriceFeed second openTrove:', txIIData.cumulativeGasUsed.toNumber()) // 542855
+
+      // new instance of the current mainnet deployed DfrancParameters
+      const DfrancParametersFactory = await ethers.getContractFactory('DfrancParameters')
+      const DfrancParams = DfrancParametersFactory.attach(DFRANC_PARAMS)
+
+      await network.provider.request({
+        method: 'hardhat_impersonateAccount',
+        params: [MULTISIG],
+      })
+      const multiSig = ethers.provider.getUncheckedSigner(MULTISIG)
+
+      // fund the multisig account to be able to process tx
+      const forceETH = await ethers.getContractFactory('ForceETH')
+      await forceETH.deploy(MULTISIG, { value: coll })
+
+      // set the new priceFeed contract in dfrancParameters
+      await DfrancParams.connect(multiSig).setPriceFeed(PriceFeed.address)
+
+      const txIII = await BorrowerOperations.connect(Account3).openTrove(
+        ZERO_ADDRESS,
+        0,
+        th._100pct,
+        minDebt,
+        ZERO_ADDRESS,
+        ZERO_ADDRESS,
+        { value: coll }
+      )
+      const txIIIData = await txIII.wait()
+      console.log('gasUsed III new PriceFeed first openTrove:', txIIIData.cumulativeGasUsed.toNumber()) // 508591
+
+      const txIV = await BorrowerOperations.connect(Account4).openTrove(
+        ZERO_ADDRESS,
+        0,
+        th._100pct,
+        minDebt,
+        ZERO_ADDRESS,
+        ZERO_ADDRESS,
+        { value: coll }
+      )
+      const txIVData = await txIV.wait()
+      console.log('gasUsed IV new PriceFeed second openTrove:', txIVData.cumulativeGasUsed.toNumber()) // 508591
     })
   })
 
