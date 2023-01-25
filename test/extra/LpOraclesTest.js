@@ -11,6 +11,7 @@ const ZERO_ADDRESS = th.ZERO_ADDRESS
 const GV_FRAX = '0xF437C8cEa5Bb0d8C10Bb9c012fb4a765663942f1'
 const CHAINLINK_USD_CHF = '0x449d117117838ffa61263b61da6301aa2a88b13a'
 const ADMIN_CONTRACT = '0x2748C55219DCa1D9D3c3a57505e99BB04e42F254'
+const OLD_PRICE_FEED = '0x09AB3C0ce6Cb41C13343879A667a6bDAd65ee9DA'
 
 const CHAINLINK_ETHUSD = '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419'
 const CHAINLINK_BTCUSD = '0xf4030086522a5beea4988f8ca5b36dbc97bee88c'
@@ -50,6 +51,9 @@ const btcParams = [_chfFeed, _chfFeedTimeout, CHAINLINK_BTCUSD, _timeout]
 describe('Oracle', function () {
   let GVOracle
   let PriceFeed
+  let ChainlinkOracleETH
+  let ChainlinkOracleBTC
+  let OldPriceFeedInstance
 
   beforeEach(async function () {
     ;[Owner, Account1, Account2, Account3] = await ethers.getSigners()
@@ -64,9 +68,12 @@ describe('Oracle', function () {
     const PriceFeedFactory = await ethers.getContractFactory('PriceFeed')
     PriceFeed = await PriceFeedFactory.deploy()
     await PriceFeed.setAddresses(ADMIN_CONTRACT)
+
+    // new instance of the current mainnet deployed priceFeed to query and compare
+    OldPriceFeedInstance = PriceFeedFactory.attach(OLD_PRICE_FEED)
   })
 
-  describe('Add asset to price feed', function () {
+  describe('Add asset to price feed and fetch price', function () {
     it('Can add a new Chainlink3PoolPairedLpOracle asset and fetch the price', async function () {
       await PriceFeed.addOracle(GV_FRAX, GVOracle.address)
 
@@ -79,7 +86,7 @@ describe('Oracle', function () {
       const priceFetch = await PriceFeed.callStatic.fetchPrice(GV_FRAX)
       console.log('PriceFetch GVFrax3Crv in CHF:', priceFetch.toString())
 
-      expect(priceFetch.toString()).to.be.eq(priceFetch.toString())
+      expect(priceDirect.toString()).to.be.eq(priceFetch.toString())
     })
 
     it('Can add ETH as a new Chainlink asset and fetch the price', async function () {
@@ -94,7 +101,11 @@ describe('Oracle', function () {
       const priceFetch = await PriceFeed.callStatic.fetchPrice(ZERO_ADDRESS)
       console.log('PriceFetch ETH in CHF:', priceFetch.toString())
 
-      expect(priceFetch.toString()).to.be.eq(priceFetch.toString())
+      expect(priceDirect.toString()).to.be.eq(priceFetch.toString())
+
+      const priceOldFeed = await OldPriceFeedInstance.getDirectPrice(ZERO_ADDRESS)
+      console.log('PriceDirect ETH in CHF mainnet PriceFeed:', priceOldFeed.toString())
+      expect(priceDirect.toString()).to.be.eq(priceOldFeed.toString())
     })
 
     it('Can add BTC as a new Chainlink asset and fetch the price', async function () {
@@ -109,7 +120,11 @@ describe('Oracle', function () {
       const priceFetch = await PriceFeed.callStatic.fetchPrice(WBTC_ADDRESS)
       console.log('PriceFetch ETH in CHF:', priceFetch.toString())
 
-      expect(priceFetch.toString()).to.be.eq(priceFetch.toString())
+      expect(priceDirect.toString()).to.be.eq(priceFetch.toString())
+
+      const priceOldFeed = await OldPriceFeedInstance.getDirectPrice(WBTC_ADDRESS)
+      console.log('PriceDirect BTC in CHF mainnet PriceFeed:', priceOldFeed.toString())
+      expect(priceDirect.toString()).to.be.eq(priceOldFeed.toString())
     })
 
     it.skip('Fetches the price, gas reporting purposes', async function () {
