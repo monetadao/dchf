@@ -10,7 +10,6 @@ import "./Interfaces/IPriceFeed.sol";
 import "./Interfaces/IOracle.sol";
 
 contract PriceFeed is Ownable, CheckContract, IPriceFeed {
-
 	string public constant NAME = "PriceFeed";
 
 	bool public isInitialized;
@@ -32,21 +31,15 @@ contract PriceFeed is Ownable, CheckContract, IPriceFeed {
 	}
 
 	function setAdminContract(address _admin) external onlyOwner {
-		require(_admin != address(0), "Admin address is zero");
 		checkContract(_admin);
 		adminContract = _admin;
 	}
 
-	function addOracle(
-		address _token,
-		address _oracle
-	) external override isController {
+	function addOracle(address _token, address _oracle) external override isController {
 		IOracle oracle = IOracle(_oracle);
 
-		require(
-			_oracle != address(0),
-			"Not valid address"
-		);
+		require(_oracle != address(0), "Not valid address");
+		require(oracle.value() != 0, "Not valid oracle");
 
 		registeredOracles[_token] = _oracle;
 

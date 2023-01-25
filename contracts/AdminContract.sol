@@ -30,7 +30,7 @@ contract AdminContract is Ownable, Initializable {
 	address sortedTrovesAddress;
 
 	function setAddresses(
-		address _paramaters,
+		address _parameters,
 		address _stabilityPoolManager,
 		address _borrowerOperationsAddress,
 		address _troveManagerAddress,
@@ -40,7 +40,7 @@ contract AdminContract is Ownable, Initializable {
 		address _communityIssuanceAddress
 	) external initializer onlyOwner {
 		require(!isInitialized, "Already initialized");
-		CheckContract(_paramaters);
+		CheckContract(_parameters);
 		CheckContract(_stabilityPoolManager);
 		CheckContract(_borrowerOperationsAddress);
 		CheckContract(_troveManagerAddress);
@@ -57,15 +57,14 @@ contract AdminContract is Ownable, Initializable {
 		sortedTrovesAddress = _sortedTrovesAddress;
 		communityIssuance = ICommunityIssuance(_communityIssuanceAddress);
 
-		dfrancParameters = IDfrancParameters(_paramaters);
+		dfrancParameters = IDfrancParameters(_parameters);
 		stabilityPoolManager = IStabilityPoolManager(_stabilityPoolManager);
 	}
 
-	//Needs to approve Community Issuance to use this fonction.
+	//Needs to approve Community Issuance to use this function.
 	function addNewCollateral(
 		address _stabilityPoolProxyAddress,
-		address _chainlinkOracle,
-		address _chainlinkIndex,
+		address _assetOracle,
 		uint256 assignedToken,
 		uint256 _tokenPerWeekDistributed,
 		uint256 redemptionLockInDay
@@ -77,7 +76,7 @@ contract AdminContract is Ownable, Initializable {
 			"This collateral already exists"
 		);
 
-		dfrancParameters.priceFeed().addOracle(_asset, _chainlinkOracle, _chainlinkIndex);
+		dfrancParameters.priceFeed().addOracle(_asset, _assetOracle);
 		dfrancParameters.setAsDefaultWithRemptionBlock(_asset, redemptionLockInDay);
 
 		stabilityPoolManager.addStabilityPool(_asset, _stabilityPoolProxyAddress);

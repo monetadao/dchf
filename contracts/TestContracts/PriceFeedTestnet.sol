@@ -16,7 +16,6 @@ contract PriceFeedTestnet is IPriceFeed {
 
 	struct MockOracleData {
 		address chainLinkOracle;
-		address chainLinkIndex;
 		bool registered;
 	}
 
@@ -33,19 +32,15 @@ contract PriceFeedTestnet is IPriceFeed {
 		return _index;
 	}
 
-	function addOracle(
-		address _token,
-		address _chainlinkOracle,
-		address _chainlinkIndex
-	) external override {
-		oracles[_token] = MockOracleData(_chainlinkOracle, _chainlinkIndex, true);
+	function addOracle(address _token, address _oracle) external override {
+		oracles[_token] = MockOracleData(_oracle, true);
 	}
 
 	function fetchPrice(address _asset) external override returns (uint256) {
 		// Fire an event just like the mainnet version would.
 		// This lets the subgraph rely on events to get the latest price even when developing locally.
-		emit LastGoodPriceUpdated(_asset, _price);
-		emit LastGoodIndexUpdated(_asset, _price);
+		// emit LastGoodPriceUpdated(_asset, _price);
+		// emit LastGoodIndexUpdated(_asset, _price);
 		return _price.mul(_index).div(1 ether);
 	}
 
