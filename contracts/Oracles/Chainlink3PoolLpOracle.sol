@@ -6,14 +6,6 @@ import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/interfaces/
 import "../Dependencies/BaseMath.sol";
 import "./BaseOracle.sol";
 
-interface IGrizzlyVault {
-	function pricePerShare() external view returns (uint256);
-
-	function decimals() external view returns (uint8);
-
-	function token() external view returns (address);
-}
-
 interface ICurvePool {
 	function get_virtual_price() external view returns (uint256 price);
 
@@ -24,69 +16,50 @@ interface ICurvePool {
 /// @notice An Implementation of the IOracle for single Chainlink feeds.
 /// Assumptions: If a Chainlink Aggregator is not working as intended (e.g. calls revert (excl. getRoundData))
 /// then the methods `value` will revert as well
-contract Chainlink3PoolPairedLpOracle is BaseOracle {
+contract Chainlink3PoolLpOracle is BaseOracle {
 	/// ======== Custom Errors ======== ///
 
-	error ChainlinkOracle__feed_invalid();
+	// any additional checks?
 
 	/// ======== Variables ======== ///
 
-	address public immutable feed;
-	uint256 public immutable timeout; // NOTE should not make more sense a global timeout variable?
-	uint256 public immutable scale;
-
 	address public immutable usdcFeed;
-	uint256 public immutable usdcTimeout;
 	uint256 public immutable usdcScale;
 
 	address public immutable daiFeed;
-	uint256 public immutable daiTimeout;
 	uint256 public immutable daiScale;
 
 	address public immutable usdtFeed;
-	uint256 public immutable usdtTimeout;
 	uint256 public immutable usdtScale;
 
-	address public immutable gvToken;
-	address public immutable lpToken; // NOTE in Metapools lpToken = pool
+	address public immutable pool3Pool;
+	uint256 public immutable pool3Precision;
+
+	//address public immutable gvToken;
 
 	// NOTE for immutable params usdc, usdt, etc, would not make sense to explicitly assign the value out of the constructor, too many params!
-	/// @param _feed Address of the Chainlink feed
+	/// @param _chfFeed Address of the Chainlink feed
 	/// @param _timeout Unique identifier
 	constructor(
 		address _chfFeed,
-		uint256 _chfFeedTimeout,
-		address _feed,
-		uint256 _timeout,
 		address _usdcFeed,
-		uint256 _usdcTimeout,
 		address _daiFeed,
-		uint256 _daiTimeout,
 		address _usdtFeed,
-		uint256 _usdtTimeout,
-		address _gvToken,
-		address _lpToken
-	) BaseOracle(_chfFeed, _chfFeedTimeout) {
-		feed = _feed;
-		timeout = _timeout;
-		scale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_feed).decimals();
-
+		address _pool3Pool,
+		uint256 _timeout
+	) BaseOracle(_chfFeed, _timeout) {
 		usdcFeed = _usdcFeed;
-		usdcTimeout = _usdcTimeout;
+		// TODO: check feed.decimals <= 18 or scale = 0
 		usdcScale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_usdcFeed).decimals();
 
 		daiFeed = _daiFeed;
-		daiTimeout = _daiTimeout;
 		daiScale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_daiFeed).decimals();
 
 		usdtFeed = _usdtFeed;
-		usdtTimeout = _usdtTimeout;
 		usdtScale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_usdtFeed).decimals();
 
-		gvToken = _gvToken;
-		lpToken = _lpToken;
-
-		assert(IGrizzlyVault(gvToken).token() == _lpToken); // sanity check in constructor
+		pool3Pool = _pool3Pool;
+		pool3Precision = 10**18; // precision used in 3pool-Pool
 	}
 
 	/// ======== Chainlink Oracle Implementation ======== ///
@@ -97,28 +70,28 @@ contract Chainlink3PoolPairedLpOracle is BaseOracle {
 	function _feedValue()
 		internal
 		view
+		virtual
 		override(BaseOracle)
 		returns (uint256 value_, uint256 timestamp_)
 	{
 		// compute robust 3pool value
-		(uint256 usdcValue, ) = _fetchValidValue(usdcFeed, usdcTimeout, usdcScale);
-		(uint256 daiValue, ) = _fetchValidValue(daiFeed, daiTimeout, daiScale);
-		(uint256 usdtValue, ) = _fetchValidValue(usdtFeed, usdtTimeout, usdtScale);
+		value_ = _pool3Value();
+		timestamp_ = block.timestamp; // TODO: what to do here?
+	}
+
+	// Returns the 3pool value
+	function _pool3Value()
+		internal
+		view
+		returns (uint256 value_) 
+	{
+		(uint256 usdcValue, ) = _fetchAndValidateChainlinkValue(usdcFeed, usdcScale);
+		(uint256 daiValue, ) = _fetchAndValidateChainlinkValue(daiFeed, daiScale);
+		(uint256 usdtValue, ) = _fetchAndValidateChainlinkValue(usdtFeed, usdtScale);
 		uint256 pool3Value = min(usdcValue, min(daiValue, usdtValue));
+		value_ = 
+			(pool3Value * ICurvePool(pool3Pool).get_virtual_price()) / pool3Precision;
 
-		// compute robust 3pool-paired LP oracle value
-		(uint256 feedValue, uint256 feedTimestamp) = _fetchValidValue(feed, timeout, scale);
-		uint256 underlyingValue = min(feedValue, pool3Value);
-
-		value_ =
-			(underlyingValue * ICurvePool(lpToken).get_virtual_price()) /
-			10**(ICurvePool(lpToken).decimals());
-
-		// value_ =
-		// 	(IGrizzlyVault(gvToken).pricePerShare() * lpValueAdjusted) /
-		// 	IGrizzlyVault(gvToken).decimals(); // same decimals as lpValue
-
-		timestamp_ = feedTimestamp; // returns the timestamp of metapool index 0 round
 	}
 
 	// Returns the smallest of two numbers

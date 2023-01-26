@@ -4,19 +4,12 @@ pragma solidity ^0.8.14;
 import { IERC20 } from "@openzeppelin/contracts/interfaces/IERC20.sol";
 import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "../Dependencies/BaseMath.sol";
+import "../Interfaces/IOracle.sol";
 
-interface IOracle {
-	function value() external view returns (uint256 value);
-
-	function feedValue() external view returns (uint256 value, uint256 timestamp);
-
-	function chfValue() external view returns (uint256 value, uint256 timestamp);
-}
-
-/// @title ChainlinkOracle
-/// @notice An Implementation of the IOracle for single Chainlink feeds.
-/// Assumptions: If a Chainlink Aggregator is not working as intended (e.g. calls revert (excl. getRoundData))
-/// then the methods `value` will revert as well
+/// @title BaseOracle
+/// @notice Abstract base contract for Oracle implementations.
+/// @dev Uses Chainlink for the CHF/USD price. Token price (in USD) feeds are implemented by 
+/// extending contracts.
 abstract contract BaseOracle is IOracle, BaseMath {
 	/// ======== Custom Errors ======== ///
 
@@ -27,15 +20,15 @@ abstract contract BaseOracle is IOracle, BaseMath {
 	/// ======== Variables ======== ///
 
 	address public immutable chfFeed;
-	uint256 public immutable chfTimeout;
 	uint256 public immutable chfScale;
+	uint256 public immutable timeout;
 
 	/// @param _chfFeed Address of the Chainlink feed
-	/// @param _chfFeedTimeout Unique identifier
-	constructor(address _chfFeed, uint256 _chfFeedTimeout) {
+	/// @param _timeout Unique identifier
+	constructor(address _chfFeed, uint256 _timeout) {
 		chfFeed = _chfFeed;
-		chfTimeout = _chfFeedTimeout;
 		chfScale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_chfFeed).decimals();
+		timeout = _timeout;
 	}
 
 	/// ======== Oracle Implementation ======== ///
@@ -66,14 +59,15 @@ abstract contract BaseOracle is IOracle, BaseMath {
 		return _chfValue();
 	}
 
+	// Fetches the current CHF/USD price
 	function _chfValue() private view returns (uint256 value_, uint256 timestamp_) {
 		// fetch last chainlink price
-		(value_, timestamp_) = _fetchValidValue(chfFeed, chfTimeout, chfScale);
+		(value_, timestamp_) = _fetchAndValidateChainlinkValue(chfFeed, chfScale);
 	}
 
-	function _fetchValidValue(
+	// Fetches an up-to-date valid price from a Chainlink feed _feed
+	function _fetchAndValidateChainlinkValue(
 		address _feed,
-		uint256 _timeout,
 		uint256 _scale
 	) internal view returns (uint256 value_, uint256 timestamp_) {
 		(, int256 roundValue, , uint256 roundTimestamp, ) = AggregatorV3Interface(_feed)
@@ -81,7 +75,7 @@ abstract contract BaseOracle is IOracle, BaseMath {
 
 		// sanity checks
 		if (roundTimestamp > block.timestamp) revert ChainlinkOracle__value_invalidTimestamp();
-		if ((block.timestamp - roundTimestamp) > _timeout)
+		if ((block.timestamp - roundTimestamp) > timeout)
 			revert ChainlinkOracle__value_staleFeed();
 		if (roundValue <= 0) revert ChainlinkOracle__value_invalidValue();
 

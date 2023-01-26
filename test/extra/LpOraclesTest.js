@@ -28,35 +28,29 @@ const CHAINLINK_BTCUSD = '0xf4030086522a5beea4988f8ca5b36dbc97bee88c'
 const WBTC_ADDRESS = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
 
 const _chfFeed = '0x449d117117838ffa61263b61da6301aa2a88b13a'
-const _chfFeedTimeout = timeValues.SECONDS_IN_ONE_DAY // 86400s (24h)
 const _feed = '0xB9E1E3A9feFf48998E45Fa90847ed4D467E8BcfD' // frax feed
-const _timeout = timeValues.SECONDS_IN_ONE_DAY
 const _usdcFeed = '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6'
-const _usdcTimeout = timeValues.SECONDS_IN_ONE_DAY
 const _daiFeed = '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9'
-const _daiTimeout = timeValues.SECONDS_IN_ONE_DAY
 const _usdtFeed = '0x3E7d1eAB13ad0104d2750B8863b489D65364e32D'
-const _usdtTimeout = timeValues.SECONDS_IN_ONE_DAY
+const _pool3Pool = '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7'
 const _gvToken = '0xF437C8cEa5Bb0d8C10Bb9c012fb4a765663942f1' // vault token
 const _lpToken = '0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B' // curvePool token
+const _timeout = timeValues.SECONDS_IN_ONE_DAY
 
 const deployParams = [
   _chfFeed,
-  _chfFeedTimeout,
-  _feed,
-  _timeout,
   _usdcFeed,
-  _usdcTimeout,
   _daiFeed,
-  _daiTimeout,
   _usdtFeed,
-  _usdtTimeout,
-  _gvToken,
+  _feed,
+  _pool3Pool,
   _lpToken,
+  _gvToken,
+  _timeout
 ]
 
-const ethParams = [_chfFeed, _chfFeedTimeout, CHAINLINK_ETHUSD, _timeout]
-const btcParams = [_chfFeed, _chfFeedTimeout, CHAINLINK_BTCUSD, _timeout]
+const ethParams = [_chfFeed, CHAINLINK_ETHUSD, _timeout]
+const btcParams = [_chfFeed, CHAINLINK_BTCUSD, _timeout]
 
 async function fundAccount(account, holder, lpTokenAddress) {
   await Promise.all([
@@ -84,7 +78,7 @@ describe('Oracle', function () {
   beforeEach(async function () {
     ;[Owner, Account1, Account2, Account3, Account4] = await ethers.getSigners()
 
-    const GVOracleFactory = await ethers.getContractFactory('Chainlink3PoolPairedLpOracle')
+    const GVOracleFactory = await ethers.getContractFactory('ChainlinkPaired3PoolLpOracle')
     GVOracle = await GVOracleFactory.deploy(...deployParams)
 
     const ChainlinkOracleFactory = await ethers.getContractFactory('ChainlinkOracle')

@@ -7,9 +7,8 @@ import "../Dependencies/BaseMath.sol";
 import "./BaseOracle.sol";
 
 /// @title ChainlinkOracle
-/// @notice An Implementation of the IOracle for single Chainlink feeds.
-/// Assumptions: If a Chainlink Aggregator is not working as intended (e.g. calls revert (excl. getRoundData))
-/// then the methods `value` will revert as well
+/// @notice An Implementation of the IOracle for single Chainlink feeds
+/// @dev Reverts if any of the Chainlink feeds, CHF/USD or [token]/USD, does not return a valid value.
 contract ChainlinkOracle is BaseOracle {
 	/// ======== Custom Errors ======== ///
 
@@ -18,19 +17,17 @@ contract ChainlinkOracle is BaseOracle {
 	/// ======== Variables ======== ///
 
 	address public immutable feed;
-	uint256 public immutable timeout;
 	uint256 public immutable scale;
 
 	/// @param _feed Address of the Chainlink feed
 	/// @param _timeout Unique identifier
 	constructor(
 		address _chfFeed,
-		uint256 _chfFeedTimeout,
 		address _feed,
 		uint256 _timeout
-	) BaseOracle(_chfFeed, _chfFeedTimeout) {
+	) BaseOracle(_chfFeed, _timeout) {
 		feed = _feed;
-		timeout = _timeout;
+		// TODO: check feed.decimals <= 18 or scale = 0
 		scale = DECIMAL_PRECISION / 10**AggregatorV3Interface(_feed).decimals();
 	}
 
@@ -46,6 +43,6 @@ contract ChainlinkOracle is BaseOracle {
 		returns (uint256 value_, uint256 timestamp_)
 	{
 		// fetch last chainlink price feed e.g ETH / BTC
-		(value_, timestamp_) = _fetchValidValue(feed, timeout, scale);
+		(value_, timestamp_) = _fetchAndValidateChainlinkValue(feed, scale);
 	}
 }
