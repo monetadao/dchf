@@ -4,11 +4,10 @@ const { ethers, network } = require('hardhat')
 const testHelpers = require('../utils/testHelpers.js')
 const timeValues = testHelpers.TimeValues
 const th = testHelpers.TestHelper
-const toBN = th.toBN
 const dec = th.dec
+const assertRevert = th.assertRevert
 const ZERO_ADDRESS = th.ZERO_ADDRESS
 
-const { abi: BOpABI } = require('../../artifacts/contracts/BorrowerOperations.sol/BorrowerOperations.json')
 const { abi: ERC20ABI } = require('../../artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json')
 
 const BORROWER_OPERATIONS = '0x9eB2Ce1be2DD6947e4f5Aabe33106f48861DFD74'
@@ -25,8 +24,6 @@ const MULTISIG = '0x83737EAe72ba7597b36494D723fbF58cAfee8A69'
 
 const LP_TOKEN_HOLDER = '0x005fb56Fe0401a4017e6f046272dA922BBf8dF06' // frax lpToken holder
 
-const GV_FRAX = '0xF437C8cEa5Bb0d8C10Bb9c012fb4a765663942f1'
-const CHAINLINK_USD_CHF = '0x449d117117838ffa61263b61da6301aa2a88b13a'
 const ADMIN_CONTRACT = '0x2748C55219DCa1D9D3c3a57505e99BB04e42F254'
 const OLD_PRICE_FEED = '0x09AB3C0ce6Cb41C13343879A667a6bDAd65ee9DA'
 
@@ -159,20 +156,35 @@ describe('Oracle', function () {
       expect(priceDirect.toString()).to.be.eq(priceOldFeed.toString())
     })
 
-    it.skip('Can read getRoundData and latestRoundData', async function () {
-      const getLatestRoundData = await LpOracle.latestAnswer()
-      console.log('GetLatestRoundData lpOracle answer:', +getLatestRoundData.answer)
-      console.log('GetLatestRoundData lpOracle timestamp:', +getLatestRoundData.updatedAt)
+    it('feedValue and chfValue return correct prices', async function () {
+      const feedValue = await LpOracle.feedValue()
+      const chfValue = await LpOracle.chfValue()
 
-      expect(+getLatestRoundData.answer).to.be.greaterThan(0)
-      expect(getLatestRoundData.updatedAt.toNumber()).to.be.greaterThan(1672531200) // 1-1-2023
+      console.log('Get feedValue 3PoolLpOracle:', feedValue.value_.toString())
+      console.log('Get chfValue 3PoolLpOracle:', chfValue.value_.toString())
 
-      const blockNumBefore = await ethers.provider.getBlockNumber()
-      const blockBefore = await ethers.provider.getBlock(blockNumBefore)
-      const timestampBefore = blockBefore.timestamp
-      const diff = timestampBefore - getLatestRoundData.updatedAt.toNumber()
+      expect(+feedValue.value_).to.be.greaterThan(0)
+      expect(+chfValue.value_).to.be.greaterThan(0)
 
-      expect(diff).lt((await PriceFeed.TIMEOUT()).toNumber())
+      console.log('Get feedTimestamp 3PoolLpOracle:', feedValue.timestamp.toNumber())
+      console.log('Get chfTimestamp 3PoolLpOracle:', chfValue.timestamp.toNumber())
+
+      expect(feedValue.timestamp.toNumber()).to.be.greaterThan(1672531200) // 1-1-2023
+      expect(chfValue.timestamp.toNumber()).to.be.greaterThan(1672531200) // 1-1-2023
+    })
+
+    it('Exact math for final CHF value', async function () {
+      const feedValue = await LpOracle.feedValue()
+      const chfValue = await LpOracle.chfValue()
+      const decimalPrecision = await LpOracle.DECIMAL_PRECISION()
+
+      const expectedValue = (feedValue.value_ * decimalPrecision) / chfValue.value_
+      const oracleValue = await LpOracle.value()
+
+      console.log('Get final CHFValue Paired3PoolLpOracle:', oracleValue.toString())
+      console.log('Get expected CHFValue Paired3PoolLpOracle:', expectedValue.toString())
+
+      th.assertIsApproximatelyEqual(expectedValue.toString(), oracleValue.toString(), (error = 1000))
     })
   })
 
@@ -450,21 +462,50 @@ describe('Oracle', function () {
     })
   })
 
-  describe('Getters from LpOracle', function () {
-    it.skip('Returns correctly the decimals', async function () {
-      const decimals = await LpOracle.decimals()
-      expect(decimals).to.equal(18)
-    })
-    it.skip('Returns correctly the decimals adjustment var', async function () {
-      const decimalsAdjustment = await LpOracle.DECIMAL_ADJUSTMENT()
-      expect(decimalsAdjustment.toString()).to.be.deep.equal(dec(1, 26))
+  describe('Getters and public vars from 3PoolLpOracle', function () {
+    it('Params are correctly set in constructor', async function () {
+      const chfFeed = await LpOracle.chfFeed()
+      const usdcFeed = await LpOracle.usdcFeed()
+      const daiFeed = await LpOracle.daiFeed()
+      const usdtFeed = await LpOracle.usdtFeed()
+      const feed = await LpOracle.feed()
+
+      const pool3Pool = await LpOracle.pool3Pool()
+      const lpToken = await LpOracle.lpToken()
+      const gvToken = await LpOracle.gvToken()
+      const timeout = await LpOracle.timeout()
+
+      expect(chfFeed.toLowerCase()).to.be.eq(_chfFeed.toLowerCase())
+      expect(usdcFeed.toLowerCase()).to.be.eq(_usdcFeed.toLowerCase())
+      expect(daiFeed.toLowerCase()).to.be.eq(_daiFeed.toLowerCase())
+      expect(usdtFeed.toLowerCase()).to.be.eq(_usdtFeed.toLowerCase())
+      expect(feed.toLowerCase()).to.be.eq(_feed.toLowerCase())
+      expect(pool3Pool.toLowerCase()).to.be.eq(_pool3Pool.toLowerCase())
+      expect(lpToken.toLowerCase()).to.be.eq(_lpToken.toLowerCase())
+      expect(gvToken.toLowerCase()).to.be.eq(_gvToken.toLowerCase())
+      expect(timeout.toNumber()).to.be.eq(_timeout)
+
+      const chfScale = await LpOracle.chfScale()
+      expect(chfScale.toString()).to.be.eq(dec(1, 10).toString())
+
+      const decimalPrecision = await LpOracle.DECIMAL_PRECISION()
+      expect(decimalPrecision.toString()).to.be.eq(dec(1, 18).toString())
+
+      const usdcScale = await LpOracle.usdcScale()
+      const usdtScale = await LpOracle.usdtScale()
+      const daiScale = await LpOracle.daiScale()
+
+      expect(usdcScale.toString()).to.be.eq(dec(1, 10).toString())
+      expect(usdtScale.toString()).to.be.eq(dec(1, 10).toString())
+      expect(daiScale.toString()).to.be.eq(dec(1, 10).toString())
     })
   })
 
-  describe('Getters from PriceFeed', function () {
-    it.skip('AdminContract is the owner', async function () {
-      const adminContract = await PriceFeed.adminContract()
-      expect(ADMIN_CONTRACT).to.eq(adminContract)
+  describe('Initialization PriceFeed', function () {
+    it('Is properly initialized and reverts after a re-initializing attempt', async function () {
+      assert.isTrue(await PriceFeed.isInitialized())
+
+      await assertRevert(PriceFeed.setAddresses(ADMIN_CONTRACT), 'Already initialized')
     })
   })
 })

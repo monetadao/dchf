@@ -56,7 +56,7 @@ describe('3Crv LpOracle', function () {
       expect(priceDirect.toString()).to.be.eq(priceFetch.toString())
     })
 
-    it('Can read priceDirect and priceFetch', async function () {
+    it('feedValue and chfValue return correct prices', async function () {
       const feedValue = await LpOracle.feedValue()
       const chfValue = await LpOracle.chfValue()
 
