@@ -13,6 +13,13 @@ const { abi: ERC20ABI } = require('../../artifacts/@openzeppelin/contracts/token
 
 const BORROWER_OPERATIONS = '0x9eB2Ce1be2DD6947e4f5Aabe33106f48861DFD74'
 const DFRANC_PARAMS = '0x6F9990B242873d7396511f2630412A3fcEcacc42'
+const STABILITY_POOL_MANAGER = '0x202FbFF035188f9f0525E144C8B3F8249a74aD21'
+const COMMUNITY_ISSUANCE = '0x0fa46e8cBCEff8468DB2Ec2fD77731D8a11d3D86'
+const TROVE_MANAGER = '0x99838142189adE67c1951f9c57c3333281334F7F'
+const TROVE_MANAGER_HELPERS = '0xaAACB8C39Bd5Acbb0A236112Df8d15411161e518'
+const SORTED_TROVES = '0x1Dd69453a685C735f2ab43E2169b57e9Edf72286'
+const DCHF_TOKEN = '0x045da4bFe02B320f4403674B3b7d121737727A36'
+const MON_TOKEN = '0x1EA48B9965bb5086F3b468E50ED93888a661fc17'
 
 const MULTISIG = '0x83737EAe72ba7597b36494D723fbF58cAfee8A69'
 
@@ -46,7 +53,7 @@ const deployParams = [
   _pool3Pool,
   _lpToken,
   _gvToken,
-  _timeout
+  _timeout,
 ]
 
 const ethParams = [_chfFeed, CHAINLINK_ETHUSD, _timeout]
@@ -69,17 +76,18 @@ async function fundAccount(account, holder, lpTokenAddress) {
 }
 
 describe('Oracle', function () {
-  let GVOracle
+  let LpOracle
   let PriceFeed
   let ChainlinkOracleETH
   let ChainlinkOracleBTC
   let OldPriceFeedInstance
+  let DfrancParams
 
   beforeEach(async function () {
     ;[Owner, Account1, Account2, Account3, Account4] = await ethers.getSigners()
 
-    const GVOracleFactory = await ethers.getContractFactory('ChainlinkPaired3PoolLpOracle')
-    GVOracle = await GVOracleFactory.deploy(...deployParams)
+    const LpOracleFactory = await ethers.getContractFactory('ChainlinkPaired3PoolLpOracle')
+    LpOracle = await LpOracleFactory.deploy(...deployParams)
 
     const ChainlinkOracleFactory = await ethers.getContractFactory('ChainlinkOracle')
     ChainlinkOracleETH = await ChainlinkOracleFactory.deploy(...ethParams)
@@ -91,19 +99,23 @@ describe('Oracle', function () {
 
     // new instance of the current mainnet deployed priceFeed to query and compare
     OldPriceFeedInstance = PriceFeedFactory.attach(OLD_PRICE_FEED)
+
+    // new instance of the current mainnet deployed DfrancParameters
+    const DfrancParametersFactory = await ethers.getContractFactory('DfrancParameters')
+    DfrancParams = DfrancParametersFactory.attach(DFRANC_PARAMS)
   })
 
   describe('Add asset to price feed and fetch price', function () {
     it('Can add a new Chainlink3PoolPairedLpOracle asset and fetch the price', async function () {
-      await PriceFeed.addOracle(_gvToken, GVOracle.address)
+      await PriceFeed.addOracle(_lpToken, LpOracle.address)
 
-      const registeredOracle = await PriceFeed.registeredOracles(_gvToken)
-      expect(registeredOracle).to.be.eq(GVOracle.address)
+      const registeredOracle = await PriceFeed.registeredOracles(_lpToken)
+      expect(registeredOracle).to.be.eq(LpOracle.address)
 
-      const priceDirect = await PriceFeed.getDirectPrice(_gvToken)
+      const priceDirect = await PriceFeed.getDirectPrice(_lpToken)
       console.log('PriceDirect GVFrax3Crv in CHF:', priceDirect.toString())
 
-      const priceFetch = await PriceFeed.callStatic.fetchPrice(_gvToken)
+      const priceFetch = await PriceFeed.callStatic.fetchPrice(_lpToken)
       console.log('PriceFetch GVFrax3Crv in CHF:', priceFetch.toString())
 
       expect(priceDirect.toString()).to.be.eq(priceFetch.toString())
@@ -148,7 +160,7 @@ describe('Oracle', function () {
     })
 
     it.skip('Can read getRoundData and latestRoundData', async function () {
-      const getLatestRoundData = await GVOracle.latestAnswer()
+      const getLatestRoundData = await LpOracle.latestAnswer()
       console.log('GetLatestRoundData lpOracle answer:', +getLatestRoundData.answer)
       console.log('GetLatestRoundData lpOracle timestamp:', +getLatestRoundData.updatedAt)
 
@@ -199,10 +211,6 @@ describe('Oracle', function () {
       const txIIData = await txII.wait()
       console.log('gasUsed II old PriceFeed 2nd openTrove:', txIIData.cumulativeGasUsed.toNumber()) // 542855
 
-      // new instance of the current mainnet deployed DfrancParameters
-      const DfrancParametersFactory = await ethers.getContractFactory('DfrancParameters')
-      const DfrancParams = DfrancParametersFactory.attach(DFRANC_PARAMS)
-
       await network.provider.request({
         method: 'hardhat_impersonateAccount',
         params: [MULTISIG],
@@ -247,10 +255,6 @@ describe('Oracle', function () {
       // new instance of the current mainnet deployed BorrowerOperations
       const BorrowerOperationsFactory = await ethers.getContractFactory('BorrowerOperations')
       const BorrowerOperations = BorrowerOperationsFactory.attach(BORROWER_OPERATIONS)
-
-      // new instance of the current mainnet deployed DfrancParameters
-      const DfrancParametersFactory = await ethers.getContractFactory('DfrancParameters')
-      const DfrancParams = DfrancParametersFactory.attach(DFRANC_PARAMS)
 
       await network.provider.request({
         method: 'hardhat_impersonateAccount',
@@ -313,6 +317,7 @@ describe('Oracle', function () {
 
       // allow the borrower operations as spender
       await lpToken.connect(Account3).approve(BorrowerOperations.address, amount)
+
       const txIII = await BorrowerOperations.connect(Account3).openTrove(
         _lpToken,
         amount,
@@ -326,13 +331,132 @@ describe('Oracle', function () {
     })
   })
 
+  describe('Migrations: full changeOver between current mainnetFeed and new PriceFeed', function () {
+    it('Prices before and after the changeOver must match', async function () {
+      await PriceFeed.addOracle(ZERO_ADDRESS, ChainlinkOracleETH.address)
+
+      const registeredOracle = await PriceFeed.registeredOracles(ZERO_ADDRESS)
+      expect(registeredOracle).to.be.eq(ChainlinkOracleETH.address)
+
+      // this is the new priceFeed
+      const priceDirect = await PriceFeed.getDirectPrice(ZERO_ADDRESS)
+
+      // this is the current mainnet priceFeed
+      const priceCurrentFeed = await OldPriceFeedInstance.getDirectPrice(ZERO_ADDRESS)
+      expect(priceDirect.toString()).to.be.eq(priceCurrentFeed.toString())
+
+      expect(PriceFeed.address).to.not.eq(OldPriceFeedInstance.address) // sanity check
+
+      // impersonate the multisig
+      await network.provider.request({
+        method: 'hardhat_impersonateAccount',
+        params: [MULTISIG],
+      })
+      const multiSig = ethers.provider.getUncheckedSigner(MULTISIG)
+
+      // fund the multisig account to be able to process tx
+      const forceETH = await ethers.getContractFactory('ForceETH')
+      await forceETH.deploy(MULTISIG, { value: hre.ethers.utils.parseUnits('10', 18) })
+
+      // set the new priceFeed contract in dfrancParameters
+      await DfrancParams.connect(multiSig).setPriceFeed(PriceFeed.address)
+
+      const priceFeed = await DfrancParams.priceFeed()
+      expect(priceFeed).to.eq(PriceFeed.address) // check that the switch was successful
+    })
+
+    it('Adds a new asset from new AdminContract after switch', async function () {
+      // need to add all the assets both legacy and new ones
+      await PriceFeed.addOracle(_lpToken, LpOracle.address)
+      await PriceFeed.addOracle(ZERO_ADDRESS, ChainlinkOracleETH.address)
+      await PriceFeed.addOracle(WBTC_ADDRESS, ChainlinkOracleBTC.address)
+
+      const registeredOracle = await PriceFeed.registeredOracles(_lpToken)
+      expect(registeredOracle).to.be.eq(LpOracle.address)
+
+      const AdminContractFactory = await ethers.getContractFactory('AdminContract')
+      const AdminContract = await AdminContractFactory.deploy()
+      await AdminContract.setAddresses(DFRANC_PARAMS, STABILITY_POOL_MANAGER, COMMUNITY_ISSUANCE)
+
+      // new instance of the current mainnet deployed StabilityPoolManager
+      const StabilityPoolManagerFactory = await ethers.getContractFactory('StabilityPoolManager')
+      const StabilityPoolManager = StabilityPoolManagerFactory.attach(STABILITY_POOL_MANAGER)
+
+      // new instance of the current mainnet deployed CommunityIssuance
+      const CommunityIssuanceFactory = await ethers.getContractFactory('CommunityIssuance')
+      const CommunityIssuance = CommunityIssuanceFactory.attach(COMMUNITY_ISSUANCE)
+
+      // impersonate the multisig
+      await network.provider.request({
+        method: 'hardhat_impersonateAccount',
+        params: [MULTISIG],
+      })
+      const multiSig = ethers.provider.getUncheckedSigner(MULTISIG)
+
+      // fund the multisig account to be able to process tx
+      const forceETH = await ethers.getContractFactory('ForceETH')
+      await forceETH.deploy(MULTISIG, { value: hre.ethers.utils.parseUnits('10', 18) })
+
+      // change the adminContract for the new one in all the contracts
+      await DfrancParams.connect(multiSig).setAdminContract(AdminContract.address)
+      await StabilityPoolManager.connect(multiSig).setAdminContract(AdminContract.address)
+      await CommunityIssuance.connect(multiSig).setAdminContract(AdminContract.address)
+      await PriceFeed.setAdminContract(AdminContract.address)
+
+      // set the new priceFeed contract in dfrancParameters
+      await DfrancParams.connect(multiSig).setPriceFeed(PriceFeed.address)
+
+      const priceFeed = await DfrancParams.priceFeed()
+      expect(priceFeed).to.eq(PriceFeed.address) // check that the switch was successful
+
+      await AdminContract.transferOwnership(MULTISIG)
+
+      const supply = dec(10000, 18)
+      const weeklyReward = dec(10000 / 4, 18) // 2500
+
+      const StabilityPoolFactory = await ethers.getContractFactory('StabilityPool')
+      const StabilityPool = await StabilityPoolFactory.deploy()
+
+      // initialize a new StabilityPool for the lpToken asset
+      await StabilityPool.setAddresses(
+        _lpToken,
+        BORROWER_OPERATIONS,
+        TROVE_MANAGER,
+        TROVE_MANAGER_HELPERS,
+        DCHF_TOKEN,
+        SORTED_TROVES,
+        COMMUNITY_ISSUANCE,
+        DFRANC_PARAMS
+      )
+
+      // new instance of the current mainnet deployed MON
+      const MONTokenFactory = await ethers.getContractFactory('MONToken')
+      const MON = MONTokenFactory.attach(MON_TOKEN)
+
+      await MON.connect(multiSig).approve(COMMUNITY_ISSUANCE, supply)
+
+      // multisig has MON, and approved MON token in order to call this function
+      await AdminContract.connect(multiSig).addNewCollateral(
+        StabilityPool.address,
+        LpOracle.address,
+        supply,
+        weeklyReward,
+        14
+      )
+
+      // check that the asset is properly configured, otherwise MIN_NET_DEBT should be 0
+      const minNetDebtLpToken = await DfrancParams.MIN_NET_DEBT(_lpToken)
+      expect(minNetDebtLpToken.toString()).to.be.eq(dec(2000, 18).toString())
+    })
+  })
+
   describe('Getters from LpOracle', function () {
     it.skip('Returns correctly the decimals', async function () {
-      const decimals = await GVOracle.decimals()
+      const decimals = await LpOracle.decimals()
       expect(decimals).to.equal(18)
     })
     it.skip('Returns correctly the decimals adjustment var', async function () {
-      const decimalsAdjustment = await GVOracle.DECIMAL_ADJUSTMENT()
+      const decimalsAdjustment = await LpOracle.DECIMAL_ADJUSTMENT()
       expect(decimalsAdjustment.toString()).to.be.deep.equal(dec(1, 26))
     })
   })
