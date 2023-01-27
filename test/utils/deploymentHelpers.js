@@ -225,11 +225,6 @@ class DeploymentHelper {
     await contracts.adminContract.setAddresses(
       contracts.dfrancParameters.address,
       contracts.stabilityPoolManager.address,
-      contracts.borrowerOperations.address,
-      contracts.troveManager.address,
-      contracts.troveManagerHelpers.address,
-      contracts.dchfToken.address,
-      contracts.sortedTroves.address,
       MONContracts.communityIssuance.address
     )
 

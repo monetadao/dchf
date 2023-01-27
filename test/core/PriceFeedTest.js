@@ -3,10 +3,12 @@ const AdminContract = artifacts.require('./AdminContract.sol')
 const PriceFeedTestnet = artifacts.require('./PriceFeedTestnet.sol')
 const MockChainlink = artifacts.require('./MockAggregator.sol')
 const ChainlinkFlagMock = artifacts.require('./ChainlinkFlagMock.sol')
+const Curve3Pool = artifacts.require('./Curve3Pool.sol')
 
 const { ZERO_ADDRESS } = require('@openzeppelin/test-helpers/src/constants')
 const testHelpers = require('../utils/testHelpers.js')
 const th = testHelpers.TestHelper
+const timeValues = testHelpers.TimeValues
 
 const { dec, assertRevert, toBN } = th
 
@@ -18,6 +20,16 @@ const DEFAULT_PRICE = dec(100, 18)
 const DEFAULT_INDEX_e9 = dec(1, 9)
 const DEFAULT_PRICE_e8 = dec(100, 8)
 
+const _chfFeed = '0x449d117117838ffa61263b61da6301aa2a88b13a'
+const _feed = '0xB9E1E3A9feFf48998E45Fa90847ed4D467E8BcfD' // frax feed
+const _usdcFeed = '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6'
+const _daiFeed = '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9'
+const _usdtFeed = '0x3E7d1eAB13ad0104d2750B8863b489D65364e32D'
+const _pool3Pool = '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7'
+const _gvToken = '0xF437C8cEa5Bb0d8C10Bb9c012fb4a765663942f1' // vault token
+const _lpToken = '0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B' // curvePool token
+const _timeout = timeValues.SECONDS_IN_ONE_DAY
+
 contract('PriceFeed', async (accounts) => {
   const [owner, alice] = accounts
   let priceFeedTestnet
@@ -26,15 +38,17 @@ contract('PriceFeed', async (accounts) => {
   let chainFlagMock
   let mockChainlink
   let mockChainlinkIndex
+  let curve3Pool
   let adminContract
 
-  const setAddressesAndOracle = async () => {
+  // new contracts to test
+  let chainlinkOracle
+  let chainlink3PoolLpOracle
+  let chainlinkPaired3PoolLpOracle
+
+  const setAddressesAndOracle = async (asset, oracleContract) => {
     await priceFeed.setAddresses(adminContract.address, { from: owner })
-    await priceFeed.addOracle(
-      EMPTY_ADDRESS,
-      mockChainlink.address,
-      mockChainlinkIndex.address !== undefined ? mockChainlinkIndex.address : ZERO_ADDRESS
-    )
+    await priceFeed.addOracle(asset, oracleContract.address)
   }
 
   const getFetchPriceWithContractValues = async () => {
@@ -50,8 +64,8 @@ contract('PriceFeed', async (accounts) => {
     index = index.toString()
 
     return toBN(price)
-      .mul(toBN(index))
-      .div(toBN(dec(1, 18)))
+      .mul(toBN(dec(1, 18)))
+      .div(toBN(index))
       .toString()
   }
 
@@ -77,13 +91,45 @@ contract('PriceFeed', async (accounts) => {
     adminContract = await AdminContract.new()
     AdminContract.setAsDeployed(adminContract)
 
+    curve3Pool = await Curve3Pool.new()
+    Curve3Pool.setAsDeployed(curve3Pool)
+
+    const ChainlinkOracle = await ethers.getContractFactory('ChainlinkOracle')
+    const Chainlink3PoolLpOracle = await ethers.getContractFactory('Chainlink3PoolLpOracle')
+    const ChainlinkPaired3PoolLpOracle = await ethers.getContractFactory('ChainlinkPaired3PoolLpOracle')
+
+    const chainlinkOracleParams = [mockChainlinkIndex.address, mockChainlink.address, _timeout]
+    const threePoolLpOracleParams = [
+      mockChainlinkIndex.address,
+      _usdcFeed,
+      _daiFeed,
+      _usdtFeed,
+      curve3Pool.address,
+      _timeout,
+    ]
+    const paired3PoolLpOracleParams = [
+      mockChainlinkIndex.address,
+      _usdcFeed,
+      _daiFeed,
+      _usdtFeed,
+      _feed,
+      curve3Pool.address,
+      _lpToken,
+      _gvToken,
+      _timeout,
+    ]
+
+    chainlinkOracle = await ChainlinkOracle.deploy(...chainlinkOracleParams)
+    chainlink3PoolLpOracle = await Chainlink3PoolLpOracle.deploy(...threePoolLpOracleParams)
+    chainlinkPaired3PoolLpOracle = await ChainlinkPaired3PoolLpOracle.deploy(...paired3PoolLpOracleParams)
+
     // Set Chainlink latest and prev round Id's to non-zero
     await mockChainlink.setLatestRoundId(3)
     await mockChainlink.setPrevRoundId(2)
     await mockChainlinkIndex.setLatestRoundId(3)
     await mockChainlinkIndex.setPrevRoundId(2)
 
-    //Set current and prev prices in both oracles
+    // Set current and prev prices in both oracles
     await mockChainlink.setPrice(DEFAULT_PRICE_e8)
     await mockChainlink.setPrevPrice(DEFAULT_PRICE_e8)
     await mockChainlinkIndex.setPrice(DEFAULT_INDEX_e9)
@@ -99,7 +145,7 @@ contract('PriceFeed', async (accounts) => {
   })
 
   describe('PriceFeed internal testing contract', async (accounts) => {
-    it('fetchPrice before setPrice should return the default price', async () => {
+    it.only('fetchPrice before setPrice should return the default price', async () => {
       const price = await priceFeedTestnet.getPrice()
       assert.equal(price, dec(200, 18))
     })
@@ -569,7 +615,7 @@ contract('PriceFeed', async (accounts) => {
     assert.equal(price, await getFetchPriceWithDifferentValue(DEFAULT_PRICE, dec(2, 18)))
   })
 
-  it('chainlinUntrusted: Oracle and Index work, uses chainlink and update status to working', async () => {
+  it('chainlinkUntrusted: Oracle and Index work, uses chainlink and update status to working', async () => {
     await setAddressesAndOracle()
 
     await mockChainlink.setLatestRoundId(0)

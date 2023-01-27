@@ -41,7 +41,7 @@ contract PriceFeedTestnet is IPriceFeed {
 		// This lets the subgraph rely on events to get the latest price even when developing locally.
 		// emit LastGoodPriceUpdated(_asset, _price);
 		// emit LastGoodIndexUpdated(_asset, _price);
-		return _price.mul(_index).div(1 ether);
+		return _price.mul(1 ether).div(_index);
 	}
 
 	function getDirectPrice(address _asset) external view returns (uint256) {
