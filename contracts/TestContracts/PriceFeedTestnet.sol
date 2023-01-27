@@ -45,7 +45,7 @@ contract PriceFeedTestnet is IPriceFeed {
 	}
 
 	function getDirectPrice(address _asset) external view returns (uint256) {
-		return _price.mul(_index).div(1 ether);
+		return _price.mul(1 ether).div(_index);
 	}
 
 	// Manual external price setter.

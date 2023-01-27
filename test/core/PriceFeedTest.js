@@ -5,10 +5,10 @@ const MockChainlink = artifacts.require('./MockAggregator.sol')
 const ChainlinkFlagMock = artifacts.require('./ChainlinkFlagMock.sol')
 const Curve3Pool = artifacts.require('./Curve3Pool.sol')
 
-const { ZERO_ADDRESS } = require('@openzeppelin/test-helpers/src/constants')
 const testHelpers = require('../utils/testHelpers.js')
 const th = testHelpers.TestHelper
 const timeValues = testHelpers.TimeValues
+const ZERO_ADDRESS = th.ZERO_ADDRESS
 
 const { dec, assertRevert, toBN } = th
 
@@ -17,6 +17,7 @@ const EMPTY_ADDRESS = '0x' + '0'.repeat(40)
 const DEFAULT_INDEX = dec(1, 18)
 const DEFAULT_PRICE = dec(100, 18)
 
+const DEFAULT_INDEX_e8 = dec(1, 8)
 const DEFAULT_INDEX_e9 = dec(1, 9)
 const DEFAULT_PRICE_e8 = dec(100, 8)
 
@@ -51,14 +52,18 @@ contract('PriceFeed', async (accounts) => {
     await priceFeed.addOracle(asset, oracleContract.address)
   }
 
-  const getFetchPriceWithContractValues = async () => {
-    return getFetchPriceWithDifferentValue(undefined, undefined)
+  const setAddresses = async () => {
+    await priceFeed.setAddresses(adminContract.address, { from: owner })
   }
 
-  const getFetchPriceWithDifferentValue = async (price, index) => {
-    if (price === undefined) price = await priceFeed.lastGoodPrice(ZERO_ADDRESS)
+  const getFetchPriceWithContractValues = async (oracleContract) => {
+    return getFetchPriceWithDifferentValue(oracleContract, undefined, undefined)
+  }
 
-    if (index === undefined) index = await priceFeed.lastGoodIndex(ZERO_ADDRESS)
+  const getFetchPriceWithDifferentValue = async (oracleContract, price, index) => {
+    if (price === undefined) price = (await oracleContract.feedValue()).value_
+
+    if (index === undefined) index = (await oracleContract.chfValue()).value_
 
     price = price.toString()
     index = index.toString()
@@ -67,6 +72,11 @@ contract('PriceFeed', async (accounts) => {
       .mul(toBN(dec(1, 18)))
       .div(toBN(index))
       .toString()
+  }
+
+  const getPriceFromPriceFeed = async (asset) => {
+    price = priceFeed.fetchPrice(asset)
+    return price
   }
 
   beforeEach(async () => {
@@ -93,6 +103,28 @@ contract('PriceFeed', async (accounts) => {
 
     curve3Pool = await Curve3Pool.new()
     Curve3Pool.setAsDeployed(curve3Pool)
+
+    // Set Chainlink latest and prev round Id's to non-zero
+    await mockChainlink.setLatestRoundId(3)
+    await mockChainlink.setPrevRoundId(2)
+    await mockChainlinkIndex.setLatestRoundId(3)
+    await mockChainlinkIndex.setPrevRoundId(2)
+
+    // Set current and prev prices in both oracles
+    await mockChainlink.setPrice(DEFAULT_PRICE_e8)
+    await mockChainlink.setPrevPrice(DEFAULT_PRICE_e8)
+    // Start with 1e8 as price index
+    await mockChainlinkIndex.setPrice(DEFAULT_INDEX_e8)
+    await mockChainlinkIndex.setPrevPrice(DEFAULT_INDEX_e8)
+
+    // Decimals have influence in constructors -> scale
+    await mockChainlink.setDecimals(8)
+    await mockChainlinkIndex.setDecimals(8)
+
+    // Set mock price updateTimes in both oracles to very recent
+    const now = await th.getLatestBlockTimestamp(web3)
+    await mockChainlink.setUpdateTime(now)
+    await mockChainlinkIndex.setUpdateTime(now)
 
     const ChainlinkOracle = await ethers.getContractFactory('ChainlinkOracle')
     const Chainlink3PoolLpOracle = await ethers.getContractFactory('Chainlink3PoolLpOracle')
@@ -122,30 +154,10 @@ contract('PriceFeed', async (accounts) => {
     chainlinkOracle = await ChainlinkOracle.deploy(...chainlinkOracleParams)
     chainlink3PoolLpOracle = await Chainlink3PoolLpOracle.deploy(...threePoolLpOracleParams)
     chainlinkPaired3PoolLpOracle = await ChainlinkPaired3PoolLpOracle.deploy(...paired3PoolLpOracleParams)
-
-    // Set Chainlink latest and prev round Id's to non-zero
-    await mockChainlink.setLatestRoundId(3)
-    await mockChainlink.setPrevRoundId(2)
-    await mockChainlinkIndex.setLatestRoundId(3)
-    await mockChainlinkIndex.setPrevRoundId(2)
-
-    // Set current and prev prices in both oracles
-    await mockChainlink.setPrice(DEFAULT_PRICE_e8)
-    await mockChainlink.setPrevPrice(DEFAULT_PRICE_e8)
-    await mockChainlinkIndex.setPrice(DEFAULT_INDEX_e9)
-    await mockChainlinkIndex.setPrevPrice(DEFAULT_INDEX_e9)
-
-    await mockChainlink.setDecimals(8)
-    await mockChainlinkIndex.setDecimals(9)
-
-    // Set mock price updateTimes in both oracles to very recent
-    const now = await th.getLatestBlockTimestamp(web3)
-    await mockChainlink.setUpdateTime(now)
-    await mockChainlinkIndex.setUpdateTime(now)
   })
 
   describe('PriceFeed internal testing contract', async (accounts) => {
-    it.only('fetchPrice before setPrice should return the default price', async () => {
+    it('fetchPrice before setPrice should return the default price', async () => {
       const price = await priceFeedTestnet.getPrice()
       assert.equal(price, dec(200, 18))
     })
@@ -168,116 +180,124 @@ contract('PriceFeed', async (accounts) => {
 
       await assertRevert(
         priceFeed.setAddresses(adminContract.address, { from: alice }),
-        'OwnableUpgradeable: caller is not the owner'
+        'Ownable: caller is not the owner'
       )
     })
   })
 
   // Dfranc Tests :: Start
-  it('Validate default status on setAddressesAndOracle', async () => {
-    await setAddressesAndOracle()
-    assert.equal(await priceFeed.status(), '0')
+  it('Validate mapping on setAddressesAndOracle', async () => {
+    await setAddressesAndOracle(ZERO_ADDRESS, chainlinkOracle)
+    assert.equal(await priceFeed.registeredOracles(ZERO_ADDRESS), chainlinkOracle.address)
   })
 
   it('addOracle as User: Reverts', async () => {
-    await setAddressesAndOracle()
+    await setAddressesAndOracle(ZERO_ADDRESS, chainlinkOracle)
     await assertRevert(
-      priceFeed.addOracle(EMPTY_ADDRESS, mockChainlink.address, mockChainlinkIndex.address, { from: alice }),
-      'OwnableUpgradeable: caller is not the owner'
+      priceFeed.addOracle(EMPTY_ADDRESS, chainlinkOracle.address, {
+        from: alice,
+      }),
+      'Ownable: caller is not the owner'
     )
   })
 
-  it('addOracle as Owner: Oracle Works, index broken, reverts', async () => {
-    await setAddressesAndOracle()
-    await mockChainlinkIndex.setLatestRoundId(0)
-    await assertRevert(priceFeed.addOracle(EMPTY_ADDRESS, mockChainlink.address, mockChainlinkIndex.address))
+  it('addOracle as Owner: Oracle Works, index price is 0, reverts', async () => {
+    await setAddresses()
+    await mockChainlinkIndex.setPrice(0)
+    await assertRevert(
+      priceFeed.addOracle(EMPTY_ADDRESS, chainlinkOracle.address),
+      'ChainlinkOracle__value_invalidValue()'
+    )
   })
 
-  it('addOracle as Owner: Oracle broken, index works, reverts', async () => {
-    await setAddressesAndOracle()
-    await mockChainlink.setLatestRoundId(0)
-    await assertRevert(priceFeed.addOracle(EMPTY_ADDRESS, mockChainlink.address, mockChainlinkIndex.address))
+  it('addOracle as Owner: Oracle price is 0, index works, reverts', async () => {
+    await setAddresses()
+    await mockChainlink.setPrice(0)
+    await assertRevert(
+      priceFeed.addOracle(EMPTY_ADDRESS, chainlinkOracle.address),
+      'ChainlinkOracle__value_invalidValue()'
+    )
   })
 
-  it('addOracle as Owner: Oracle works, index zero address, adds new oracle', async () => {
-    await setAddressesAndOracle()
-    await priceFeed.addOracle(EMPTY_ADDRESS, mockChainlink.address, ZERO_ADDRESS)
+  it('addOracle as Owner: Oracle Works, index timestamp is 0, reverts', async () => {
+    await setAddresses()
+    await mockChainlinkIndex.setUpdateTime(0)
+    await assertRevert(
+      priceFeed.addOracle(EMPTY_ADDRESS, chainlinkOracle.address),
+      'ChainlinkOracle__value_staleFeed()'
+    )
+  })
 
-    const price = await getFetchPriceWithContractValues()
-    assert.equal(price, await getFetchPriceWithDifferentValue(DEFAULT_PRICE, dec(1, 18)))
+  it('addOracle as Owner: Oracle timestamp is 0, index works, reverts', async () => {
+    await setAddresses()
+    await mockChainlink.setUpdateTime(0)
+    await assertRevert(
+      priceFeed.addOracle(EMPTY_ADDRESS, chainlinkOracle.address),
+      'ChainlinkOracle__value_staleFeed()'
+    )
+  })
+
+  it('addOracle as Owner: Oracle Works, index timestamp is 2024, reverts', async () => {
+    await setAddresses()
+    await mockChainlinkIndex.setUpdateTime(1704067200)
+    await assertRevert(
+      priceFeed.addOracle(EMPTY_ADDRESS, chainlinkOracle.address),
+      'ChainlinkOracle__value_invalidTimestamp()'
+    )
+  })
+
+  it('addOracle as Owner: Oracle timestamp is 2024, index works, reverts', async () => {
+    await setAddresses()
+    await mockChainlink.setUpdateTime(1704067200)
+    await assertRevert(
+      priceFeed.addOracle(EMPTY_ADDRESS, chainlinkOracle.address),
+      'ChainlinkOracle__value_invalidTimestamp()'
+    )
   })
 
   it('addOracle as Owner: All chainlink responses are good, add new oracle', async () => {
     await mockChainlink.setPrice(dec(1236, 8))
-    await mockChainlink.setPrevPrice(dec(1234, 8))
-    await mockChainlinkIndex.setPrice(dec(2, 9))
-    await mockChainlinkIndex.setPrevPrice(dec(1, 9))
+    await mockChainlinkIndex.setPrice(dec(2, 8))
 
-    await setAddressesAndOracle()
+    await setAddressesAndOracle(ZERO_ADDRESS, chainlinkOracle)
 
-    const price = await getFetchPriceWithContractValues()
-    assert.equal(price, await getFetchPriceWithDifferentValue(dec(1236, 18), dec(2, 18)))
+    const price = await getFetchPriceWithContractValues(chainlinkOracle)
+    assert.equal(price, await getFetchPriceWithDifferentValue(chainlinkOracle, dec(1236, 18), dec(2, 18)))
   })
 
-  it('ChainlinkWorking: Chainlink Responses are good, return price and remain same State', async () => {
-    await setAddressesAndOracle()
-    const statusBefore = await priceFeed.status()
+  it('ChainlinkWorking: Oracle Works, index zero address, return price', async () => {
+    await setAddressesAndOracle(ZERO_ADDRESS, chainlinkOracle)
 
-    await mockChainlink.setPrice(dec(1236, 8))
-    await mockChainlink.setPrevPrice(dec(1234, 8))
-    await mockChainlinkIndex.setPrice(dec(2, 9))
-    await mockChainlinkIndex.setPrevPrice(dec(1, 9))
-
-    await priceFeed.fetchPrice(EMPTY_ADDRESS)
-    const price = await getFetchPriceWithContractValues()
-
-    const statusAfter = await priceFeed.status()
-
-    assert.equal(statusAfter.toString(), statusBefore.toString())
-    assert.equal(price, await getFetchPriceWithDifferentValue(dec(1236, 18), dec(2, 18)))
-  })
-
-  it('ChainlinkWorking: Oracle Works, index zero address, return price and remain same State', async () => {
-    mockChainlinkIndex = ZERO_ADDRESS
-
-    await setAddressesAndOracle()
-    const statusBefore = await priceFeed.status()
-
-    await mockChainlink.setPrevPrice(dec(1234, 8))
     await mockChainlink.setPrice(dec(1234, 8))
 
     await priceFeed.fetchPrice(EMPTY_ADDRESS)
-    const price = await getFetchPriceWithContractValues()
-    const statusAfter = await priceFeed.status()
 
-    assert.equal(statusAfter, statusBefore.toString())
-    assert.equal(price, await getFetchPriceWithDifferentValue(dec(1234, 18), dec(1, 18)))
+    const price = await getFetchPriceWithContractValues(chainlinkOracle)
+
+    assert.equal(price, await getFetchPriceWithDifferentValue(chainlinkOracle, dec(1234, 18), dec(1, 18)))
   })
 
-  it('ChainlinkWorking: Flag returns true, return lastGoodPrice and currentGoodIndex, state maintains working', async () => {
-    await setAddressesAndOracle()
+  it('ChainlinkWorking: Flag returns true, return lastGoodPrice and currentGoodIndex', async () => {
+    await setAddressesAndOracle(ZERO_ADDRESS, chainlinkOracle)
     await chainFlagMock.setFlag(true)
 
-    const statusBefore = await priceFeed.status()
-
-    await mockChainlink.setPrevPrice(dec(1234, 8))
     await mockChainlink.setPrice(dec(1234, 8))
     await mockChainlinkIndex.setPrice(dec(2, 9))
-    await mockChainlinkIndex.setPrevPrice(dec(1, 9))
 
-    await priceFeed.fetchPrice(EMPTY_ADDRESS)
-    const price = await getFetchPriceWithContractValues()
-    const statusAfter = await priceFeed.status()
+    const priceFromFeed = await priceFeed.fetchPrice(EMPTY_ADDRESS)
+    const price = await getFetchPriceWithContractValues(chainlinkOracle)
 
-    assert.equal(+statusAfter, +statusBefore)
-    assert.equal(statusAfter, '0')
-    assert.equal(price, await getFetchPriceWithDifferentValue(dec(1234, 18), dec(2, 18)))
-    assert.notEqual(price, await getFetchPriceWithDifferentValue(DEFAULT_PRICE, DEFAULT_INDEX))
+    assert.equal(price, priceFromFeed)
+
+    assert.equal(price, await getFetchPriceWithDifferentValue(chainlinkOracle, dec(1234, 18), dec(20, 18)))
+    assert.notEqual(
+      price,
+      await getFetchPriceWithDifferentValue(chainlinkOracle, DEFAULT_PRICE, DEFAULT_INDEX)
+    )
   })
 
-  it('ChainlinkWorking: Oracle works, index broken, return price with lastGoodIndex, and change State to broken', async () => {
-    await setAddressesAndOracle()
-    const statusBefore = await priceFeed.status()
+  it('ChainlinkWorking: Oracle works, index broken, still returns the price in this new version', async () => {
+    await setAddressesAndOracle(ZERO_ADDRESS, chainlinkOracle)
 
     await mockChainlink.setPrevPrice(dec(1234, 8))
     await mockChainlink.setPrice(dec(1234, 8))
@@ -285,58 +305,16 @@ contract('PriceFeed', async (accounts) => {
     await mockChainlinkIndex.setPrevPrice(dec(1, 9))
     await mockChainlinkIndex.setLatestRoundId(0)
 
-    await priceFeed.fetchPrice(EMPTY_ADDRESS)
-    const price = await getFetchPriceWithContractValues()
-    const statusAfter = await priceFeed.status()
+    const priceFromFeed = await priceFeed.fetchPrice(EMPTY_ADDRESS)
+    const price = await getFetchPriceWithContractValues(chainlinkOracle)
 
-    assert.notEqual(statusAfter, statusBefore)
-    assert.equal(statusAfter, '1')
-    assert.notEqual(price, await getFetchPriceWithDifferentValue(dec(1234, 18), dec(2, 18)))
-    assert.equal(price, await getFetchPriceWithDifferentValue(dec(1234, 18), DEFAULT_INDEX))
-  })
+    assert.equal(price, priceFromFeed)
 
-  it('ChainlinkWorking: Oracle broken, index works, return price with lastGoodIndex, and change State to broken', async () => {
-    await setAddressesAndOracle()
-    const statusBefore = await priceFeed.status()
-
-    await mockChainlink.setPrevPrice(dec(1234, 8))
-    await mockChainlink.setPrice(dec(1234, 8))
-    await mockChainlink.setLatestRoundId(0)
-
-    await mockChainlinkIndex.setPrice(dec(2, 9))
-    await mockChainlinkIndex.setPrevPrice(dec(1, 9))
-
-    await priceFeed.fetchPrice(EMPTY_ADDRESS)
-    const price = await getFetchPriceWithContractValues()
-
-    const statusAfter = await priceFeed.status()
-
-    assert.notEqual(statusAfter, statusBefore)
-    assert.equal(statusAfter, '1')
-    assert.notEqual(price, await getFetchPriceWithDifferentValue(dec(1234, 18), dec(2, 18)))
-    assert.equal(price, await getFetchPriceWithDifferentValue(DEFAULT_PRICE, dec(2, 18)))
-  })
-
-  it('ChainlinkWorking: Oracle broken, index broken, return price with lastGoodPrice and lastGoodIndex, and change State to broken', async () => {
-    await setAddressesAndOracle()
-    const statusBefore = await priceFeed.status()
-
-    await mockChainlink.setPrevPrice(dec(1234, 8))
-    await mockChainlink.setPrice(dec(1234, 8))
-    await mockChainlink.setLatestRoundId(0)
-
-    await mockChainlinkIndex.setPrice(dec(2, 9))
-    await mockChainlinkIndex.setPrevPrice(dec(1, 9))
-    await mockChainlinkIndex.setLatestRoundId(0)
-
-    await priceFeed.fetchPrice(EMPTY_ADDRESS)
-    const price = await getFetchPriceWithContractValues()
-    const statusAfter = await priceFeed.status()
-
-    assert.notEqual(statusAfter, statusBefore)
-    assert.equal(statusAfter, '1')
-    assert.notEqual(price, await getFetchPriceWithDifferentValue(dec(1234, 18), dec(2, 18)))
-    assert.equal(price, await getFetchPriceWithDifferentValue(DEFAULT_PRICE, DEFAULT_INDEX))
+    assert.equal(price, await getFetchPriceWithDifferentValue(chainlinkOracle, dec(1234, 18), dec(20, 18)))
+    assert.notEqual(
+      price,
+      await getFetchPriceWithDifferentValue(chainlinkOracle, dec(1234, 18), DEFAULT_INDEX)
+    )
   })
 
   // Dfranc Tests :: End
