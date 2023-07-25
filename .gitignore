@@ -13,6 +13,8 @@ deployment/output
 .idea
 .vscode
 
+# Mac
+.DS_Store
 
 #FOLLOWING ARE FROM THE FORK -- Waiting for cleanup
 
